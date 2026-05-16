@@ -1,27 +1,28 @@
-@if($pop)
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
+@if ($pop)
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
-                <a href="{{$pop->url}}">
-                    <div class="item">
-                        <img src="{{asset('uploads/slider/'.$pop->image)}}" />
-                    </div>
-                </a>
-            </div>
-            <div class="modal-footer">
+                    <a href="{{ $pop->url }}">
+                        <div class="item">
+                            <img src="{{ asset('uploads/slider/' . $pop->image) }}" />
+                        </div>
+                    </a>
+                </div>
+                <div class="modal-footer">
 
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endif
 <style>
     .dtrr {
@@ -70,7 +71,7 @@
     }
 </style>
 <section class="hero-area" style="margin-top:2px">
-    <div class="container-fluid">
+    <div class="">
         <div class="row">
             <div class="hero-slider col-lg-12">
                 <div class="slideshow">
@@ -78,11 +79,11 @@
 
 
                         @foreach ($sliders as $key => $slider)
-                        <div class="item">
-                            <a href="{{$slider->url}}">
-                                <img src="{{asset('uploads/slider/'.$slider->image)}}" />
-                            </a>
-                        </div>
+                            <div class="item">
+                                <a href="{{ $slider->url }}">
+                                    <img src="{{ asset('uploads/slider/' . $slider->image) }}" />
+                                </a>
+                            </div>
                         @endforeach
 
                     </div>

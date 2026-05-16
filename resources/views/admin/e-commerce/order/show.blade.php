@@ -1,11 +1,11 @@
-@extends('layouts.admin.e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Order Information')
 
 @section('content')
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <div class="container-fluid">
+        <div class="">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1>Order</h1>
@@ -17,13 +17,13 @@
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div><!-- /. -->
     </section>
 
     <!-- Main content -->
 
     <section class="content">
-        <div class="container-fluid">
+        <div class="">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -219,7 +219,8 @@
                             <tr>
                                 <th>Shipping Charge</th>
                                 <td>{{ $order->shipping_charge }}
-                                    <strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></td>
+                                    <strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong>
+                                </td>
                                 <th>Discount</th>
                                 <td>{{ $order->discount }} <strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong>
                                 </td>
@@ -242,7 +243,8 @@
                                     {{ $part }}<strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong>
                                 </td>
                                 <th>Due</th>
-                                <td> {{ $order->total - $part }} <strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong>
+                                <td> {{ $order->total - $part }}
+                                    <strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong>
                                 </td>
                             </tr>
                             <tr>
@@ -355,9 +357,7 @@
                 </div>
                 <div class="card-body">
                     @php
-                        $vendors = DB::table('multi_order')
-                            ->where('order_id', $order->id)
-                            ->get();
+                        $vendors = DB::table('multi_order')->where('order_id', $order->id)->get();
                     @endphp
                     <style>
                         .gx {
@@ -484,7 +484,7 @@
 
             </div>
 
-        </div><!-- /.container-fluid -->
+        </div><!-- /. -->
     </section>
     <!-- /.content -->
 

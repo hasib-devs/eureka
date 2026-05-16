@@ -1,4 +1,4 @@
-@extends('layouts.admin.e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Dashboard')
 
@@ -11,12 +11,12 @@
 
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <div class="container-fluid">
+        <div class="">
             <div class="row mb-2">
                 <?php
-                $low_products=\App\Models\Product::where('quantity','<','6')->where('user_id',auth()->id())->count();
-                if($low_products>0){
-            ?>
+                $low_products = \App\Models\Product::where('quantity', '<', '6')->where('user_id', auth()->id())->count();
+                if ($low_products > 0) {
+                    ?>
                 <style>
                     .low-warning {
                         padding: 8px 30px;
@@ -38,7 +38,7 @@
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
     <!-- Main content -->

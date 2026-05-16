@@ -21,8 +21,9 @@ body {
 }
 
 /* Sidebar Scrollable Section */
-.sidebar {
+.dashboard-sidebar {
     width: 280px;
+    min-width: 280px;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(15px);
     border-right: 1px solid rgba(0, 0, 0, 0.08);
@@ -61,12 +62,12 @@ body {
     letter-spacing: 1px;
 }
 
-.sidebar ul {
+.dashboard-sidebar ul {
     list-style: none;
     margin-top: 5px;
 }
 
-.sidebar li {
+.dashboard-sidebar li {
     padding: 10px 15px;
     margin: 2px 0;
     border-radius: 8px;
@@ -79,8 +80,8 @@ body {
     font-size: 0.95rem;
 }
 
-.sidebar li:hover,
-.sidebar li.active {
+.dashboard-sidebar li:hover,
+.dashboard-sidebar li.active {
     background: #f2d231;
     color: #000;
     font-weight: 500;
@@ -224,7 +225,6 @@ header {
 /* Card Design */
 .card {
     position: relative;
-    height: 110px;
     border-radius: 55px;
     color: white;
     overflow: hidden;
@@ -455,7 +455,7 @@ body.dark-mode {
 }
 
 /* Apply deep blur to everything in dark mode */
-body.dark-mode .sidebar,
+body.dark-mode .dashboard-sidebar,
 body.dark-mode header,
 body.dark-mode .analytics-live-card,
 body.dark-mode .card {
@@ -498,13 +498,13 @@ body.dark-mode {
     color: var(--text-color);
 }
 
-body.dark-mode .sidebar {
+body.dark-mode .dashboard-sidebar {
     background: var(--sidebar-bg);
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-body.dark-mode .sidebar li {
+body.dark-mode .dashboard-sidebar li {
     color: #cbd5e1;
 }
 

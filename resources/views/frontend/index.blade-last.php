@@ -38,7 +38,7 @@
                 padding: 10px;
             }
         </style>
-        <section class="container-fluid">
+        <section class="">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -73,7 +73,7 @@
     @if (setting('BRAND_STATUS') != 0 || setting('BRAND_STATUS') == '')
         <!--================product  Area start=================-->
         <div class="shop-category shop-brand" style="padding-bottom: 20px;text-align: center;">
-            <div class="container-fluid">
+            <div class="">
                 <h3 class="title" style="margin-bottom: 0 !important;"><span>Top Brands</span> <a href="/brands/list">view
                         all</a></h3>
                 <div class="cat-row" style="display:block;">
@@ -97,7 +97,7 @@
     @if (setting('LATEST_PRODUCT_STATUS') != 0 || setting('LATEST_PRODUCT_STATUS') == '')
         <!--================ Latest product Area =================-->
         <div class="products mt">
-            <div class="container-fluid">
+            <div class="">
                 <!--<h3 class="title"><span>Latest Products</span> <a href="{{ route('product') }}">View All</a></h3>-->
 
                 <h3 class="title"><span>Latest Products</span> </h3>
@@ -117,7 +117,7 @@
     @if (!empty($homepage_category_products))
         @foreach ($homepage_category_products as $homepage_category)
             <div class="products">
-                <div class="container-fluid">
+                <div class="">
                     <h3 class="title"><span>{{ $homepage_category->name }}</span> <a
                             href="{{ url('category/' . $homepage_category->slug) }}">View All</a></h3>
                     <div class="row autoplay slick-slides">
@@ -134,7 +134,7 @@
 
     @if (setting('NEWS_LETTER_STATUS') != 0 || setting('NEWS_LETTER_STATUS') == '')
         <div class="bef-footer">
-            <div class="container-fluid" style="">
+            <div class="" style="">
                 <div class="items">
                     <div class="search-box">
 
@@ -375,7 +375,7 @@
 
             ]
         });
-        
+
         $('.autoplay').slick({
     slidesToShow: 4,   // 👉 এখানেই control
     slidesToScroll: 1,

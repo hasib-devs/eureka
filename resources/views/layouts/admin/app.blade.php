@@ -10,60 +10,54 @@
     <link rel="shortcut icon" type="image/jpg" href="/uploads/setting/{{ setting('favicon') }}" />
 
     <title>@yield('title')</title>
-    @include('layouts.global')
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
 
-    <!-- pace-progress -->
-    {{-- <link rel="stylesheet" href="/assets/plugins/pace-progress/themes/black/pace-theme-flat-top.css"> --}}
+    {{-- TODO: We will use that later --}}
+    {{-- @include('layouts.global') --}}
+
+    <!-- Google Font: Source Sans Pro -->
+
+    {{-- Dashboard CSS --}}
+    <link rel="stylesheet" href="{{ asset('dashboard-assets/style.css') }}">
+
+    <!-- Styles / Scripts -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
 
     @notifyCss
 
     @stack('css')
 
     <!-- Theme style -->
-    <link rel="stylesheet" href="/assets/dist/css/adminlte.min.css">
-    <style>
-        div.fixed.inset-0.flex.items-end.justify-center {
-            z-index: 999999;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/dist/css/adminlte.css">
+
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body class="">
     <!-- Site wrapper -->
-    <div class="wrapper">
+    <div class="flex w-screen h-screen overflow-hidden">
 
         <!-- Navbar -->
-        @include('layouts.admin.partials.navbar')
+        {{-- @include('layouts.admin.e-commerce.partials.navbar') --}}
         <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->
-        @include('layouts.admin.partials.aside')
-        <!-- /.main sidebar container -->
+        @include('layouts.admin.sidebar')
 
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
+        <div class="flex-1 overflow-y-auto p-4">
 
             @yield('content')
 
+            {{-- <p style="text-align:center;margin: 0;padding: 5px 0px;">Developed by: <a target="_blank"
+                    href="https://reliableuksolutions.com">Wedevs</a></p> --}}
         </div>
-        <!-- /.content-wrapper -->
 
-        <!-- Footer -->
-        {{-- <x-footer-component /> --}}
-        <!-- /.footer -->
-
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
-        </aside>
-        <!-- /.control-sidebar -->
     </div>
-    <!-- ./wrapper -->
+
 
     <!-- jQuery -->
     <script src="/assets/plugins/jquery/jquery.min.js"></script>
@@ -71,39 +65,51 @@
     <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/assets/dist/js/adminlte.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
 
-    <!-- pace-progress -->
-    {{-- <script src="/assets/plugins/pace-progress/pace.min.js"></script> --}}
 
     <x-notify::notify />
     @notifyJs
 
     @stack('js')
-
-    <script src="/assets/dist/js/demo.js"></script>
     <script>
-        $(document).ready(function() {
-            setInterval(function() {
-                $('.notify').hide();
-            }, 2000);
+        setInterval(function() {
+            $('.notify').hide();
+        }, 2000);
+        $(document).on('click', '#deleteData', function(e) {
+            let id = $(this).data('id');
+            e.preventDefault();
+            let conf = confirm('Are you sure delete this data!!');
+            if (conf) {
 
-            function countNewMessage() {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ route('admin.connection.live.chat.new-sms.count') }}",
-                    dataType: "JSON",
-                    success: function(response) {
-                        $('li#countMessage span').text(response)
-                    }
-                });
+                document.getElementById('delete-data-form-' + id).submit();
             }
 
-            setInterval(function() {
-                countNewMessage();
-            }, 7000);
-        });
+        })
     </script>
+    {{-- <script src="/assets/dist/js/demo.js"></script> --}}
+
+    {{-- <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const path = window.location.pathname;
+
+            document.querySelectorAll('.sidebar li').forEach(function(li) {
+                li.classList.remove('active');
+
+                const onclick = li.getAttribute('onclick');
+                if (!onclick) return;
+
+                const match = onclick.match(/admin\/[^'")]+/);
+                if (!match) return;
+
+                const itemPath = '/' + match[0];
+
+                if (path === itemPath || path.startsWith(itemPath + '/')) {
+                    li.classList.add('active');
+                }
+            });
+        });
+    </script> --}}
+
 </body>
 
 </html>

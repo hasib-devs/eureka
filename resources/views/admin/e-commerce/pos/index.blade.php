@@ -1,4 +1,4 @@
-@extends('layouts.admin.e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Modern POS Terminal')
 
@@ -234,7 +234,7 @@
             display: flex;
             flex-direction: column;
             background: #fff;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.02);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.02);
             position: relative;
         }
 
@@ -264,7 +264,7 @@
         }
 
         .cart-badge {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 14px;
@@ -292,8 +292,15 @@
         }
 
         @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modern-cart-item:hover {
@@ -520,7 +527,7 @@
             font-size: 14px;
             opacity: 0.7;
         }
-        
+
         .loading-fullscreen {
             grid-column: 1 / -1;
             text-align: center;
@@ -538,8 +545,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 @endpush
@@ -549,10 +561,10 @@
     <div class="pos-container">
         <!-- Dashboard Exit -->
         <div style="position: absolute; left: 20px; top: -50px; display: flex; align-items: center; gap: 15px;">
-             <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary btn-round">
-                 <i class="fas fa-arrow-left"></i> Dashboard
-             </a>
-             <h4 style="margin:0; font-weight: 800; color: #4a5568;">POS Terminal</h4>
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary btn-round">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+            <h4 style="margin:0; font-weight: 800; color: #4a5568;">POS Terminal</h4>
         </div>
 
         <!-- Left Panel: Product Discovery -->
@@ -566,10 +578,11 @@
                 </div>
                 <div class="search-wrapper">
                     <i class="fas fa-search search-icon-large"></i>
-                    <input type="text" class="search-input" id="searchProduct" placeholder="Search by name, category or SKU...">
+                    <input type="text" class="search-input" id="searchProduct"
+                        placeholder="Search by name, category or SKU...">
                 </div>
             </div>
-            
+
             <div class="product-scroll-area">
                 <div class="modern-grid" id="productGrid">
                     <div class="empty-state-modern">
@@ -628,12 +641,13 @@
                 <div class="close-form-btn" id="closeFormBtn"><i class="fas fa-times"></i></div>
                 <h4 class="mb-4" style="font-weight: 800;">Customer Details</h4>
                 <div id="alertContainer"></div>
-                
+
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group">
                             <label class="small text-muted font-weight-bold">First Name</label>
-                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name" required>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name"
+                                required>
                         </div>
                     </div>
                     <div class="col-6">
@@ -706,105 +720,109 @@
 @push('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-    let cart = [];
-    let products = [];
+        let cart = [];
+        let products = [];
 
-    const shippingCharge = 60;
-    const shippingOutside = 120;
-    const freeShippingAbove = 1000;
+        const shippingCharge = 60;
+        const shippingOutside = 120;
+        const freeShippingAbove = 1000;
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Dynamic Clock
+        function updateClock() {
+            const now = new Date();
+            let h = now.getHours();
+            let m = now.getMinutes();
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12; // the hour '0' should be '12'
+            m = m < 10 ? '0' + m : m;
+            const timeStr = h + ':' + m + ' ' + ampm;
+            $('#realtimeClock').text(timeStr);
         }
-    });
+        setInterval(updateClock, 1000);
+        updateClock();
 
-    // Dynamic Clock
-    function updateClock() {
-        const now = new Date();
-        let h = now.getHours();
-        let m = now.getMinutes();
-        let ampm = h >= 12 ? 'PM' : 'AM';
-        h = h % 12;
-        h = h ? h : 12; // the hour '0' should be '12'
-        m = m < 10 ? '0'+m : m;
-        const timeStr = h + ':' + m + ' ' + ampm;
-        $('#realtimeClock').text(timeStr);
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+        // Form Drawer Logic
+        $('#openFormBtn').on('click', () => {
+            if (!cart.length) {
+                showAlert('Your bag is empty! Add some products first.', 'warning');
+                return;
+            }
+            $('#customerFormModern').addClass('open');
+        });
+        $('#closeFormBtn, .pos-container .product-panel').on('click', (e) => {
+            if (!$(e.target).closest('#customerFormModern').length || $(e.target).is(
+                    '#closeFormBtn, #closeFormBtn i')) {
+                $('#customerFormModern').removeClass('open');
+            }
+        });
 
-    // Form Drawer Logic
-    $('#openFormBtn').on('click', () => {
-        if (!cart.length) {
-            showAlert('Your bag is empty! Add some products first.', 'warning');
-            return;
-        }
-        $('#customerFormModern').addClass('open');
-    });
-    $('#closeFormBtn, .pos-container .product-panel').on('click', (e) => {
-        if (!$(e.target).closest('#customerFormModern').length || $(e.target).is('#closeFormBtn, #closeFormBtn i')) {
-             $('#customerFormModern').removeClass('open');
-        }
-    });
-
-    /* ===============================
-        SEARCH & LOAD
-    =============================== */
-    function loadProducts(query = '') {
-        if (query.trim().length === 0) {
-            $('#productGrid').html(`
+        /* ===============================
+            SEARCH & LOAD
+        =============================== */
+        function loadProducts(query = '') {
+            if (query.trim().length === 0) {
+                $('#productGrid').html(`
                 <div class="empty-state-modern">
                     <i class="fas fa-search"></i>
                     <p>Search to begin</p>
                     <span>Start typing to find products in your inventory</span>
                 </div>
             `);
-            products = [];
-            return;
-        }
+                products = [];
+                return;
+            }
 
-        $('#productGrid').html(`
+            $('#productGrid').html(`
             <div class="loading-fullscreen">
                  <div class="spinner-modern"></div>
                  <p class="text-muted">Searching Inventory...</p>
             </div>
         `);
 
-        $.ajax({
-            url: '/admin/pos/search-products',
-            method: 'GET',
-            data: { q: query },
-            success(res) {
-                products = res;
-                renderProducts(res);
-            },
-            error() {
-                $('#productGrid').html('<div class="loading-fullscreen text-danger">Inventory search failed!</div>');
-            }
-        });
-    }
+            $.ajax({
+                url: '/admin/pos/search-products',
+                method: 'GET',
+                data: {
+                    q: query
+                },
+                success(res) {
+                    products = res;
+                    renderProducts(res);
+                },
+                error() {
+                    $('#productGrid').html(
+                        '<div class="loading-fullscreen text-danger">Inventory search failed!</div>');
+                }
+            });
+        }
 
-    function renderProducts(items) {
-        const grid = $('#productGrid');
-        grid.empty();
+        function renderProducts(items) {
+            const grid = $('#productGrid');
+            grid.empty();
 
-        if (!items.length) {
-            grid.html(`
+            if (!items.length) {
+                grid.html(`
                 <div class="empty-state-modern">
                     <i class="fas fa-search"></i>
                     <p>No matches found</p>
                     <span>Try searching with different keywords</span>
                 </div>
             `);
-            return;
-        }
+                return;
+            }
 
-        items.forEach(p => {
-            const price = p.discount_price ?? p.regular_price ?? p.price;
-            const img = p.image ? `/uploads/product/${p.image}` : '/uploads/product/default.png';
+            items.forEach(p => {
+                const price = p.discount_price ?? p.regular_price ?? p.price;
+                const img = p.image ? `/uploads/product/${p.image}` : '/uploads/product/default.png';
 
-            grid.append(`
+                grid.append(`
                 <div class="premium-card" onclick="addProductToCart(${p.id})">
                     <div class="card-img-container">
                         <img src="${img}" class="card-img" onerror="this.src='/uploads/product/default.png'">
@@ -816,69 +834,71 @@
                     </div>
                 </div>
             `);
-        });
-    }
-
-    let searchTimer;
-    $('#searchProduct').on('input', function () {
-        clearTimeout(searchTimer);
-        const q = $(this).val();
-        searchTimer = setTimeout(() => loadProducts(q), 400);
-    });
-
-    /* ===============================
-        CART LOGIC
-    =============================== */
-    function addProductToCart(id) {
-        const product = products.find(p => p.id === id);
-        if (!product || product.quantity <= 0) {
-             if (product && product.quantity <= 0) showAlert('Product is out of stock!', 'danger');
-             return;
+            });
         }
 
-        const exists = cart.find(i => i.product_id === product.id);
-        if (exists) {
-            if (exists.qty < exists.max_stock) {
-                exists.qty++;
-            } else {
-                showAlert('Max stock reached in cart!', 'warning');
+        let searchTimer;
+        $('#searchProduct').on('input', function() {
+            clearTimeout(searchTimer);
+            const q = $(this).val();
+            searchTimer = setTimeout(() => loadProducts(q), 400);
+        });
+
+        /* ===============================
+            CART LOGIC
+        =============================== */
+        function addProductToCart(id) {
+            const product = products.find(p => p.id === id);
+            if (!product || product.quantity <= 0) {
+                if (product && product.quantity <= 0) showAlert('Product is out of stock!', 'danger');
                 return;
             }
-        } else {
-            cart.unshift({
-                product_id: product.id,
-                name: product.title,
-                price: parseFloat(product.discount_price ?? product.regular_price ?? product.price),
-                image: product.image ? `/uploads/product/${product.image}` : '/uploads/product/default.png',
-                max_stock: product.quantity,
-                qty: 1
-            });
-            $('#cartItems').animate({ scrollTop: 0 }, 'fast');
+
+            const exists = cart.find(i => i.product_id === product.id);
+            if (exists) {
+                if (exists.qty < exists.max_stock) {
+                    exists.qty++;
+                } else {
+                    showAlert('Max stock reached in cart!', 'warning');
+                    return;
+                }
+            } else {
+                cart.unshift({
+                    product_id: product.id,
+                    name: product.title,
+                    price: parseFloat(product.discount_price ?? product.regular_price ?? product.price),
+                    image: product.image ? `/uploads/product/${product.image}` : '/uploads/product/default.png',
+                    max_stock: product.quantity,
+                    qty: 1
+                });
+                $('#cartItems').animate({
+                    scrollTop: 0
+                }, 'fast');
+            }
+            updateCart();
         }
-        updateCart();
-    }
 
-    function updateCart() {
-        const box = $('#cartItems');
-        $('#cartCount').text(cart.length);
+        function updateCart() {
+            const box = $('#cartItems');
+            $('#cartCount').text(cart.length);
 
-        if (!cart.length) {
-            box.html(`
+            if (!cart.length) {
+                box.html(`
                 <div class="empty-state-modern">
                     <i class="fas fa-shopping-basket"></i>
                     <p>Bag is empty</p>
                     <span>Your selected items will appear here</span>
                 </div>
             `);
-            $('#cartFooterModern').hide();
-            return;
-        }
+                $('#cartFooterModern').hide();
+                return;
+            }
 
-        $('#cartFooterModern').show();
-        box.empty();
+            $('#cartFooterModern').show();
+            box.empty();
 
-        cart.forEach((item, i) => {
-            box.append(`
+            cart.forEach((item, i) => {
+                box.append(`
                 <div class="modern-cart-item">
                     <img src="${item.image}" class="cart-item-thumb">
                     <div class="cart-item-info">
@@ -897,102 +917,107 @@
                     </div>
                 </div>
             `);
-        });
+            });
 
-        updateSummary();
-    }
-
-    function qtyAdjust(i, delta) {
-        const item = cart[i];
-        if (delta > 0 && item.qty < item.max_stock) {
-            item.qty++;
-        } else if (delta < 0 && item.qty > 1) {
-            item.qty--;
-        } else if (delta > 0) {
-            showAlert('Stock limit reached!', 'warning');
-        }
-        updateCart();
-    }
-
-    function removeItem(i) {
-        cart.splice(i, 1);
-        updateCart();
-    }
-
-    $('#clearCartBtn').on('click', () => { cart = []; updateCart(); });
-
-    function updateSummary() {
-        const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-        const city = $('#city').val();
-        let shipping = subtotal >= freeShippingAbove ? 0 : (city === 'Dhaka' ? shippingCharge : shippingOutside);
-
-        $('#subtotal').text('৳' + subtotal.toFixed(2));
-        $('#shipping').text('৳' + shipping.toFixed(2));
-        $('#total').text('৳' + (subtotal + shipping).toFixed(2));
-    }
-
-    $('#city').on('change', updateSummary);
-
-    /* ===============================
-        ORDER SUBMISSION
-    =============================== */
-    $('#checkoutBtn').on('click', function () {
-        const btn = $(this);
-        if (!cart.length) return;
-
-        // Simple validation
-        if (!$('#firstName').val() || !$('#phone').val() || !$('#address').val()) {
-            showAlert('Please fill required fields!', 'danger');
-            return;
+            updateSummary();
         }
 
-        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        function qtyAdjust(i, delta) {
+            const item = cart[i];
+            if (delta > 0 && item.qty < item.max_stock) {
+                item.qty++;
+            } else if (delta < 0 && item.qty > 1) {
+                item.qty--;
+            } else if (delta > 0) {
+                showAlert('Stock limit reached!', 'warning');
+            }
+            updateCart();
+        }
 
-        const data = {
-            first_name: $('#firstName').val(),
-            last_name: $('#lastName').val(),
-            phone: $('#phone').val(),
-            email: $('#email').val(),
-            address: $('#address').val(),
-            city: $('#city').val(),
-            district: $('#district').val(),
-            payment_method: $('#paymentMethod').val(),
-            transaction_id: $('#transactionId').val(),
-            cart_items: cart
-        };
+        function removeItem(i) {
+            cart.splice(i, 1);
+            updateCart();
+        }
 
-        $.post('/admin/pos/store-order', data, res => {
-            showAlert('Success! Order #' + res.invoice + ' completed.', 'success');
+        $('#clearCartBtn').on('click', () => {
             cart = [];
             updateCart();
-            $('#customerFormModern').removeClass('open');
-             // Trigger print or receipt here if needed
-        }).fail(err => {
-            let msg = 'Order failed to save!';
-            if (err.responseJSON) {
-                if (err.responseJSON.error) msg = err.responseJSON.error;
-                else if (err.responseJSON.message) msg = err.responseJSON.message;
-                
-                if (err.responseJSON.errors) {
-                    const firstErr = Object.values(err.responseJSON.errors)[0][0];
-                    msg = firstErr;
-                }
-            }
-            showAlert(msg, 'danger');
-        }).always(() => {
-            btn.prop('disabled', false).html('Place Order Now <i class="fas fa-check-double"></i>');
         });
-    });
 
-    function showAlert(msg, type) {
-        $('#alertContainer').html(`<div class="alert alert-${type} shadow-sm border-0" style="border-radius: 12px; font-weight: 600;">${msg}</div>`);
-        setTimeout(() => $('.alert').fadeOut(), 6000);
-    }
+        function updateSummary() {
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const city = $('#city').val();
+            let shipping = subtotal >= freeShippingAbove ? 0 : (city === 'Dhaka' ? shippingCharge : shippingOutside);
 
-    // Payment method switch
-    $('#paymentMethod').on('change', function() {
-        if ($(this).val() !== 'cash') $('#transactionFields').slideDown();
-        else $('#transactionFields').slideUp();
-    });
-</script>
+            $('#subtotal').text('৳' + subtotal.toFixed(2));
+            $('#shipping').text('৳' + shipping.toFixed(2));
+            $('#total').text('৳' + (subtotal + shipping).toFixed(2));
+        }
+
+        $('#city').on('change', updateSummary);
+
+        /* ===============================
+            ORDER SUBMISSION
+        =============================== */
+        $('#checkoutBtn').on('click', function() {
+            const btn = $(this);
+            if (!cart.length) return;
+
+            // Simple validation
+            if (!$('#firstName').val() || !$('#phone').val() || !$('#address').val()) {
+                showAlert('Please fill required fields!', 'danger');
+                return;
+            }
+
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+            const data = {
+                first_name: $('#firstName').val(),
+                last_name: $('#lastName').val(),
+                phone: $('#phone').val(),
+                email: $('#email').val(),
+                address: $('#address').val(),
+                city: $('#city').val(),
+                district: $('#district').val(),
+                payment_method: $('#paymentMethod').val(),
+                transaction_id: $('#transactionId').val(),
+                cart_items: cart
+            };
+
+            $.post('/admin/pos/store-order', data, res => {
+                showAlert('Success! Order #' + res.invoice + ' completed.', 'success');
+                cart = [];
+                updateCart();
+                $('#customerFormModern').removeClass('open');
+                // Trigger print or receipt here if needed
+            }).fail(err => {
+                let msg = 'Order failed to save!';
+                if (err.responseJSON) {
+                    if (err.responseJSON.error) msg = err.responseJSON.error;
+                    else if (err.responseJSON.message) msg = err.responseJSON.message;
+
+                    if (err.responseJSON.errors) {
+                        const firstErr = Object.values(err.responseJSON.errors)[0][0];
+                        msg = firstErr;
+                    }
+                }
+                showAlert(msg, 'danger');
+            }).always(() => {
+                btn.prop('disabled', false).html('Place Order Now <i class="fas fa-check-double"></i>');
+            });
+        });
+
+        function showAlert(msg, type) {
+            $('#alertContainer').html(
+                `<div class="alert alert-${type} shadow-sm border-0" style="border-radius: 12px; font-weight: 600;">${msg}</div>`
+                );
+            setTimeout(() => $('.alert').fadeOut(), 6000);
+        }
+
+        // Payment method switch
+        $('#paymentMethod').on('change', function() {
+            if ($(this).val() !== 'cash') $('#transactionFields').slideDown();
+            else $('#transactionFields').slideUp();
+        });
+    </script>
 @endpush
