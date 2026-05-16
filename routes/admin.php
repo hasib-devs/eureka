@@ -1,45 +1,41 @@
 <?php
 
-use App\Models\ticket;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\IpBlockController;
-use App\Http\Controllers\pageController;
-use App\Http\Controllers\SystemController;
-use App\Http\Controllers\CourierController;
-use App\Http\Controllers\campaingController;
-use App\Http\Controllers\WithdrawController;
-use App\Http\Controllers\Admin\chatController;
-use App\Http\Controllers\subscriptionController;
 use App\Http\Controllers\Admin\attributeController;
+use App\Http\Controllers\Admin\chatController;
 use App\Http\Controllers\Admin\CustomOrderController;
-use App\Http\Controllers\Admin\Ecommerce\TagController;
 use App\Http\Controllers\Admin\Ecommerce\AuthController;
-use App\Http\Controllers\Admin\Ecommerce\SizeController;
-use App\Http\Controllers\Admin\Ecommerce\StafController;
-use App\Http\Controllers\Admin\Ecommerce\BrandController;
-use App\Http\Controllers\Admin\Ecommerce\ColorController;
-use App\Http\Controllers\Admin\Ecommerce\OrderController;
-use App\Http\Controllers\Admin\Ecommerce\CouponController;
-use App\Http\Controllers\Admin\Ecommerce\SliderController;
-
 use App\Http\Controllers\Admin\Ecommerce\BannerController;
-
-use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
-use App\Http\Controllers\Admin\Ecommerce\ticketController;
-use App\Http\Controllers\Admin\Ecommerce\VendorController;
-use App\Http\Controllers\blogControler as ablogController;
+use App\Http\Controllers\Admin\Ecommerce\BrandController;
+use App\Http\Controllers\Admin\Ecommerce\CategoryController;
 use App\Http\Controllers\Admin\Ecommerce\ClassicController;
+use App\Http\Controllers\Admin\Ecommerce\CollectionController;
+use App\Http\Controllers\Admin\Ecommerce\ColorController;
+use App\Http\Controllers\Admin\Ecommerce\CouponController;
+use App\Http\Controllers\Admin\Ecommerce\CustomerController;
+use App\Http\Controllers\Admin\Ecommerce\DashboardController;
+use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
+use App\Http\Controllers\Admin\Ecommerce\OrderController;
 use App\Http\Controllers\Admin\Ecommerce\ProductController;
 use App\Http\Controllers\Admin\Ecommerce\ProfileController;
 use App\Http\Controllers\Admin\Ecommerce\SettingController;
-use App\Http\Controllers\Admin\Ecommerce\CategoryController;
-use App\Http\Controllers\Admin\Ecommerce\CustomerController;
-use App\Http\Controllers\Admin\Ecommerce\DashboardController;
-use App\Http\Controllers\Admin\Ecommerce\CollectionController;
+use App\Http\Controllers\Admin\Ecommerce\SizeController;
+use App\Http\Controllers\Admin\Ecommerce\SliderController;
+use App\Http\Controllers\Admin\Ecommerce\StafController;
 use App\Http\Controllers\Admin\Ecommerce\SubCategoryController;
-//use App\Http\Controllers\Admin\POSController;
+use App\Http\Controllers\Admin\Ecommerce\TagController;
+use App\Http\Controllers\Admin\Ecommerce\ticketController;
+use App\Http\Controllers\Admin\Ecommerce\VendorController;
+use App\Http\Controllers\Admin\IpBlockController;
+use App\Http\Controllers\blogControler as ablogController;
+use App\Http\Controllers\campaingController;
+use App\Http\Controllers\CourierController;
 use App\Http\Controllers\Frontend\IncompleteLeadController;
-
+use App\Http\Controllers\pageController;
+use App\Http\Controllers\subscriptionController;
+use App\Http\Controllers\SystemController;
+use App\Http\Controllers\WithdrawController;
+// use App\Http\Controllers\Admin\POSController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,19 +48,14 @@ use App\Http\Controllers\Frontend\IncompleteLeadController;
 |
 */
 
-
-
-
-
-
 Route::middleware(['auth', 'admin'])->group(function () {
     // Pos system
-  //  Route::get('/pos', [POSController::class, 'index'])->name('pos');
-   // Route::get('/pos/search-products', [POSController::class, 'searchProducts']);
-   // Route::get('/pos/product/{id}', [POSController::class, 'getProduct']);
-   // Route::post('/pos/store-order', [POSController::class, 'storeOrder']);
-    //Route::get('/pos/print-invoice/{id}', [POSController::class, 'printInvoice']);
-    
+    //  Route::get('/pos', [POSController::class, 'index'])->name('pos');
+    // Route::get('/pos/search-products', [POSController::class, 'searchProducts']);
+    // Route::get('/pos/product/{id}', [POSController::class, 'getProduct']);
+    // Route::post('/pos/store-order', [POSController::class, 'storeOrder']);
+    // Route::get('/pos/print-invoice/{id}', [POSController::class, 'printInvoice']);
+
     // IP Blocking
     Route::get('ip-block', [IpBlockController::class, 'index'])->name('ip_block.index');
     Route::post('ip-block', [IpBlockController::class, 'store'])->name('ip_block.store');
@@ -79,11 +70,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('category', CategoryController::class);
     Route::resource('collection', CollectionController::class);
     Route::resource('sub-category', SubCategoryController::class);
-    
+
     Route::resource('slider', SliderController::class);
-Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoController::class);    
+    Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoController::class);
     Route::resource('banner', BannerController::class);
-    
+
     Route::resource('sliderone', NewSliderController::class);
     Route::resource('brand', BrandController::class);
     Route::resource('color', ColorController::class);
@@ -134,12 +125,10 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
     Route::Post('staf/store', [StafController::class, 'store'])->name('staff.store');
     Route::get('staf/list', [StafController::class, 'stafflist'])->name('staff.list');
 
-
     Route::get('staf/{id}/edit', [StafController::class, 'staffEdit'])->name('staff.edit');
     Route::get('mail', [ticketController::class, 'mail'])->name('mail');
     Route::get('mail/show/{id}', [ticketController::class, 'mailShow'])->name('mail.show');
     Route::get('mail/{id}', [ticketController::class, 'maildelete'])->name('mail.delete');
-
 
     Route::get('subscribe', [subscriptionController::class, 'show'])->name('subscribe');
     Route::get('ticket', [ticketController::class, 'index'])->name('ticket');
@@ -166,7 +155,6 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
     Route::get('product/inhouse', [ProductController::class, 'inhouseProduct'])->name('product.inhouse.index');
     Route::get('product/inhouse/create', [ProductController::class, 'inhouseCreate'])->name('product.inhouse.create');
     // Route::get('product/indexone', [ProductController::class, 'indexone'])->name('product.indexone'); // Commented by Hridoy
-
 
     Route::get('admin/product/color/{cc}/{pp}', [ProductController::class, 'nColorDelete'])->name('color.delete.n2');
     Route::get('admin/product/attr/{cc}', [ProductController::class, 'nattrDelete'])->name('attr.delete.n2');
@@ -198,7 +186,6 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
     Route::get('extra-categories/edit/{edit}', [SubCategoryController::class, 'extracategoryEdit'])->name('extracategory.edit');
     Route::post('extra-categories/edit', [SubCategoryController::class, 'extracategoryUpdate'])->name('edit.extra');
 
-
     Route::post('product/order', [CustomOrderController::class, 'orderProductStore'])->name('product.order.store');
     Route::get('product/order/{id}', [CustomOrderController::class, 'orderProduct'])->name('product.order');
     Route::get('apply/coupon/{code}/{id}', [CustomOrderController::class, 'applyCoupon'])->name('apply.coupon');
@@ -215,7 +202,6 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
     Route::Post('campaing/create/data', [campaingController::class, 'getData'])->name('campaing.getData');
     Route::Post('campaing/store', [campaingController::class, 'store'])->name('campaing.store');
     Route::Post('campaing/update', [campaingController::class, 'update'])->name('campaing.update');
-
 
     // order controller
     Route::group(['as' => 'order.', 'prefix' => 'order'], function () {
@@ -240,27 +226,25 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
         Route::get('status/return_complete/{id}', [OrderController::class, 'returnComplete'])->name('status.returnComplete');
         Route::get('status/shipping/{id}', [OrderController::class, 'statusShipping'])->name('status.shipping');
         Route::get('status/sub/{id}/{status}/{vendor}', [OrderController::class, 'sub_status'])->name('subStatus');
-       
 
-    
         Route::get('/incomplete-leads/export', [IncompleteLeadController::class, 'export'])
-        ->name('incomplete.leads.export');
+            ->name('incomplete.leads.export');
     });
-    
-      Route::post('/fraud-checker', [OrderController::class, 'fraud_checker'])->name('order.fraud_checker');
-      
-     Route::get('/incomplete-leads', [IncompleteLeadController::class, 'index'])
+
+    Route::post('/fraud-checker', [OrderController::class, 'fraud_checker'])->name('order.fraud_checker');
+
+    Route::get('/incomplete-leads', [IncompleteLeadController::class, 'index'])
         ->name('incomplete.leads.index');
-         Route::get('/incomplete-leads/export', [IncompleteLeadController::class, 'export'])
+    Route::get('/incomplete-leads/export', [IncompleteLeadController::class, 'export'])
         ->name('incomplete.leads.export');
-    
+
     Route::delete('/incomplete-leads/{id}', [IncompleteLeadController::class, 'destroy'])
         ->name('incomplete.leads.delete');
-    
+
     // Dashboard Stats API (optional)
     Route::get('/incomplete-leads/stats', [IncompleteLeadController::class, 'getDashboardStats'])
         ->name('incomplete.leads.stats');
-    
+
     Route::get('/blogs', [ablogController::class, 'index'])->name('index');
     Route::get('/user-blogs', [ablogController::class, 'index2'])->name('user_blog');
     Route::get('/Create-new-blog', [ablogController::class, 'new_blog_form'])->name('new_blog');
@@ -270,7 +254,6 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
     Route::delete('/blog-delete/{id}', [ablogController::class, 'destory'])->name('blog_delete');
     Route::get('/blog-edit/{id}', [ablogController::class, 'blog_edit_form'])->name('blog_edit');
     Route::post('/blog-update', [ablogController::class, 'update_exit_blog'])->name('update_exit_blog');
-
 
     // Auth User Profile Define Here....
     Route::group(['as' => 'profile.', 'prefix' => 'profile'], function () {
@@ -307,7 +290,6 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
         Route::get('/live-chat/status/{id}', [ChatController::class, 'updateStatus']);
     });
 
-
     Route::get('shop', [SettingController::class, 'showShop'])->name('shop');
     Route::put('shop/update', [SettingController::class, 'shopUpdate'])->name('shop.update');
 
@@ -317,7 +299,6 @@ Route::resource('video', \App\Http\Controllers\Admin\Ecommerce\HomepageVideoCont
     Route::put('setting/logo', [SettingController::class, 'updateLogo'])->name('update.logo');
 
     Route::get('notice', [SettingController::class, 'noticeIndex'])->name('notice_index');
-
 
     Route::get('setting/site_info', [SettingController::class, 'shop_infoIndex'])->name('setting.site_info');
     Route::get('setting/layout', [SettingController::class, 'layoutIndex'])->name('setting.layout');
