@@ -8,137 +8,13 @@
     <link rel="stylesheet" href="{{ asset('dashboard-assets/style.css') }}">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        .premium-revenue-card {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            border-radius: 28px;
-            padding: 30px;
-            margin-top: 40px;
-            margin-bottom: 30px;
-            color: #fff;
-            box-shadow: 0 20px 45px rgba(15, 23, 42, .28);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .premium-revenue-card:before {
-            content: "";
-            position: absolute;
-            width: 260px;
-            height: 260px;
-            right: -80px;
-            top: -90px;
-            background: rgba(242, 210, 49, .18);
-            border-radius: 50%;
-            filter: blur(4px);
-        }
-
-        .premium-revenue-header {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            align-items: flex-start;
-            position: relative;
-            z-index: 1;
-        }
-
-        .premium-kicker {
-            display: inline-block;
-            background: rgba(242, 210, 49, .16);
-            color: #f2d231;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .premium-revenue-header h2 {
-            margin: 0;
-            font-size: 26px;
-            color: #fff;
-        }
-
-        .premium-revenue-header p {
-            margin: 8px 0 0;
-            color: rgba(255, 255, 255, .62);
-        }
-
-        .premium-total {
-            font-size: 28px;
-            font-weight: 800;
-            color: #f2d231;
-            white-space: nowrap;
-        }
-
-        .premium-bars {
-            height: 220px;
-            display: flex;
-            align-items: flex-end;
-            gap: 24px;
-            margin-top: 34px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .premium-bar-wrap {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .premium-bar-wrap span {
-            width: 100%;
-            max-width: 70px;
-            display: block;
-            border-radius: 22px 22px 8px 8px;
-            background: linear-gradient(180deg, #f2d231, #fb923c);
-            box-shadow: 0 12px 30px rgba(242, 210, 49, .28);
-            animation: premiumBarGrow 1.4s ease both;
-        }
-
-        .premium-bar-wrap small {
-            color: rgba(255, 255, 255, .7);
-            font-weight: 700;
-        }
-
-        @keyframes premiumBarGrow {
-            from {
-                height: 0;
-                opacity: .2;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @media(max-width:767px) {
-            .premium-revenue-header {
-                flex-direction: column;
-            }
-
-            .premium-bars {
-                gap: 12px;
-                height: 180px;
-            }
-        }
-    </style>
-
 </head>
 
 <body>
     <div class="container">
+        {{-- Sidebar --}}
         <aside class="sidebar">
             <div class="profile">
-                <div class="rounded-full overflow-hidden w-12 h-12">
-                    <img src="https://placehold.co/50" alt="User">
-                </div>
                 <div>
                     <h3>ANAS LUXY WORLD</h3>
                     <p>Admin</p>
@@ -297,6 +173,7 @@
             </nav>
         </aside>
 
+        {{-- Main Content --}}
         <main class="main-content">
             <header>
                 <div class="top-left">
@@ -311,6 +188,7 @@
                 </div>
             </header>
 
+            {{-- Real-time Overview --}}
             <div class="analytics-live-card">
                 <div class="analytics-content">
                     <div class="analytics-text">
@@ -332,6 +210,8 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Cards Overview --}}
             <div class="card-grid">
                 <div class="card cyan">
                     <div class="card-info">
@@ -447,6 +327,7 @@
                 </div>
             </div>
 
+            {{-- Orders Overview --}}
             <div class="overview-section">
                 <h2 class="section-title">Orders Overview</h2>
 
@@ -498,7 +379,7 @@
                 </div>
             </div>
 
-
+            {{-- Revenue Analytics  --}}
             <div class="premium-revenue-card">
                 <div class="premium-revenue-header">
                     <div>
@@ -516,8 +397,6 @@
                     <div class="premium-bar-wrap"><span style="height:90%"></span><small>W4</small></div>
                 </div>
             </div>
-
-
         </main>
     </div>
 
@@ -536,12 +415,6 @@
             setInterval(updateCount, 5000);
         })();
     </script>
-
-
-
 </body>
 
 </html>
-BLADE
-
-php artisan view:clear

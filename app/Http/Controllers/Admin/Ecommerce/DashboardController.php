@@ -62,7 +62,7 @@ class DashboardController extends Controller
 
         $bounce_rate = 0;
 
-        return view('admin.e-commerce.dashboard-new', compact(
+        return view('admin.e-commerce.dashboard', compact(
             'return_orders',
             'revenue_today',
             'revenue_monthly',

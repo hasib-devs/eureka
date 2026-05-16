@@ -2,7 +2,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family:
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        sans-serif;
 }
 
 body {
@@ -35,7 +39,7 @@ body {
     padding: 12px;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .nav-container {
@@ -75,7 +79,8 @@ body {
     font-size: 0.95rem;
 }
 
-.sidebar li:hover, .sidebar li.active {
+.sidebar li:hover,
+.sidebar li.active {
     background: #f2d231;
     color: #000;
     font-weight: 500;
@@ -96,16 +101,18 @@ header {
     background: #fff;
     padding: 15px 25px;
     border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
-.top-left, .top-right {
+.top-left,
+.top-right {
     display: flex;
     gap: 25px;
     align-items: center;
 }
 
-.top-left span, .top-right span {
+.top-left span,
+.top-right span {
     cursor: pointer;
     font-weight: 500;
     display: flex;
@@ -121,8 +128,8 @@ header {
     margin-bottom: 30px;
     display: flex;
     align-items: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .analytics-content {
@@ -155,9 +162,18 @@ header {
 }
 
 @keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+    }
 }
 
 .analytics-text h2 {
@@ -193,7 +209,9 @@ header {
 }
 
 @keyframes grow {
-    from { height: 0; }
+    from {
+        height: 0;
+    }
 }
 
 /* Card Grid Customization */
@@ -211,7 +229,7 @@ header {
     color: white;
     overflow: hidden;
     padding: 20px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 }
 
@@ -244,32 +262,32 @@ header {
 }
 
 /* Card Colors - Professional Palette */
-.cyan { 
-    background: linear-gradient(135deg, #0891b2, #22d3ee); 
+.cyan {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
     box-shadow: 0 10px 20px rgba(8, 145, 178, 0.2);
 }
-.orange { 
-    background: linear-gradient(135deg, #ea580c, #fb923c); 
+.orange {
+    background: linear-gradient(135deg, #ea580c, #fb923c);
     box-shadow: 0 10px 20px rgba(234, 88, 12, 0.2);
 }
-.green { 
-    background: linear-gradient(135deg, #16a34a, #4ade80); 
+.green {
+    background: linear-gradient(135deg, #16a34a, #4ade80);
     box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);
 }
-.red { 
-    background: linear-gradient(135deg, #dc2626, #f87171); 
+.red {
+    background: linear-gradient(135deg, #dc2626, #f87171);
     box-shadow: 0 10px 20px rgba(220, 38, 38, 0.2);
 }
-.blue { 
-    background: linear-gradient(135deg, #2563eb, #60a5fa); 
+.blue {
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
     box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
 }
-.purple { 
-    background: linear-gradient(135deg, #7c3aed, #a78bfa); 
+.purple {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
     box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);
 }
-.dark-blue { 
-    background: linear-gradient(135deg, #1e293b, #475569); 
+.dark-blue {
+    background: linear-gradient(135deg, #1e293b, #475569);
     box-shadow: 0 10px 20px rgba(30, 41, 59, 0.2);
 }
 
@@ -292,8 +310,6 @@ header {
     background: #ccc;
     border-radius: 10px;
 }
-
-
 
 /* Orders Overview Section */
 .overview-section {
@@ -324,8 +340,10 @@ header {
     justify-content: center;
     text-align: center;
     color: white;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -383,11 +401,21 @@ body.dark-mode .circle-card .circle-content h2 {
     width: 100%;
 }
 
-.green-bar { background: #16a34a; }
-.red-bar { background: #dc2626; }
-.cyan-bar { background: #0891b2; }
-.orange-bar { background: #ea580c; }
-.purple-bar { background: #7c3aed; }
+.green-bar {
+    background: #16a34a;
+}
+.red-bar {
+    background: #dc2626;
+}
+.cyan-bar {
+    background: #0891b2;
+}
+.orange-bar {
+    background: #ea580c;
+}
+.purple-bar {
+    background: #7c3aed;
+}
 
 /* DARK MODE OVERRIDES */
 body.dark-mode .value-card {
@@ -408,9 +436,6 @@ body.dark-mode .value-card:hover {
     background: rgba(255, 255, 255, 0.08) !important;
 }
 
-
-
-
 /* Dark Mode Variables */
 :root {
     --bg-color: #f0f2f5;
@@ -430,8 +455,8 @@ body.dark-mode {
 }
 
 /* Apply deep blur to everything in dark mode */
-body.dark-mode .sidebar, 
-body.dark-mode header, 
+body.dark-mode .sidebar,
+body.dark-mode header,
 body.dark-mode .analytics-live-card,
 body.dark-mode .card {
     backdrop-filter: blur(25px) saturate(180%);
@@ -483,7 +508,7 @@ body.dark-mode .sidebar li {
     color: #cbd5e1;
 }
 
-body.dark-mode header, 
+body.dark-mode header,
 body.dark-mode .analytics-live-card {
     background: var(--header-bg);
     backdrop-filter: blur(10px);
@@ -505,4 +530,123 @@ body.dark-mode .profile {
 body.dark-mode .bx-moon::before {
     content: "\ebbd"; /* This is the code for the sun icon in Boxicons */
     color: #f2d231;
+}
+
+.premium-revenue-card {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    border-radius: 28px;
+    padding: 30px;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    color: #fff;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
+    overflow: hidden;
+    position: relative;
+}
+
+.premium-revenue-card:before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    right: -80px;
+    top: -90px;
+    background: rgba(242, 210, 49, 0.18);
+    border-radius: 50%;
+    filter: blur(4px);
+}
+
+.premium-revenue-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-kicker {
+    display: inline-block;
+    background: rgba(242, 210, 49, 0.16);
+    color: #f2d231;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.premium-revenue-header h2 {
+    margin: 0;
+    font-size: 26px;
+    color: #fff;
+}
+
+.premium-revenue-header p {
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.premium-total {
+    font-size: 28px;
+    font-weight: 800;
+    color: #f2d231;
+    white-space: nowrap;
+}
+
+.premium-bars {
+    height: 220px;
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    margin-top: 34px;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-bar-wrap {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.premium-bar-wrap span {
+    width: 100%;
+    max-width: 70px;
+    display: block;
+    border-radius: 22px 22px 8px 8px;
+    background: linear-gradient(180deg, #f2d231, #fb923c);
+    box-shadow: 0 12px 30px rgba(242, 210, 49, 0.28);
+    animation: premiumBarGrow 1.4s ease both;
+}
+
+.premium-bar-wrap small {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+}
+
+@keyframes premiumBarGrow {
+    from {
+        height: 0;
+        opacity: 0.2;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 767px) {
+    .premium-revenue-header {
+        flex-direction: column;
+    }
+
+    .premium-bars {
+        gap: 12px;
+        height: 180px;
+    }
 }

@@ -17,7 +17,6 @@
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     @notifyCss
 
@@ -31,167 +30,167 @@
         }
     </style>
 
-<style>
-body.sidebar-mini .content-wrapper,
-body.sidebar-mini .main-footer,
-body.sidebar-mini .main-header {
-    margin-left: 280px !important;
-}
+    <style>
+        body.sidebar-mini .content-wrapper,
+        body.sidebar-mini .main-footer,
+        body.sidebar-mini .main-header {
+            margin-left: 280px !important;
+        }
 
-.content-wrapper {
-    margin-top: 0 !important;
-    padding: 25px !important;
-    min-height: 100vh !important;
-    background: #f0f2f5 !important;
-}
+        .content-wrapper {
+            margin-top: 0 !important;
+            padding: 25px !important;
+            min-height: 100vh !important;
+            background: #f0f2f5 !important;
+        }
 
-.main-header.navbar {
-    margin-left: 280px !important;
-}
+        .main-header.navbar {
+            margin-left: 280px !important;
+        }
 
-.sidebar li.active {
-    background: #f2d231 !important;
-    color: #000 !important;
-    font-weight: 600 !important;
-}
-</style>
-
-
-<style id="client-admin-sidebar-style">
-/* Client-style AdminLTE sidebar */
-.main-sidebar {
-    background: rgba(255,255,255,0.92) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-right: 1px solid rgba(0,0,0,0.08);
-    box-shadow: 12px 0 30px rgba(15,23,42,0.06);
-}
-
-.brand-link {
-    border-bottom: 0 !important;
-    padding: 18px 15px 8px !important;
-    text-align: center;
-}
-
-.brand-link .brand-image {
-    width: 62px !important;
-    height: 62px !important;
-    object-fit: contain;
-    float: none !important;
-    margin: 0 auto !important;
-    opacity: 1 !important;
-    border-radius: 50%;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-}
-
-.sidebar {
-    padding: 0 14px 18px !important;
-}
-
-.user-panel {
-    background: #fff;
-    border-radius: 14px;
-    padding: 12px !important;
-    margin: 10px 0 24px !important;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    border-bottom: 0 !important;
-}
-
-.user-panel .image img {
-    width: 48px !important;
-    height: 48px !important;
-    object-fit: contain;
-    background: #fff;
-}
-
-.user-panel .info a {
-    color: #111827 !important;
-    font-weight: 800;
-    font-size: 15px;
-    text-transform: uppercase;
-    line-height: 1.2;
-}
-
-.nav-sidebar > .nav-item {
-    margin-bottom: 4px;
-}
-
-.nav-sidebar .nav-link {
-    color: #334155 !important;
-    border-radius: 10px !important;
-    padding: 10px 13px !important;
-    margin-bottom: 3px !important;
-    transition: all .2s ease;
-    font-size: 15px !important;
-}
-
-.nav-sidebar .nav-link:hover,
-.nav-sidebar .nav-link.active {
-    background: #f2d231 !important;
-    color: #000 !important;
-    font-weight: 700;
-    box-shadow: 0 8px 16px rgba(242,210,49,0.25);
-}
-
-.nav-sidebar .nav-icon {
-    color: inherit !important;
-    width: 24px !important;
-    text-align: center;
-}
-
-.nav-sidebar .nav-treeview {
-    background: rgba(15,23,42,0.04) !important;
-    border-radius: 12px !important;
-    padding: 6px !important;
-    margin: 5px 0 8px 0 !important;
-}
-
-.nav-sidebar .nav-treeview .nav-link {
-    font-size: 14px !important;
-    padding: 8px 12px !important;
-}
-
-.nav-sidebar .right {
-    color: inherit !important;
-}
-
-.content-wrapper {
-    background: #f0f2f5 !important;
-}
-
-.main-header.navbar {
-    background: #ffffff !important;
-    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
-}
-
-.main-header .nav-link {
-    color: #64748b !important;
-}
-</style>
+        .sidebar li.active {
+            background: #f2d231 !important;
+            color: #000 !important;
+            font-weight: 600 !important;
+        }
+    </style>
 
 
+    <style id="client-admin-sidebar-style">
+        /* Client-style AdminLTE sidebar */
+        .main-sidebar {
+            background: rgba(255, 255, 255, 0.92) !important;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 12px 0 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .brand-link {
+            border-bottom: 0 !important;
+            padding: 18px 15px 8px !important;
+            text-align: center;
+        }
+
+        .brand-link .brand-image {
+            width: 62px !important;
+            height: 62px !important;
+            object-fit: contain;
+            float: none !important;
+            margin: 0 auto !important;
+            opacity: 1 !important;
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar {
+            padding: 0 14px 18px !important;
+        }
+
+        .user-panel {
+            background: #fff;
+            border-radius: 14px;
+            padding: 12px !important;
+            margin: 10px 0 24px !important;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            border-bottom: 0 !important;
+        }
+
+        .user-panel .image img {
+            width: 48px !important;
+            height: 48px !important;
+            object-fit: contain;
+            background: #fff;
+        }
+
+        .user-panel .info a {
+            color: #111827 !important;
+            font-weight: 800;
+            font-size: 15px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .nav-sidebar>.nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-sidebar .nav-link {
+            color: #334155 !important;
+            border-radius: 10px !important;
+            padding: 10px 13px !important;
+            margin-bottom: 3px !important;
+            transition: all .2s ease;
+            font-size: 15px !important;
+        }
+
+        .nav-sidebar .nav-link:hover,
+        .nav-sidebar .nav-link.active {
+            background: #f2d231 !important;
+            color: #000 !important;
+            font-weight: 700;
+            box-shadow: 0 8px 16px rgba(242, 210, 49, 0.25);
+        }
+
+        .nav-sidebar .nav-icon {
+            color: inherit !important;
+            width: 24px !important;
+            text-align: center;
+        }
+
+        .nav-sidebar .nav-treeview {
+            background: rgba(15, 23, 42, 0.04) !important;
+            border-radius: 12px !important;
+            padding: 6px !important;
+            margin: 5px 0 8px 0 !important;
+        }
+
+        .nav-sidebar .nav-treeview .nav-link {
+            font-size: 14px !important;
+            padding: 8px 12px !important;
+        }
+
+        .nav-sidebar .right {
+            color: inherit !important;
+        }
+
+        .content-wrapper {
+            background: #f0f2f5 !important;
+        }
+
+        .main-header.navbar {
+            background: #ffffff !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .main-header .nav-link {
+            color: #64748b !important;
+        }
+    </style>
 
 
 
-<style id="disable-sidebar-hover-open">
-body.sidebar-collapse .main-sidebar:hover {
-    width: 4.6rem !important;
-}
 
-body.sidebar-collapse .main-sidebar:hover .brand-text,
-body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-link p,
-body.sidebar-collapse .main-sidebar:hover .user-panel .info {
-    display: none !important;
-    visibility: hidden !important;
-}
 
-body.sidebar-collapse .main-sidebar:hover ~ .content-wrapper,
-body.sidebar-collapse .main-sidebar:hover ~ .main-footer,
-body.sidebar-collapse .main-sidebar:hover ~ .main-header {
-    margin-left: 4.6rem !important;
-}
-</style>
+    <style id="disable-sidebar-hover-open">
+        body.sidebar-collapse .main-sidebar:hover {
+            width: 4.6rem !important;
+        }
+
+        body.sidebar-collapse .main-sidebar:hover .brand-text,
+        body.sidebar-collapse .main-sidebar:hover .nav-sidebar .nav-link p,
+        body.sidebar-collapse .main-sidebar:hover .user-panel .info {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        body.sidebar-collapse .main-sidebar:hover~.content-wrapper,
+        body.sidebar-collapse .main-sidebar:hover~.main-footer,
+        body.sidebar-collapse .main-sidebar:hover~.main-header {
+            margin-left: 4.6rem !important;
+        }
+    </style>
 
 </head>
 
@@ -258,27 +257,27 @@ body.sidebar-collapse .main-sidebar:hover ~ .main-header {
     </script>
     <script src="/assets/dist/js/demo.js"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const path = window.location.pathname;
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const path = window.location.pathname;
 
-    document.querySelectorAll('.sidebar li').forEach(function(li) {
-        li.classList.remove('active');
+            document.querySelectorAll('.sidebar li').forEach(function(li) {
+                li.classList.remove('active');
 
-        const onclick = li.getAttribute('onclick');
-        if (!onclick) return;
+                const onclick = li.getAttribute('onclick');
+                if (!onclick) return;
 
-        const match = onclick.match(/admin\/[^'")]+/);
-        if (!match) return;
+                const match = onclick.match(/admin\/[^'")]+/);
+                if (!match) return;
 
-        const itemPath = '/' + match[0];
+                const itemPath = '/' + match[0];
 
-        if (path === itemPath || path.startsWith(itemPath + '/')) {
-            li.classList.add('active');
-        }
-    });
-});
-</script>
+                if (path === itemPath || path.startsWith(itemPath + '/')) {
+                    li.classList.add('active');
+                }
+            });
+        });
+    </script>
 
 </body>
 
