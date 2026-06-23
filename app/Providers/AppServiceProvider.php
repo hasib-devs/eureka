@@ -70,24 +70,28 @@ class AppServiceProvider extends ServiceProvider
             return $this;
         });
 
-        $footerPages = Page::where('status', '1')->where('position', '1')->get();
-        $categories_f = Category::where('status', true)->orderBy('updated_at', 'desc')->where('is_feature', '1')->take(14)->get();
+        try {
+            $footerPages = Page::where('status', '1')->where('position', '1')->get();
+            $categories_f = Category::where('status', true)->orderBy('updated_at', 'desc')->where('is_feature', '1')->take(14)->get();
 
-        // Updated by Hridoy
-        $categories = Category::where('status', true)->oldest('id')->get(['name', 'slug', 'cover_photo']);
+            // Updated by Hridoy
+            $categories = Category::where('status', true)->oldest('id')->get(['name', 'slug', 'cover_photo']);
 
-        $sub_f = SubCategory::where('status', true)->orderBy('updated_at', 'desc')->where('is_feature', '1')->take(10)->get();
-        $mini_f = miniCategory::where('status', true)->orderBy('updated_at', 'desc')->where('is_feature', '1')->take(10)->get();
+            $sub_f = SubCategory::where('status', true)->orderBy('updated_at', 'desc')->where('is_feature', '1')->take(10)->get();
+            $mini_f = miniCategory::where('status', true)->orderBy('updated_at', 'desc')->where('is_feature', '1')->take(10)->get();
 
-        View::share(
-            [
-                'footerPages' => $footerPages,
-                'categories_f' => $categories_f,
-                'categories' => $categories,
-                'sub_f' => $sub_f,
-                'mini_f' => $mini_f,
-            ]
-        );
+            View::share(
+                [
+                    'footerPages' => $footerPages,
+                    'categories_f' => $categories_f,
+                    'categories' => $categories,
+                    'sub_f' => $sub_f,
+                    'mini_f' => $mini_f,
+                ]
+            );
+        } catch (\Exception $e) {
+            // DB not available during artisan commands (e.g. key:generate, package:discover)
+        }
     }
 
     /**
