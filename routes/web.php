@@ -260,20 +260,12 @@ Route::get('/auth/facebook/callback', [socialController::class, 'handleFacebookC
 
 
 Route::post('/save-token', [App\Http\Controllers\HomeController::class, 'saveToken'])->name('save-token');
-Route::post('/send-notification', [App\Http\Controllers\HomeController::class, 'sendNotification'])->name('send.notification');
+Route::post('/send-notification', [App\Http\Controllers\HomeController::class, 'sendNotification'])->middleware('admin')->name('send.notification');
 Route::post('register/send-otp', [RegisterController::class, 'sendotp'])->name('sendotp');
 
 Route::post('/success', [OrderController::class, 'success'])->name('success');
 Route::post('/fail', [OrderController::class, 'fail'])->name('fail');
 
-Route::get('/cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('view:clear');
-    Artisan::call('route:clear');
-    Artisan::call('storage:link');
-    return 1;
-});
 
 // ===== Active Visitors Tracking =====
 use App\Http\Controllers\Frontend\ActiveVisitorController;

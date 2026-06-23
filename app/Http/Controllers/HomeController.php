@@ -172,6 +172,11 @@ class HomeController extends Controller
 
     public function sendNotification(Request $request)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string|max:1000',
+        ]);
+
         $firebaseToken = DeviceId::pluck('device_id')->all();
 
         $SERVER_API_KEY = 'AAAA9Ek9F7U:APA91bEtCumEi8v_NmoBW6rQbm48iVNB4ctTguXS5G33Mj1FEmX48zlNYEHLWO3d6WfLkPD3ByKZQPrlJVl0swAd1ZxFWPMHWOdPWXD30sGCOvu_xIV7nTW9PC6cGiL6n3FOBHl1bavE';
@@ -201,7 +206,8 @@ class HomeController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
 
         $response = curl_exec($ch);
+        curl_close($ch);
 
-        dd($response);
+        return back()->with('message', 'Notification sent.');
     }
 }

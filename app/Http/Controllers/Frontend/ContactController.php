@@ -47,12 +47,14 @@ class ContactController extends Controller
             'email'   => 'required|email|string|max:50',
             'phone' => 'required|max:11|min:11',
             'subject' => 'nullable|string',
-            'message' => 'required|string'
+            'message' => 'required|string',
+            'cover_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
         $cover_photo = $request->file('cover_photo');
         if ($cover_photo) {
             $currentDate = Carbon::now()->toDateString();
-            $imageName   = $currentDate.'-'.uniqid().'.'.$cover_photo->getClientOriginalExtension();
+            // Extension is derived from the validated MIME (never the client-supplied name) to prevent .php/.svg upload-to-webroot.
+            $imageName   = $currentDate.'-'.uniqid().'.'.$cover_photo->extension();
             
 
             if (!file_exists('uploads/contact')) {
