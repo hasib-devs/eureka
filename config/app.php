@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // Brand prefix used in OTP/SMS messages (read via config() so it survives config:cache).
+    'nickname' => env('APP_NICKNAME', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

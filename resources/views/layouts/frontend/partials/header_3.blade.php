@@ -218,7 +218,7 @@ echo $top_nav_col_1; @endphp">
                 </a>
             </div>
             <div class="APP_NAME" style="padding-left:1.2rem;padding-right:1.2rem;">
-                <a id="LOGO_NAME" href="{{ route('home') }}">{{ env('APP_NAME') }}</a>
+                <a id="LOGO_NAME" href="{{ route('home') }}">{{ config('app.name') }}</a>
             </div>
             <div class="mobi-comp top-menu" style="display: none;">
                 <ul>

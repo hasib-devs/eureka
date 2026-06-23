@@ -33,7 +33,7 @@
     <br>
     <div class="text-center py-3 text-bold">
         @if (setting('recovrAC') == "emailsms" || setting('recovrAC') == "sms")
-            <a class="btn btn-info" href="{{route('password.recover.mobile')}}">Recover by phone {{ env('APP_NAME') }} </a><br>
+            <a class="btn btn-info" href="{{route('password.recover.mobile')}}">Recover by phone {{ config('app.name') }}</a><br>
         @endif
         <a href="{{route('login')}}">Go Back to Sign In</a>
     </div>

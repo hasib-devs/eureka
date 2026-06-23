@@ -197,7 +197,7 @@ class RegisterController extends Controller
             $api_key = setting('SMS_API_KEY');
             $senderid = setting('SMS_API_SENDER_ID');
             $number = $request->number;
-            $message = env('APP_NICKNAME') . " OTP: " . $rand;
+            $message = config('app.nickname') . " OTP: " . $rand;
 
             $data = [
                 "api_key" => $api_key,

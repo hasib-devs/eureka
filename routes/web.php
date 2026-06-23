@@ -275,10 +275,6 @@ Route::get('/cache', function () {
     return 1;
 });
 
-
-Route::get('/new-test', function () {
-    return 'New test route';
-});
 // ===== Active Visitors Tracking =====
 use App\Http\Controllers\Frontend\ActiveVisitorController;
 
