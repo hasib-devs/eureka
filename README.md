@@ -1,62 +1,160 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Eureka
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A multi-vendor e-commerce platform built on Laravel 11. It ships a customer storefront, a
+multi-vendor seller portal, and a full admin back office — with built-in order management, a POS,
+live chat, marketing tools, and fraud protection. Payment and delivery integrations are tuned for
+the Bangladesh market (UddoktaPay, Steadfast Courier, BDCourier fraud lookup).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Storefront**
+- Product catalog with categories, sub-categories, mini-categories, brands, collections, tags,
+  attributes, colors, and sizes
+- Cart, wishlist, reviews, and a Buy-Now flow
+- Guest, minimal, and full checkout; partial payments; downloadable products
+- Incomplete-lead and active-visitor tracking
+- Blogs (with comments), campaigns, contact forms, newsletter subscriptions
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Multi-vendor**
+- Vendor accounts, dashboards, product and order management
+- Commissions, withdrawals, and per-vendor reporting
 
-## Learning Laravel
+**Admin back office**
+- Catalog, order, customer, coupon, banner/slider, and homepage management
+- Point of Sale (POS) and custom orders
+- Staff/roles, support tickets, settings, and reporting/exports
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Operations & security**
+- Live chat / SMS messaging between customers and staff
+- Fraud checker (local order history + BDCourier API, with graceful fallback)
+- IP block list and duplicate-order throttling
+- Excel import/export
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech stack
 
-## Laravel Sponsors
+| Area | Technology |
+|------|-----------|
+| Backend | PHP 8.2+, Laravel 11 |
+| Frontend | Blade, Vite 8, Tailwind CSS v4, Alpine.js |
+| Database | MySQL (default) / SQLite (local dev) |
+| Search | Laravel Scout |
+| Auth | Laravel UI + Socialite (social login) |
+| Testing | Pest |
+| Formatting | Laravel Pint |
+| Integrations | UddoktaPay (payments), Steadfast Courier (delivery), BDCourier (fraud), Maatwebsite Excel, Intervention Image |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Requirements
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP **8.2+** with the standard Laravel extensions
+- Composer
+- Node.js **18+** and npm
+- MySQL 8 (or SQLite for local development)
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Installation
 
-## Code of Conduct
+```bash
+# 1. Install dependencies
+composer install
+npm install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 2. Environment
+cp .env.example .env
+php artisan key:generate
 
-## Security Vulnerabilities
+# 3. Configure your database in .env, then migrate
+php artisan migrate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 4. Storage symlink for uploaded media
+php artisan storage:link
+```
+
+---
+
+## Running locally
+
+```bash
+# Everything at once: server + queue worker + logs + Vite
+composer dev
+
+# …or run the pieces yourself
+php artisan serve
+npm run dev
+```
+
+The app runs at `http://localhost:8000`. Build assets for production with `npm run build`.
+
+---
+
+## Testing & formatting
+
+```bash
+composer test          # run the Pest suite (clears config first)
+vendor/bin/pint        # format code (PSR-12) before committing
+```
+
+---
+
+## Configuration
+
+Core settings live in `.env` (see `.env.example`):
+
+- **App:** `APP_NAME`, `APP_URL`, `APP_ENV`, `APP_DEBUG`
+- **Database:** `DB_CONNECTION`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- **Mail:** `MAIL_*`
+- **Queue / cache / session:** `QUEUE_CONNECTION`, `CACHE_STORE`, `SESSION_DRIVER` (default to `database`)
+- **Social login:** Socialite provider keys
+
+> **Third-party API keys** (UddoktaPay, Steadfast Courier, BDCourier fraud checker, SMS) are managed
+> at runtime in **Admin → Settings**, not in `.env`. The fraud checker degrades gracefully to local
+> order history if the external API is unavailable or rate-limited.
+
+The default queue and cache drivers are database-backed, so a queue worker must be running for
+queued jobs to process (`composer dev` starts one for you).
+
+---
+
+## Project structure
+
+```
+app/
+├── Http/Controllers/
+│   ├── Admin/         # admin back office (+ Admin/Ecommerce)
+│   ├── Frontend/      # customer storefront
+│   ├── Vendor/        # multi-vendor seller portal
+│   └── Auth/          # authentication
+├── Models/            # ~52 Eloquent models ($guarded = ['id'] convention)
+├── Services/          # SteadfastCourierService
+├── Library/           # UddoktaPay payment integration
+└── Notifications/
+
+routes/
+├── web.php            # storefront routes
+├── admin.php          # admin routes
+├── vendor.php         # vendor routes
+└── api.php            # API routes
+
+resources/views/       # Blade templates
+database/migrations/   # schema
+```
+
+---
+
+## Working with AI coding agents
+
+This repo ships instruction files for AI coding agents (Claude Code, Gemini, Cursor, GitHub Copilot).
+All rules and project context live in a single source of truth — **[AGENTS.md](AGENTS.md)**. The other
+agent files are thin pointers to it.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# eureka-reliableuksolutions
+Proprietary. All rights reserved.
