@@ -159,14 +159,6 @@ class HomeController extends Controller
         return view('frontend.track', compact('order'));
     }
 
-    public function allCat()
-    {
-        $categories = Category::where('status', true)->latest('id')->get(['name', 'slug', 'cover_photo']);
-
-        return view('frontend.category', compact('categories'));
-
-    }
-
     public function saveToken(Request $request)
     {
         $exits = DeviceId::where('device_id', $request->token)->where('user_id', auth()->id())->first();

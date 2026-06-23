@@ -125,7 +125,6 @@ Route::get('clear/compare', function () {
     session()->forget('compare');
     return redirect('/');
 })->name('compare.clear');
-Route::get('categories', [HomeController::class, 'allCat'])->name('category');
 Route::get('get/cart', [CartController::class, 'getCart'])->name('get.cart');
 Route::post('add/cart', [CartController::class, 'addToCart'])->name('add.cart');
 Route::post('add/compare', [CartController::class, 'addToCompare'])->name('add.compare');

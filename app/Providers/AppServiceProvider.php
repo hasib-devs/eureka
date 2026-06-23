@@ -90,7 +90,15 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
         } catch (\Exception $e) {
-            // DB not available during artisan commands (e.g. key:generate, package:discover)
+            // DB not available (artisan commands, empty schema, connection issue):
+            // share empty defaults so views never hit an undefined variable.
+            View::share([
+                'footerPages' => collect(),
+                'categories_f' => collect(),
+                'categories' => collect(),
+                'sub_f' => collect(),
+                'mini_f' => collect(),
+            ]);
         }
     }
 

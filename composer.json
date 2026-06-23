@@ -10,7 +10,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "browner12/helpers": "^3.7",
         "doctrine/dbal": "^4.3",
         "guzzlehttp/guzzle": "^7.10",
         "intervention/image": "^3.11",
@@ -38,7 +37,11 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/SettingHelper.php",
+            "app/Helpers/RouteHelper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
