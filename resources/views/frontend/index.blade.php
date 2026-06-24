@@ -989,7 +989,7 @@
 
             {{-- CATEGORY TITLE --}}
             <h3 class="lux-section-title" style="text-align:center margin:15px;">
-                All Categories Hello World
+                All Categories
             </h3>
 
             <div class="lux-category-wrap">
