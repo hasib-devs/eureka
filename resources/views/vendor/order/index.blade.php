@@ -11,126 +11,107 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Order List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Order List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">Order List</h1>
+            <nav class="text-sm text-slate-500">
+                <a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a>
+                <span class="mx-1">/</span>
+                <span>Order List</span>
+            </nav>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Order List</h3>
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+        <x-ui.card>
+            <x-slot:header>Order List</x-slot:header>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Payment</th>
+                        <th>Subtotal</th>
+                        <th>Discount</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($orders as $key => $data)
+                        @php
+                            $order_dt = DB::table('multi_order')
+                                ->where('order_id', $data->id)
+                                ->where('vendor_id', auth()->id())
+                                ->first();
+                        @endphp
                         <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Payment</th>
-                            <th>Subtotal</th>
-                            <th>Discount</th>
-                            <th>Total</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($orders as $key => $data)
-                            @php
-                                $order_dt = DB::table('multi_order')
-                                    ->where('order_id', $data->id)
-                                    ->where('vendor_id', auth()->id())
-                                    ->first();
-                            @endphp
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ $data->first_name }}</td>
-                                <td>{{ $data->phone }}</td>
-                                <td>{{ $data->payment_method }}</td>
-                                <td>{{ $order_dt->total }}</td>
-                                <td>{{ $order_dt->discount }}</td>
-                                <td>{{ $order_dt->total - $order_dt->discount }}</td>
-                                <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
-                                <td>
-                                    @if ($data->status == 0)
-                                        <span class="badge badge-warning">Pending</span>
-                                    @elseif ($data->status == 1)
-                                        <span class="badge badge-primary">Processing</span>
-                                    @elseif ($data->status == 2)
-                                        <span class="badge badge-danger">Canceled</span>
-                                    @elseif ($data->status == 5)
-                                        <span class="badge badge-danger">refund</span>
-                                    @elseif ($data->status == 4)
-                                        <span class="badge badge-primary">shipping</span>
-                                    @else
-                                        <span class="badge badge-success">Delivered</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn btn-group">
-                                        <a title="Invoice" href="{{ route('vendor.order.invoice', $data->id) }}"
-                                            class="btn btn-warning btn-sm" target="_blank">
-                                            <i class="fas fa-print"></i>
-                                        </a>
-                                        <a title="Show Information" href="{{ routeHelper('order/' . $data->id) }}"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <!--   @if ($data->status == 0)
-    <a title="Processing" href="{{ routeHelper('order/status/processing/' . $data->id) }}" id="btnStatus" onclick="return confirm('Are you sure change this order status?')" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-running"></i>
-                                        </a>
-                                        <a title="Cancel" href="{{ routeHelper('order/status/cancel/' . $data->id) }}" id="btnCancel" onclick="return confirm('Are you sure cancel this order?')" class="btn btn-danger btn-sm">
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->first_name }}</td>
+                            <td>{{ $data->phone }}</td>
+                            <td>{{ $data->payment_method }}</td>
+                            <td>{{ $order_dt->total }}</td>
+                            <td>{{ $order_dt->discount }}</td>
+                            <td>{{ $order_dt->total - $order_dt->discount }}</td>
+                            <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
+                            <td>
+                                @if ($data->status == 0)
+                                    <x-ui.badge variant="warning">Pending</x-ui.badge>
+                                @elseif ($data->status == 1)
+                                    <x-ui.badge variant="primary">Processing</x-ui.badge>
+                                @elseif ($data->status == 2)
+                                    <x-ui.badge variant="danger">Canceled</x-ui.badge>
+                                @elseif ($data->status == 5)
+                                    <x-ui.badge variant="danger">refund</x-ui.badge>
+                                @elseif ($data->status == 4)
+                                    <x-ui.badge variant="primary">shipping</x-ui.badge>
+                                @else
+                                    <x-ui.badge variant="success">Delivered</x-ui.badge>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="inline-flex gap-1">
+                                    <x-ui.button variant="warning" size="sm" href="{{ route('vendor.order.invoice', $data->id) }}" title="Invoice" target="_blank">
+                                        <i class="fas fa-print"></i>
+                                    </x-ui.button>
+                                    <x-ui.button variant="info" size="sm" href="{{ routeHelper('order/' . $data->id) }}" title="Show Information">
+                                        <i class="fas fa-eye"></i>
+                                    </x-ui.button>
+                                    <!--   @if ($data->status == 0)
+<a title="Processing" href="{{ routeHelper('order/status/processing/' . $data->id) }}" id="btnStatus" onclick="return confirm('Are you sure change this order status?')" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-running"></i>
+                                    </a>
+                                    <a title="Cancel" href="{{ routeHelper('order/status/cancel/' . $data->id) }}" id="btnCancel" onclick="return confirm('Are you sure cancel this order?')" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-window-close"></i>
+                                    </a>
+                                    <a title="Delivered" href="{{ routeHelper('order/status/delivered/' . $data->id) }}" id="btnDelivered" onclick="return confirm('Are you sure delivered this order?')" class="btn btn-success btn-sm">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </a>
+@elseif ($data->status == 1)
+<a title="Cancel" href="{{ routeHelper('order/status/cancel/' . $data->id) }}" id="btnCancel" onclick="return confirm('Are you sure cancel this order?')" class="btn btn-danger btn-sm">
                                             <i class="fas fa-window-close"></i>
                                         </a>
                                         <a title="Delivered" href="{{ routeHelper('order/status/delivered/' . $data->id) }}" id="btnDelivered" onclick="return confirm('Are you sure delivered this order?')" class="btn btn-success btn-sm">
                                             <i class="fas fa-thumbs-up"></i>
                                         </a>
-@elseif ($data->status == 1)
-    <a title="Cancel" href="{{ routeHelper('order/status/cancel/' . $data->id) }}" id="btnCancel" onclick="return confirm('Are you sure cancel this order?')" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-window-close"></i>
-                                            </a>
-                                            <a title="Delivered" href="{{ routeHelper('order/status/delivered/' . $data->id) }}" id="btnDelivered" onclick="return confirm('Are you sure delivered this order?')" class="btn btn-success btn-sm">
-                                                <i class="fas fa-thumbs-up"></i>
-                                            </a>
-    @endif -->
-                                    </div>
+@endif -->
+                                </div>
 
-                                </td>
-                            </tr>
-                        @endforeach
+                            </td>
+                        </tr>
+                    @endforeach
 
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
+                </tbody>
+            </x-ui.table>
+
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

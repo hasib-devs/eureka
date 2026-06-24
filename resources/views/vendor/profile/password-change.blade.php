@@ -7,83 +7,64 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Change Password</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Change Password</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Change Password</h1>
+            <nav class="text-sm text-slate-500">
+                <a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a>
+                <span class="mx-1">/</span>
+                <span>Change Password</span>
+            </nav>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Change Password</h3>
-
-                    </div>
+        <div class="flex justify-center">
+            <div class="w-full max-w-lg">
+                <x-ui.card header="Change Password">
 
                     <form action="{{ routeHelper('profile/password/update') }}" method="POST">
                         @csrf
                         @method('PUT')
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="current_password" class="">Current Password:</label>
-                                <input type="password" name="current_password" id="current_password"
-                                    placeholder="Current Password"
-                                    class="form-control @error('current_password') is-invalid @enderror">
-                                @error('current_password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
 
-                            <div class="form-group">
-                                <label for="password" class="">New Password:</label>
-                                <input type="password" name="password" id="password" placeholder="New Password"
-                                    class="form-control @error('password') is-invalid @enderror">
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        <div class="space-y-4">
+                            <x-ui.input
+                                type="password"
+                                name="current_password"
+                                label="Current Password:"
+                                placeholder="Current Password"
+                            />
 
-                            <div class="form-group">
-                                <label for="password_confirmation" class="">Confirm Password:</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation"
-                                    placeholder="Confirm Password" class="form-control">
-                            </div>
+                            <x-ui.input
+                                type="password"
+                                name="password"
+                                label="New Password:"
+                                placeholder="New Password"
+                            />
+
+                            <x-ui.input
+                                type="password"
+                                name="password_confirmation"
+                                label="Confirm Password:"
+                                placeholder="Confirm Password"
+                            />
                         </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <div class="form-group">
-                                <button class="mt-1 btn btn-primary">
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Change Password
-                                </button>
-                            </div>
-                        </div>
-                        <!-- /.card-footer-->
+
+                        <x-slot:footer>
+                            <x-ui.button type="submit" variant="primary">
+                                <i class="fas fa-arrow-circle-up"></i>
+                                Change Password
+                            </x-ui.button>
+                        </x-slot:footer>
+
                     </form>
 
-                </div>
-                <!-- /.card -->
+                </x-ui.card>
             </div>
         </div>
-        <!-- Default box -->
 
     </section>
-    <!-- /.content -->
 
 @endsection
 
