@@ -17,7 +17,7 @@
                 <div class="row " id="list-view">
                     <div class="col-md-12 product">
                     @if(!empty(Session::get('massage2')))
-                    <span style="margin-bottom: 20px;display: block;color: #1cc88a;text-align: center;background: white;padding: 5px;border-radius: 5px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;"> {{ Session::get('massage2')}}</span>
+                    <span class="mb-[20px] block text-[#1cc88a] text-center bg-white p-[5px] rounded-[5px] [box-shadow:0_1px_1px_rgba(0,0,0,0.1)]!"> {{ Session::get('massage2')}}</span>
                     @endif
                     </div>
                     @forelse ($wishlist as $wish_prod)

@@ -609,7 +609,7 @@
                                 data += '<div class="d-flex justify-content-start mb-4">';
                                 data += '<div class="msg_cotainer">';
                                 data += val.message;
-                                data += '<p style="left:0 !important;right:inherit !important" class="msg_time">'+moment(val.created_at).format('LLL')+'</p>';
+                                data += '<p class="msg_time left-0! right-[inherit]!">'+moment(val.created_at).format('LLL')+'</p>';
                                 data += '</div>';
                                 data += '</div>';
                                 
