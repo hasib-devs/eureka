@@ -19,7 +19,10 @@
     @notifyCss
     @stack('css')
 
-    <!-- AdminLTE still loaded: the other vendor views remain AdminLTE-styled until their plans. -->
+    <!-- adminlte.min.css retained ONLY as the Bootstrap 4 base for the kept JS widgets
+         (DataTables/select2/summernote bootstrap4 themes). The vendor chrome is now 100%
+         Tailwind — no AdminLTE chrome classes are used. Removing this would break the widgets;
+         fully dropping Bootstrap requires replacing those JS widgets (out of scope). -->
     <link rel="stylesheet" href="/assets/dist/css/adminlte.min.css">
 
     <!-- Tailwind LAST so it wins on the rebuilt pieces. -->
