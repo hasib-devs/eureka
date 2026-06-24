@@ -560,11 +560,12 @@
 
     <div class="pos-container">
         <!-- Dashboard Exit -->
-        <div style="position: absolute; left: 20px; top: -50px; display: flex; align-items: center; gap: 15px;">
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary btn-round">
+        <div class="absolute left-5 top-[-50px] flex items-center gap-4">
+            <a href="{{ route('admin.dashboard') }}"
+               class="inline-flex items-center gap-2 rounded-full border border-[#007bff] px-4 py-2 text-sm font-medium text-[#007bff] transition-colors hover:bg-[#007bff] hover:text-white">
                 <i class="fas fa-arrow-left"></i> Dashboard
             </a>
-            <h4 style="margin:0; font-weight: 800; color: #4a5568;">POS Terminal</h4>
+            <h4 class="m-0 text-lg font-extrabold text-slate-600">POS Terminal</h4>
         </div>
 
         <!-- Left Panel: Product Discovery -->
@@ -572,8 +573,8 @@
             <div class="header-section">
                 <div class="header-title-row">
                     <h3>Explore Products</h3>
-                    <div class="badge badge-soft-primary" style="padding: 10px 15px; border-radius: 12px; font-weight: 700;">
-                        <i class="fas fa-clock mr-1"></i> <span id="realtimeClock">--:-- --</span>
+                    <div class="inline-block rounded-[12px] px-[15px] py-[10px] text-[75%] font-bold leading-none">
+                        <i class="fas fa-clock"></i> <span id="realtimeClock">--:-- --</span>
                     </div>
                 </div>
                 <div class="search-wrapper">
@@ -630,7 +631,8 @@
                     <button class="modern-checkout-btn" id="openFormBtn">
                         Review & Complete Order <i class="fas fa-arrow-right"></i>
                     </button>
-                    <button class="btn btn-link btn-sm text-muted" id="clearCartBtn" style="font-weight: 700;">
+                    <button id="clearCartBtn"
+                        class="w-full cursor-pointer border-none bg-transparent py-1 text-sm font-bold text-slate-500 transition-colors hover:text-slate-700">
                         Clear All Items
                     </button>
                 </div>
@@ -639,63 +641,61 @@
             <!-- Modern Form Drawer -->
             <div id="customerFormModern">
                 <div class="close-form-btn" id="closeFormBtn"><i class="fas fa-times"></i></div>
-                <h4 class="mb-4" style="font-weight: 800;">Customer Details</h4>
+                <h4 class="mb-4 text-xl font-extrabold text-slate-700">Customer Details</h4>
                 <div id="alertContainer"></div>
 
-                <div class="row">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="small text-muted font-weight-bold">First Name</label>
-                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name"
-                                required>
-                        </div>
+                <div class="mb-4 flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-slate-700">First Name</label>
+                        <input type="text" id="firstName" placeholder="Enter first name" required
+                            class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
                     </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="small text-muted font-weight-bold">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" placeholder="Optional">
-                        </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-slate-700">Last Name</label>
+                        <input type="text" id="lastName" placeholder="Optional"
+                            class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="small text-muted font-weight-bold">Phone Number</label>
-                    <input type="tel" class="form-control" id="phone" placeholder="Contact number" required>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Contact number" required
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
                 </div>
 
-                <div class="form-group">
-                    <label class="small text-muted font-weight-bold">Address</label>
-                    <textarea class="form-control" id="address" rows="3" placeholder="Full delivery address" required></textarea>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700">Address</label>
+                    <textarea id="address" rows="3" placeholder="Full delivery address" required
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"></textarea>
                 </div>
 
-                <div class="row">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="small text-muted font-weight-bold">City</label>
-                            <select class="form-control" id="city" required>
-                                <option value="">Select City</option>
-                                <option value="Dhaka">Dhaka</option>
-                                <option value="Chittagong">Chittagong</option>
-                                <option value="Sylhet">Sylhet</option>
-                                <option value="Rajshahi">Rajshahi</option>
-                                <option value="Khulna">Khulna</option>
-                                <option value="Barishal">Barishal</option>
-                                <option value="Rangpur">Rangpur</option>
-                                <option value="Mymensingh">Mymensingh</option>
-                            </select>
-                        </div>
+                <div class="mb-4 flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-slate-700">City</label>
+                        <select id="city" required
+                            class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
+                            <option value="">Select City</option>
+                            <option value="Dhaka">Dhaka</option>
+                            <option value="Chittagong">Chittagong</option>
+                            <option value="Sylhet">Sylhet</option>
+                            <option value="Rajshahi">Rajshahi</option>
+                            <option value="Khulna">Khulna</option>
+                            <option value="Barishal">Barishal</option>
+                            <option value="Rangpur">Rangpur</option>
+                            <option value="Mymensingh">Mymensingh</option>
+                        </select>
                     </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="small text-muted font-weight-bold">District</label>
-                            <input type="text" class="form-control" id="district" placeholder="Area/District">
-                        </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-slate-700">District</label>
+                        <input type="text" id="district" placeholder="Area/District"
+                            class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="small text-muted font-weight-bold">Payment Method</label>
-                    <select class="form-control" id="paymentMethod" required>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700">Payment Method</label>
+                    <select id="paymentMethod" required
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
                         <option value="cash">Cash on Delivery</option>
                         <option value="bkash">bKash</option>
                         <option value="nagad">Nagad</option>
@@ -703,9 +703,10 @@
                     </select>
                 </div>
 
-                <div class="form-group" id="transactionFields" style="display: none;">
-                    <label class="small text-muted font-weight-bold">Transaction ID</label>
-                    <input type="text" class="form-control" id="transactionId" placeholder="TrxID if applicable">
+                <div class="mb-4" id="transactionFields" style="display: none;">
+                    <label class="block text-sm font-medium text-slate-700">Transaction ID</label>
+                    <input type="text" id="transactionId" placeholder="TrxID if applicable"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
                 </div>
 
                 <button class="modern-checkout-btn mt-4" id="checkoutBtn">

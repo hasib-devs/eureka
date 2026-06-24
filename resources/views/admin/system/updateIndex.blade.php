@@ -15,107 +15,74 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6 offse">
-                    <h1>System - <small>Update</small></h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">System Update</li>
-                    </ol>
-                </div>
+    {{-- Page header --}}
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h1 class="text-2xl font-semibold text-slate-800">System &ndash; <small class="text-base font-normal text-slate-500">Update</small></h1>
+        <ol class="flex items-center gap-1 text-sm text-slate-500">
+            <li><a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a></li>
+            <li>/</li>
+            <li class="text-slate-700">System Update</li>
+        </ol>
+    </div>
+
+    {{-- Main content --}}
+    <x-ui.card header="Application Update">
+        <div class="flex flex-col gap-6">
+
+            {{-- License card --}}
+            <div class="mx-auto w-full max-w-2xl">
+                <x-ui.card header="Setting - License">
+                    <form id="email_config" action="{{ routeHelper('setting') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="type" value="14">
+
+                        <x-ui.textarea name="license_ssh_key" label="License Key (*)" rows="4" placeholder="Enter Lincense Key..." required>{{ setting('license_ssh_key') ?? '' }}</x-ui.textarea>
+
+                    <x-slot:footer>
+                        <x-ui.button type="submit" variant="success">
+                            <i class="fas fa-arrow-circle-up"></i>
+                            Update
+                        </x-ui.button>
+                    </x-slot:footer>
+                    </form>
+                </x-ui.card>
             </div>
-        </div><!-- /. -->
-    </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Application Update</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
+            {{-- System Update card --}}
+            <div class="mx-auto w-full max-w-2xl">
+                <x-ui.card header="Setting - System Update">
+                    <div class="mb-3 flex flex-wrap items-center gap-3">
+                        <x-ui.button variant="info" :href="route('admin.info')">PHP Info</x-ui.button>
 
-
-                    <div class="col-sm-8 offset-md-2">
-                        <div class="card card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">Setting - License</h3>
-                            </div>
-
-                            <form id="email_config" action="{{ routeHelper('setting') }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="type" value="14">
-                                <div class="card-body">
-                                    <div class="col-md-12">
-                                        <ul class="form-row">
-                                            <li class="col-12 col-md-12">
-                                                <label for="license_ssh_key" class="text-capitalize">License Key<span
-                                                        class="text-red">(*)</span></label>
-                                                <textarea name="license_ssh_key" id="license_ssh_key" rows="4" placeholder="Enter Lincense Key..."
-                                                    class="form-control" required>{{ setting('license_ssh_key') ?? '' }}</textarea>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-arrow-circle-up"></i>
-                                        Update
-                                    </button>
-                                </div>
-                            </form>
-
-                        </div>
-                        <!-- /.card -->
+                        @php
+                            function isEnabled($func)
+                            {
+                                return is_callable($func) && false === stripos(ini_get('disable_functions'), $func);
+                            }
+                        @endphp
+                        @if (!isEnabled('shell_exec'))
+                            <small class="text-sm text-danger">You have to enable your hosting shell_exec() before the
+                                update</small>
+                        @endif
                     </div>
 
-                    <div class="col-sm-8 offset-md-2">
-                        <div class="card card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">Setting - System Update</h3>
-                            </div>
+                    <form action="{{ route('admin.update') }}" method="POST">
+                        @csrf
 
-                            <a class="btn btn-info ml-3 mt-3" href="{{ route('admin.info') }}">PHP Info</a>
+                        <x-ui.input name="password" label="Enter your password to update" type="password" placeholder="***" required />
 
-                            @php
-                                function isEnabled($func)
-                                {
-                                    return is_callable($func) && false === stripos(ini_get('disable_functions'), $func);
-                                }
-                            @endphp
-                            @if (!isEnabled('shell_exec'))
-                                <small class="text-red ml-3 mt-3">You have to enable your hosting shell_exec() before the
-                                    update</small>
-                            @endif
-
-                            <form action="{{ route('admin.update') }}" method="POST">
-                                @csrf
-                                <div class="card-body">
-                                    <div class="form-group col-md-12">
-                                        <label for="password" class="text-capitalize">Enter your password to update</label>
-                                        <input type="password" name="password" id="password" class="form-control"
-                                            placeholder="***" required>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-arrow-circle-up"></i>
-                                        Update
-                                    </button>
-                                </div>
-                            </form>
-
-                        </div>
-                        <!-- /.card -->
-                    </div>
-                </div>
+                    <x-slot:footer>
+                        <x-ui.button type="submit" variant="success">
+                            <i class="fas fa-arrow-circle-up"></i>
+                            Update
+                        </x-ui.button>
+                    </x-slot:footer>
+                    </form>
+                </x-ui.card>
             </div>
+
         </div>
-    @endsection
+    </x-ui.card>
+
+@endsection

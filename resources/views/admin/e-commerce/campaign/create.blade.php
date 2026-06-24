@@ -15,10 +15,12 @@
         integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog=="
         crossorigin="anonymous" />
     <style>
+        /* Dropify widget internals — cannot be expressed as Tailwind utilities */
         .dropify-wrapper .dropify-message p {
             font-size: initial;
         }
 
+        /* select2 widget internal — targets third-party pseudo-element scope */
         .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
             display: none !important
         }
@@ -26,197 +28,187 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($campaing)
-                            Edit campaing
-                        @else
-                            Add campaing
-                        @endisset
-                    </h1>
+    {{-- Page header --}}
+    <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">
+            @isset($campaing)
+                Edit campaing
+            @else
+                Add campaing
+            @endisset
+        </h1>
+        <ol class="flex items-center gap-1 text-sm text-slate-500">
+            <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+            <li class="before:mr-1 before:content-['/']">
+                @isset($campaing)
+                    Edit campaing
+                @else
+                    Add campaing
+                @endisset
+            </li>
+        </ol>
+    </div>
+
+    {{-- Main content --}}
+    <div class="w-full">
+        <x-ui.card>
+            <x-slot:header>
+                <span class="text-base font-semibold text-slate-800">
+                    @isset($campaing)
+                        Edit campaing Details
+                    @else
+                        Add New Campaign
+                    @endisset
+                </span>
+            </x-slot:header>
+
+            <form action="{{ isset($campaing) ? route('admin.campaing.update') : route('admin.campaing.store') }}"
+                method="POST" enctype="multipart/form-data">
+
+                @csrf
+
+                {{-- Name --}}
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name:</label>
+                    <input type="text" name="name" id="name" placeholder="Write campaing name"
+                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
+                        value="{{ $campaing->name ?? old('name') }}" required autocomplete="off">
+                    <input type="hidden" name="camid" value="{{ $campaing->id ?? '' }}"" id="camid">
+                    @error('name')
+                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                    @enderror
                 </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
+
+                {{-- Cover Photo (file input — JS dropify() hooks on #cover_photo, keep raw input) --}}
+                <div class="mb-4">
+                    <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                    <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm @error('cover_photo') border-danger @enderror"
+                        data-default-file="@isset($campaing) {{ asset('/') }}/uploads/campaign/{{ $campaing->cover_photo }}@enderror">
+                    @error('cover_photo')
+                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Status toggle --}}
+                <div class="mb-4">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="status" id="status" ___inline_directive___________________________________________________________________________2___>
+                        <span class="text-sm font-medium text-slate-700">Status</span>
+                    </label>
+                    @error('status')
+                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Flash sell toggle --}}
+                <div class="mb-4">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="flash" id="flash" ___inline_directive__________________________________________________________________3___>
+                        <span class="text-sm font-medium text-slate-700">flash Sell</span>
+                    </label>
+                    @error('flash')
+                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Flash end date (shown/hidden by JS via #flas_end innerHTML) --}}
+                <div class="mb-4" id="flas_end">
+                    <?php if (isset($campaing)) {?>
+                    @if ($campaing->is_flash == 1)
+                        <label for="flash_end" class="block text-sm font-medium text-slate-700 mb-1">Flash end:</label>
+                        <input type="datetime-local" name="flash_end" id="flash_end"
+                            class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                            value="{{ $campaing->end }}" >'
+                    @endif
+                    <?php }?>
+                    @error('end')
+                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <?php if (isset($campaing)) {?>
+
+                {{-- Product select (select2 multi-select) --}}
+                <div class="mb-4">
+                    <label for="product" class="block text-sm font-medium text-slate-700 mb-1">Select Product:</label>
+                    <select name="products[]" id="product" multiple data-placeholder="Select Product"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 ___inline_directive________________4___"
+                        {{ isset($campaing) ? '' : 'required' }} data-selected-text-format="count">
+                        <option value="">Select Product</option>
+                        @foreach ($products as $product)
+                            <option
+                                <?php if (isset($campaing)) {?>
+                                ___inline_directive____________________________________________________________________________________________________________________________________________5___each
+                                <?php }?>
+                                value="{{ $product->id }}"> {{ $product->title }} </option>
+                        @endforeach
+                    </select>
+                    @error('categories')
+                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Campaign products table --}}
+                <div class="mb-4">
+                    <x-ui.table id="example1">
+                        <thead>
+                            <tr>
+                                <th>Cover Photo</th>
+                                <th>Name</th>
+                                <th>Regular Price</th>
+                                <th>Campaing Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="discount_table">
+                            <a href=""></a>
                             @isset($campaing)
-                                Edit campaing
-                            @else
-                                Add campaing
+                            <?php
+                            foreach ($campaing->campaing_products as $product) {
+                                echo ' <tr>
+                                         <input type="hidden" name="adds[]" value="'.
+                                    $product->cam_products->id.
+                                    '">
+                                         <td> <img src="'.
+                                    asset('uploads/product/'.$product->cam_products->image).
+                                    '" alt="Product Image" style="height: 100px;width: 100px;">  </td>
+                                         <td>'.
+                                    $product->cam_products->title.
+                                    '</td>
+                                         <td>'.
+                                    $product->cam_products->regular_price.
+                                    '</td>
+                                         <td> <input class="border border-slate-200 rounded-lg px-2 py-1" value="'.
+                                    $product->price.
+                                    '" type="number" name="prices[]" id="">  <a href="'.
+                                    route('admin.campaing.remove', ['id' => $product->id]).
+                                    '">Remove</a></td>
+                                      </tr>';
+                            } ?>
                             @endisset
-                        </li>
-                    </ol>
+                        </tbody>
+                    </x-ui.table>
                 </div>
-            </div>
-        </div><!-- /. -->
-    </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+                <?php }?>
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($campaing)
-                                        Edit campaing Details
-                                    @else
-                                        Add New Campaign
-                                    @endisset
-                                </h3>
-                            </div>
-
-                        </div>
-                    </div>
-                    <form action="{{ isset($campaing) ? route('admin.campaing.update') : route('admin.campaing.store') }}"
-                        method="POST" enctype="multipart/form-data">
-
-                        @csrf
-
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" name="name" id="name" placeholder="Write campaing name"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $campaing->name ?? old('name') }}" required autocomplete="off">
-                                <input type="hidden" name="camid" value="{{ $campaing->id ?? '' }}"" id="camid">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="cover_photo">Cover Photo:</label>
-                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                    class="form-control @error('cover_photo') is-invalid @enderror"
-                                    data-default-file="@isset($campaing) {{ asset('/') }}/uploads/campaign/{{ $campaing->cover_photo }}@enderror">
-                            @error('cover_photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive___________________________________________________________________________2___>
-                                <label class="custom-control-label" for="status">Status</label>
-                            </div>
-                            @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                         <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="flash" id="flash" ___inline_directive__________________________________________________________________3___>
-                                <label class="custom-control-label" for="flash">flash Sell</label>
-                            </div>
-                            @error('flash')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group" id="flas_end">
-                             <?php if(isset($campaing)){?>
-                            @if ($campaing->is_flash == 1)
-                            <label for="flash_end">Flash end:</label><input type="datetime-local" name="flash_end" id="flash_end"  class="form-control " value="{{ $campaing->end }}" >'
-                            @endif
-                        <?php }?>
-                            @error('end')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <?php if(isset($campaing)){?>
-                        <div class="form-group">
-                            <label for="product">Select Product:</label>
-                            <select name="products[]" id="product" multiple data-placeholder="Select Product" class="form-control select2 ___inline_directive________________4___" {{ isset($campaing) ? '' : 'required' }} data-selected-text-format="count">
-                                <option value="">Select Product</option>
-                                @foreach ($products as $product)
-                                    <option
-                                        <?php if(isset($campaing)){?>
-                                        ___inline_directive____________________________________________________________________________________________________________________________________________5___each
-                                        <?php }?>
-                                    value="{{ $product->id }}"> {{ $product->title }} </option>
-                                @endforeach
-                            </select>
-                            @error('categories')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <style>
-                            .cprice{
-                                border: 1px solid gainsboro;padding: 8px;border-radius: 10px;
-                            }
-                        </style>
-                        <div class="form-group" >
-                            <table id="example1" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Cover Photo</th>
-                                        <th>Name</th>
-                                        <th>Regular Price</th>
-                                        <th>Campaing Price</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody id="discount_table">
-                                    <a href=""></a>
-                                    @isset($campaing)
-                                <?php
-                                foreach ($campaing->campaing_products as $product) {
-                                    echo ' <tr>
-                                                                                                             <input type="hidden" name="adds[]" value="' .
-                                        $product->cam_products->id .
-                                        '">
-                                                                                                                <td> <img src="' .
-                                        asset('uploads/product/' . $product->cam_products->image) .
-                                        '" alt="Product Image" style="height: 100px;width: 100px;">  </td>
-                                                                                                                <td>' .
-                                        $product->cam_products->title .
-                                        '</td>
-                                                                                                                <td>' .
-                                        $product->cam_products->regular_price .
-                                        '</td>
-                                                                                                                <td> <input class="cprice" value="' .
-                                        $product->price .
-                                        '" type="number" name="prices[]" id="">  <a href="' .
-                                        route('admin.campaing.remove', ['id' => $product->id]) .
-                                        '">Remove</a></td>
-                                                                                                            </tr>';
-                                } ?>
-                                    @endisset
-                                </tbody>
-
-                            </table>
-                        </div>
-                      <?php }?>
-                    </div>
-                    <div class="card-footer">
-                                <div class="form-group">
-                                    <button class="mt-1 btn btn-primary">
-                                        @isset($campaing)
-                                            <i class="fas fa-arrow-circle-up"></i>
-                                            Update
-                                        @else
-                                            <i class="fas fa-plus-circle"></i>
-                                            Submit
-                                        @endisset
-                                    </button>
-                                </div>
-                            </div>
-                    </form>
+            <x-slot:footer>
+                <div class="mb-4">
+                    <x-ui.button type="submit" variant="primary" class="mt-1">
+                        @isset($campaing)
+                            <i class="fas fa-arrow-circle-up"></i>
+                            Update
+                        @else
+                            <i class="fas fa-plus-circle"></i>
+                            Submit
+                        @endisset
+                    </x-ui.button>
                 </div>
-                <!-- /.card -->
-            </div>
-        </div>
+            </x-slot:footer>
 
-
-    </section>
-    <!-- /.content -->
+            </form>
+        </x-ui.card>
+    </div>
 @endsection
 
 @push('js')

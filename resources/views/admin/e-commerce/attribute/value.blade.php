@@ -5,148 +5,102 @@
 @endsection
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-
-                        Add attribute value
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-
-                            Add attribute value
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Add attribute value</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">Add attribute value</li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+    {{-- Add form --}}
+    <section class="mb-6">
+        <div class="mx-auto max-w-2xl">
+            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-4 py-3 font-medium text-slate-900">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-semibold text-slate-800">Add New attribute value</h3>
+                    </div>
+                </div>
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
+                <form action="{{ route('admin.attribute.value.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" value="{{ $attribute->id }}" name="att">
 
-                                    Add New attribute value
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-
-                            </div>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <x-ui.input
+                                name="name"
+                                label="Value Name:"
+                                type="text"
+                                placeholder="Write attribute value name"
+                                :value="old('name')"
+                                required
+                                autocomplete="off"
+                            />
                         </div>
                     </div>
-                    <form action="{{ route('admin.attribute.value.store') }}" method="POST">
-                        @csrf
 
-                        <div class="card-body">
-                            <input type="hidden" value="{{ $attribute->id }}" name="att">
-                            <div class="form-group">
-                                <label for="name">Value Name:</label>
-                                <input type="text" name="name" id="name" placeholder="Write attribute value name"
-                                    class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
-                                    required autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="form-group">
-                                <button class="mt-1 btn btn-primary">
-
-                                    <i class="fas fa-plus-circle"></i>
-                                    Submit
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <!-- /.card -->
+                    <div class="border-t border-slate-200 px-4 py-3">
+                        <x-ui.button type="submit" variant="primary">
+                            <i class="fas fa-plus-circle"></i>
+                            Submit
+                        </x-ui.button>
+                    </div>
+                </form>
             </div>
         </div>
-
-
     </section>
-    <!-- /.content -->
 
+    {{-- Attribute values list --}}
+    <section>
+        <x-ui.card>
+            <x-slot:header>
+                <h3 class="font-semibold text-slate-800">attribute List</h3>
+            </x-slot:header>
 
-    <!-- Main content -->
-    <section class="content">
-
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">attribute List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($values as $key => $data)
                         <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Action</th>
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->name }}</td>
+                            <td class="space-x-1">
+                                <x-ui.button variant="info" size="sm" :href="routeHelper('attribute/value/' . $data->id . '/edit')">
+                                    <i class="fas fa-edit"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="danger" size="sm" href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData">
+                                    <i class="nav-icon fas fa-trash-alt"></i>
+                                </x-ui.button>
+                                <form id="delete-data-form-{{ $data->id }}"
+                                    action="{{ routeHelper('attribute/value/delete/' . $data->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($values as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ $data->name }}</td>
-
-                                <td>
-                                    <a href="{{ routeHelper('attribute/value/' . $data->id . '/edit') }}"
-                                        class="btn btn-info btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
-                                        <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
-                                    <form id="delete-data-form-{{ $data->id }}"
-                                        action="{{ routeHelper('attribute/value/delete/' . $data->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+            </x-ui.table>
+        </x-ui.card>
     </section>
-    <!-- /.content -->
 @endsection
 
 @push('js')

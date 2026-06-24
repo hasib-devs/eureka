@@ -11,79 +11,63 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>author List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">author List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">author List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">author List</li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
+    {{-- Main content --}}
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">author List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-
-                    </div>
+        <x-ui.card>
+            <x-slot:header>
+                <div class="flex items-center justify-between">
+                    <span>author List</span>
                 </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <table id="example1" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Name</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($author as $key => $data)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $data->name }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.author.edit', $data->id) }}" class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
+            </x-slot:header>
 
-                                        <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                            class="btn btn-danger btn-sm"">
-                                            <i class="nav-icon fas fa-trash-alt"></i>
-                                        </a>
-                                        <form id="delete-data-form-{{ $data->id }}"
-                                            action="{{ route('admin.author.destroy', $data->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($author as $key => $data)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->name }}</td>
+                            <td class="space-x-1">
+                                <x-ui.button variant="info" size="sm" :href="route('admin.author.edit', $data->id)">
+                                    <i class="fas fa-edit"></i>
+                                </x-ui.button>
 
-                                    </td>
-                                </tr>
-                            @endforeach
+                                <x-ui.button variant="danger" size="sm" href="javascript:void(0)"
+                                    data-id="{{ $data->id }}" id="deleteData">
+                                    <i class="nav-icon fas fa-trash-alt"></i>
+                                </x-ui.button>
 
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+                                <form id="delete-data-form-{{ $data->id }}"
+                                    action="{{ route('admin.author.destroy', $data->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-ui.table>
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

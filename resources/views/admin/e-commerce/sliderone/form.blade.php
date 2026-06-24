@@ -1,4 +1,4 @@
-@extends('layouts.admin.e-commerce.app1')
+@extends('layouts.admin.app')
 
 @section('title')
     @isset($new_sliders_one)
@@ -20,151 +20,169 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($new_sliders_one)
-                            Edit Slider One
-                        @else
-                            Add Slider One
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($new_sliders_one)
-                                Edit Slider One
-                            @else
-                                Add Slider One
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
+    {{-- Page header --}}
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">
+            @isset($new_sliders_one)
+                Edit Slider One
+            @else
+                Add Slider One
+            @endisset
+        </h1>
+        <nav class="text-sm text-slate-500">
+            <a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a>
+            <span class="mx-1">/</span>
+            <span>
+                @isset($new_sliders_one)
+                    Edit Slider One
+                @else
+                    Add Slider One
+                @endisset
+            </span>
+        </nav>
+    </div>
+
+    {{-- Main content --}}
+    <div class="mx-auto max-w-2xl">
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+
+            {{-- Card header --}}
+            <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+                <h3 class="font-semibold text-slate-800">
+                    @isset($new_sliders_one)
+                        Edit Slider One
+                    @else
+                        Add New Slider One
+                    @endisset
+                </h3>
+                <x-ui.button variant="danger" :href="routeHelper('sliderone')">
+                    <i class="fas fa-long-arrow-alt-left"></i>
+                    Back to List One
+                </x-ui.button>
             </div>
-        </div><!-- /. -->
-    </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+            {{-- Form wraps body + footer --}}
+            <form
+                action="{{ isset($new_sliders_one) ? routeHelper('sliderone/' . $new_sliders_one->nsid) : routeHelper('sliderone') }}"
+                method="POST" enctype="multipart/form-data">
+                @csrf
+                @isset($new_sliders_one)
+                    @method('PUT')
+                @endisset
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($new_sliders_one)
-                                        Edit Slider One
-                                    @else
-                                        Add New Slider One
-                                    @endisset
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <a href="{{ routeHelper('sliderone') }}" class="btn btn-danger">
+                {{-- Card body --}}
+                <div class="space-y-4 p-4">
 
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List One
-                                </a>
-                            </div>
-                        </div>
+                    {{-- Image upload --}}
+                    <div class="mb-4">
+                        <label for="image" class="block text-sm font-medium text-slate-700 mb-1">Slider Image:</label>
+                        <input type="file" name="image" id="image"
+                            class="block w-full @error('image') border border-danger rounded @enderror"
+                            @isset($new_sliders_one) data-default-file="{{ '/uploads/sliderOne/' . $slider->image }}" @endisset>
+                        @error('image')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <form
-                        action="{{ isset($new_sliders_one) ? routeHelper('sliderone/' . $new_sliders_one->nsid) : routeHelper('sliderone') }}"
-                        method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @isset($new_sliders_one)
-                            @method('PUT')
-                        @endisset
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="image">Slider Image:</label>
-                                <input type="file" name="image" id="image"
-                                    class="form-control @error('image') is-invalid @enderror"
-                                    @isset($new_sliders_one) data-default-file="{{ '/uploads/sliderOne/' . $slider->image }}" @endisset>
-                                @error('image')
-                                    <div class="invalid-feedback text-danger d-block">{{ $message }}</div>
-                                @enderror
+
+                    {{-- Slider URL --}}
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="url"
+                            label="Slider Url:"
+                            type="text"
+                            :value="$new_sliders_one->url ?? old('url')"
+                            placeholder="Write slider url"
+                            required
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    {{-- Status toggle --}}
+                    <div class="mb-4">
+                        <label class="flex cursor-pointer items-center gap-3">
+                            <div class="relative">
+                                <input type="checkbox" name="status" id="status"
+                                    class="peer sr-only"
+                                    @isset($new_sliders_one) {{ $new_sliders_one->status ? 'checked' : '' }} @else checked @endisset>
+                                <div class="h-6 w-11 rounded-full bg-slate-200 transition-colors peer-checked:bg-primary"></div>
+                                <div class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></div>
                             </div>
-                            <div class="form-group">
-                                <label for="name">Slider Url:</label>
-                                <input type="text" name="url" id="url" placeholder="Write slider url"
-                                    class="form-control @error('url') is-invalid @enderror"
-                                    value="{{ $new_sliders_one->url ?? old('url') }}" required autocomplete="off">
-                                @error('url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <span class="text-sm font-medium text-slate-700">Status</span>
+                        </label>
+                        @error('status')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- is_feature toggle --}}
+                    <div class="mb-4">
+                        <label class="flex cursor-pointer items-center gap-3">
+                            <div class="relative">
+                                <input type="checkbox" name="is_feature" id="is_feature"
+                                    class="peer sr-only"
+                                    @isset($new_sliders_one) {{ $new_sliders_one->is_feature ? 'checked' : '' }} @else checked @endisset>
+                                <div class="h-6 w-11 rounded-full bg-slate-200 transition-colors peer-checked:bg-primary"></div>
+                                <div class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></div>
                             </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" name="status" id="status"
-                                        @isset($new_sliders_one) {{ $new_sliders_one->status ? 'checked' : '' }} @else checked @endisset>
-                                    <label class="custom-control-label" for="status">Status</label>
-                                </div>
-                                @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <span class="text-sm font-medium text-slate-700">is_features</span>
+                        </label>
+                        @error('is_feature')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- is_popup toggle --}}
+                    <div class="mb-4">
+                        <label class="flex cursor-pointer items-center gap-3">
+                            <div class="relative">
+                                <input type="checkbox" name="is_pop" id="is_pop"
+                                    class="peer sr-only"
+                                    @isset($new_sliders_one) {{ $new_sliders_one->is_pop ? 'checked' : '' }} @else checked @endisset>
+                                <div class="h-6 w-11 rounded-full bg-slate-200 transition-colors peer-checked:bg-primary"></div>
+                                <div class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></div>
                             </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" name="is_feature" id="is_feature"
-                                        @isset($new_sliders_one) {{ $new_sliders_one->is_feature ? 'checked' : '' }} @else checked @endisset>
-                                    <label class="custom-control-label" for="is_feature">is_features</label>
-                                </div>
-                                @error('is_feature')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <span class="text-sm font-medium text-slate-700">is_popup</span>
+                        </label>
+                        @error('is_pop')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- is_sub toggle --}}
+                    <div class="mb-4">
+                        <label class="flex cursor-pointer items-center gap-3">
+                            <div class="relative">
+                                <input type="checkbox" name="is_sub" id="is_sub"
+                                    class="peer sr-only"
+                                    @isset($new_sliders_one) {{ $new_sliders_one->is_sub ? 'checked' : '' }} @else checked @endisset>
+                                <div class="h-6 w-11 rounded-full bg-slate-200 transition-colors peer-checked:bg-primary"></div>
+                                <div class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></div>
                             </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" name="is_pop" id="is_pop"
-                                        @isset($new_sliders_one) {{ $new_sliders_one->is_pop ? 'checked' : '' }} @else checked @endisset>
-                                    <label class="custom-control-label" for="is_pop">is_popup</label>
-                                </div>
-                                @error('is_pop')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" name="is_sub" id="is_sub"
-                                        @isset($new_sliders_one) {{ $new_sliders_one->is_sub ? 'checked' : '' }} @else checked @endisset>
-                                    <label class="custom-control-label" for="is_sub">Sub Slider</label>
-                                </div>
-                                @error('is_sub')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="form-group">
-                                <button class="mt-1 btn btn-primary">
-                                    @isset($new_sliders_one)
-                                        <i class="fas fa-arrow-circle-up"></i>
-                                        Update
-                                    @else
-                                        <i class="fas fa-plus-circle"></i>
-                                        Submit
-                                    @endisset
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                            <span class="text-sm font-medium text-slate-700">Sub Slider</span>
+                        </label>
+                        @error('is_sub')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                 </div>
-                <!-- /.card -->
-            </div>
+
+                {{-- Card footer --}}
+                <div class="border-t border-slate-200 px-4 py-3">
+                    <x-ui.button type="submit" variant="primary">
+                        @isset($new_sliders_one)
+                            <i class="fas fa-arrow-circle-up"></i>
+                            Update
+                        @else
+                            <i class="fas fa-plus-circle"></i>
+                            Submit
+                        @endisset
+                    </x-ui.button>
+                </div>
+
+            </form>
         </div>
-
-
-    </section>
-    <!-- /.content -->
+    </div>
 @endsection
 
 @push('js')

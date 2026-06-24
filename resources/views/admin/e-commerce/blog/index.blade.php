@@ -11,107 +11,87 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Blogs List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Blogs List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Blogs List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:mx-1 before:content-['/']">Blogs List</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Blogs List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-
-                    </div>
+        <x-ui.card>
+            <x-slot:header>
+                <div class="flex items-center justify-between">
+                    <span>Blogs List</span>
                 </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+            </x-slot:header>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        @if ($is == 1)
+                            <th>User</th>
+                        @endif
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($blogs as $key => $data)
                         <tr>
-                            <th>SL</th>
+                            <td>{{ $key + 1 }}</td>
                             @if ($is == 1)
-                                <th>User</th>
+                                <td><a href="customer/{{ $data->user_id }}" class="text-primary hover:underline">{{ $data->user->name }}</a></td>
                             @endif
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($blogs as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                @if ($is == 1)
-                                    <td><a href="customer/{{ $data->user_id }}">{{ $data->user->name }}</a></td>
+                            <td>{{ $data->title }}</td>
+                            <td>
+                                @if ($data->status == 1)
+                                    <span class="inline-block rounded px-2 py-1 text-sm bg-success text-white">Active</span>
+                                @else
+                                    <span class="inline-block rounded px-2 py-1 text-sm bg-danger text-white">Dective</span>
                                 @endif
-                                <td>{{ $data->title }}</td>
-                                <td>
-                                    @if ($data->status == 1)
-                                        <span class="btn-success"
-                                            style="padding: 5px;border-radius: 5px;font-size: 14px;">Active</span>
-                                    @else
-                                        <span class="btn-danger"
-                                            style="padding: 5px;border-radius: 5px;font-size: 14px;">Dective</span>
-                                    @endif
-                                </td>
+                            </td>
 
-                                <td>
+                            <td>
+                                <div class="flex items-center gap-1">
                                     @if ($data->status)
-                                        <a href="{{ routeHelper('blog/status/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <x-ui.button variant="warning" size="sm" :href="routeHelper('blog/status/' . $data->id)">
                                             <i class="fas fa-thumbs-up"></i>
-                                        </a>
+                                        </x-ui.button>
                                     @else
-                                        <a href="{{ routeHelper('blog/status/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <x-ui.button variant="warning" size="sm" :href="routeHelper('blog/status/' . $data->id)">
                                             <i class="fas fa-thumbs-down"></i>
-                                        </a>
+                                        </x-ui.button>
                                     @endif
-                                    <a href="{{ routeHelper('blog-edit/' . $data->id) }}" class="btn btn-info btn-sm">
+                                    <x-ui.button variant="info" size="sm" :href="routeHelper('blog-edit/' . $data->id)">
                                         <i class="fas fa-edit"></i>
-                                    </a>
+                                    </x-ui.button>
 
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
+                                    <x-ui.button variant="danger" size="sm" href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData">
                                         <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
+                                    </x-ui.button>
                                     <form id="delete-data-form-{{ $data->id }}"
                                         action="{{ routeHelper('blog-delete/' . $data->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                     </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
 
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
+                </tbody>
+            </x-ui.table>
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

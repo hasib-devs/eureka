@@ -10,42 +10,31 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Slider List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Slider List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">Slider List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="text-slate-400">/</li>
+                <li class="text-slate-700">Slider List</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Slider List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ routeHelper('slider/create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Size
-                        </a>
-                    </div>
-                </div>
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                <h3 class="font-medium text-slate-900">Slider List</h3>
+                <x-ui.button variant="success" :href="routeHelper('slider/create')">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Size
+                </x-ui.button>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+
+            <div class="p-4">
+                <x-ui.table id="example1">
                     <thead>
                         <tr>
                             <th>SL</th>
@@ -65,50 +54,45 @@
                                 <td>{{ $data->url }}</td>
                                 <td>
                                     @if ($data->status)
-                                        <span class="badge badge-success">Active</span>
+                                        <x-ui.badge variant="success">Active</x-ui.badge>
                                     @else
-                                        <span class="badge badge-danger">Disable</span>
+                                        <x-ui.badge variant="danger">Disable</x-ui.badge>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="flex items-center gap-1">
                                     @if ($data->status)
-                                        <a title="Disable" href="{{ routeHelper('slider/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <x-ui.button variant="warning" size="sm" title="Disable"
+                                            :href="routeHelper('slider/' . $data->id)">
                                             <i class="fas fa-thumbs-up"></i>
-                                        </a>
+                                        </x-ui.button>
                                     @else
-                                        <a title="Active" href="{{ routeHelper('slider/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <x-ui.button variant="warning" size="sm" title="Active"
+                                            :href="routeHelper('slider/' . $data->id)">
                                             <i class="fas fa-thumbs-down"></i>
-                                        </a>
+                                        </x-ui.button>
                                     @endif
-                                    <a href="{{ routeHelper('slider/' . $data->id . '/edit') }}"
-                                        class="btn btn-info btn-sm">
+                                    <x-ui.button variant="info" size="sm"
+                                        :href="routeHelper('slider/' . $data->id . '/edit')">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
+                                    </x-ui.button>
+                                    <x-ui.button variant="danger" size="sm"
+                                        href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData">
                                         <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
+                                    </x-ui.button>
                                     <form id="delete-data-form-{{ $data->id }}"
                                         action="{{ routeHelper('slider/' . $data->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                     </form>
-
                                 </td>
                             </tr>
                         @endforeach
-
                     </tbody>
-                </table>
+                </x-ui.table>
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
 
     </section>
-    <!-- /.content -->
 
 @endsection
 
