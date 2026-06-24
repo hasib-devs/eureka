@@ -28,16 +28,16 @@ background: white
             <input type="hidden" value="{{$request->password}}" name="password">
                  <input type="hidden" value="{{$request->password}}" name="password_confirmation">
             <div class="form form2">
-                <h4 style="color:#002f5f;text-align: left;padding:10px 0px;"><b>Email Verify </b></h4>
+                <h4 class="text-[#002f5f] text-left py-[10px] px-0"><b>Email Verify </b></h4>
                 <div class="form-group">
-                    <label>You must confirm your account. Please check your Email for the Confirmation Code.<sup style="color: red;">*</sup></label>
+                    <label>You must confirm your account. Please check your Email for the Confirmation Code.<sup class="text-[red]">*</sup></label>
                     <input type="text" name="otp" id="otp" class="form-control @error('otp') is-in-valid @enderror" required />
                     @error('otp')
                         <span class="invalid-feedback" role="alert">{{ $message }}</span>
                     @enderror
                 </div>
                 
-                <input  class="form-control" type="submit" value="Sign Up" style="background:var(--primary_color)">
+                <input class="form-control bg-[var(--primary_color)]" type="submit" value="Sign Up">
                 
             </div>
         </form>

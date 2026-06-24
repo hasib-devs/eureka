@@ -55,7 +55,7 @@ if (route('home').'/register' == url()->previous()) {
                 <span class="invalid-feedback" role="alert">{{ $message }}</span>
                 @enderror
             </div>
-            <input class="form-control" type="submit" value="Login" style="background:var(--primary_color)">
+            <input class="form-control bg-[var(--primary_color)]" type="submit" value="Login">
 
 
             @if (setting('recovrAC') == "email")
