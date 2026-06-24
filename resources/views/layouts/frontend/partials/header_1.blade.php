@@ -84,7 +84,7 @@
 
     /* Enhanced Main Header */
     .main-header {
-        background: #ffffff);
+        background: #ffffff;
         position: relative;
         z-index: 1000;
         background: #ffffff;
@@ -95,7 +95,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 20px;
-        padding: 10px 10px;
+        padding: 16px 24px;
         margin: 0 auto;
     }
 
@@ -406,7 +406,7 @@
         
         .logo-link img { max-height: 44px; }
         
-        .header-row { padding: 2px 8px; }
+        .header-row { padding: 10px 14px; }
         
         .action, .hamburger {
             width: 30px;
@@ -505,7 +505,7 @@
 }
 
 .main-header.is-sticky .header-row {
-    padding: 8px 10px;
+    padding: 10px 24px;
 }
 
 .main-header .logo-link img {
@@ -548,7 +548,7 @@
 
 /* Header height shrink */
 .main-header.is-sticky .header-row {
-    padding: 8px 10px !important;
+    padding: 10px 24px !important;
 }
 
 /* Logo shrink */
@@ -579,20 +579,19 @@
     -webkit-backdrop-filter: none !important;
 }
 
-/* First load height a bit smaller */
+/* Default header-row padding */
 .main-header:not(.is-sticky) .header-row {
-    padding: 5px 10px !important;
+    padding: 16px 24px !important;
 }
 
-/* First load logo a bit smaller */
 .main-header:not(.is-sticky) .logo-link img {
     height: 68px !important;
     max-height: 72px !important;
 }
 
-/* Sticky height also slightly smaller, sticky color unchanged */
+/* Sticky: slightly tighter */
 .main-header.is-sticky .header-row {
-    padding: 5px 10px !important;
+    padding: 10px 24px !important;
 }
 
 .main-header.is-sticky .logo-link img {
@@ -600,11 +599,11 @@
     max-height: 62px !important;
 }
 
-/* Mobile height control */
+/* Mobile */
 @media (max-width: 768px) {
     .main-header:not(.is-sticky) .header-row,
     .main-header.is-sticky .header-row {
-        padding: 2px 8px !important;
+        padding: 10px 14px !important;
     }
 
     .main-header:not(.is-sticky) .logo-link img {
@@ -620,9 +619,21 @@
 
 
     
-/* Header default transparent, white on hover */
+/* ===== SOLID WHITE HEADER — FINAL OVERRIDES ===== */
+
+/* Fixed positioning */
+.main-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1200;
+    border-bottom: 1px solid #EDE8E1;
+    transition: box-shadow 0.28s ease, border-color 0.28s ease, backdrop-filter 0.28s ease;
+    will-change: box-shadow;
+}
+
+/* Always solid white — same specificity as above, comes last, wins */
 .main-header:not(.is-sticky) {
-    background: transparent !important;
+    background: #ffffff !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -630,44 +641,44 @@
 
 .main-header:not(.is-sticky):hover {
     background: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
 }
 
-
-/* ===== PREMIUM TRANSPARENT HEADER FINAL ===== */
-.app-header {
-    background: transparent !important;
+/* Sticky: glass shimmer */
+.main-header.is-sticky {
+    background: rgba(255,255,255,0.97) !important;
+    border-bottom-color: transparent;
+    box-shadow: 0 4px 24px rgba(28,25,23,0.10) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
 }
 
-.main-header:not(.is-sticky) {
-    background: transparent !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-}
-
-.main-header:not(.is-sticky):hover {
-    background: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
-}
-
-.main-header:not(.is-sticky) .header-row {
-    padding: 12px 10px !important;
-}
-
+/* Icons: always dark — no invert filter */
+.main-header .action img,
+.main-header .hamburger .bars span,
 .main-header:not(.is-sticky) .action img,
-.main-header:not(.is-sticky) .hamburger .bars span {
-    filter: brightness(0) invert(1);
-}
-
+.main-header:not(.is-sticky) .hamburger .bars span,
 .main-header:not(.is-sticky):hover .action img,
 .main-header:not(.is-sticky):hover .hamburger .bars span {
-    filter: none;
+    filter: none !important;
 }
 
+/* Cart badge: visible orange */
+.main-header .badge {
+    background: #E85E0A !important;
+    color: #fff !important;
+}
+
+/* Nav center column */
 .hdr-center {
     flex: 1;
     justify-content: center;
+    overflow: hidden;
+}
+
+/* Show hamburger whenever the desktop nav is hidden (769–991px gap) */
+@media (max-width: 991px) {
+    .hdr-center { display: none !important; }
+    .hamburger  { display: inline-flex !important; }
 }
 
 .hdr-center .main-menu-desktop,
@@ -679,6 +690,15 @@
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
+}
+
+/* Push page content below fixed header */
+.site-inner {
+    padding-top: 68px;
+}
+
+@media (max-width: 767px) {
+    .site-inner { padding-top: 58px !important; }
 }
 
 </style>
@@ -706,7 +726,8 @@
         {{-- LEFT: Logo --}}
         <div class="hdr-left">
             <a class="logo-link" href="{{ route('home') }}" aria-label="Go to homepage">
-                <img src="{{ asset('uploads/setting/' . setting('logo')) }}" alt="Logo">
+                <img src="{{ asset('uploads/setting/' . setting('logo')) }}" alt="{{ setting('site_title') ?? config('app.name', 'Store') }}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
+                <span style="display:none; font-weight:700; font-size:18px; letter-spacing:-0.3px; color:#1C1917;">{{ setting('site_title') ?? config('app.name', 'Store') }}</span>
             </a>
         </div>
 
@@ -722,20 +743,15 @@
 
         {{-- RIGHT: icons + hamburger (mobile-only, last) --}}
         <div class="hdr-right">
-            {{-- Mobile search (icon) --}}
-            <button class="action", "mobile-only" id="mobileSearchBtn">
-    <img src="{{ asset('assets/frontend/images/search.png') }}" style="width:20px;">
-</button>
+            {{-- Search --}}
+            <button type="button" class="action" id="mobileSearchBtn" aria-label="Search">
+                <img src="{{ asset('assets/frontend/images/search.png') }}" alt="Search" style="width:22px; height:22px; object-fit:contain;">
+            </button>
 
-{{-- Account (desktop only) --}}
-            <a href="@auth{{ route('dashboard') }}@else{{ route('login') }}@endauth" class="action desktop-only">
-    <img src="{{ asset('assets/frontend/images/user.png') }}" style="width:20px;">
-</a>
-
-           {{-- Wishlist --}}
-            <button type="button" class="action" id="mobileSearchBtn" aria-label="Open search">
-    <img src="{{ asset('assets/frontend/images/search.png') }}" alt="Search">
-</button>
+            {{-- Account (desktop only) --}}
+            <a href="@auth{{ route('dashboard') }}@else{{ route('login') }}@endauth" class="action desktop-only" aria-label="Account">
+                <img src="{{ asset('assets/frontend/images/user.png') }}" alt="Account" style="width:22px; height:22px; object-fit:contain;">
+            </a>
 
 
             {{-- Cart --}}
