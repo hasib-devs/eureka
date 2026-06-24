@@ -195,30 +195,42 @@
                     }
                 }
             
-/* ===== MENU INSIDE TRANSPARENT HEADER FINAL ===== */
+/* ===== WHITE HEADER — DARK NAV TEXT ===== */
+
+/* Override the dark navy background and white text */
+:root {
+    --menu-bg: transparent;
+    --menu-text: #1C1917;
+}
+
 header .main-menu-desktop {
-    background: transparent !important;
-    padding: 0 !important;
-    margin-top: 0 !important;
-    font-family: 'Poppins', sans-serif !important;
+    background: transparent;
+    padding: 0;
+    margin-top: 0;
 }
 
-.main-header:not(.is-sticky) .nav-categories > li > a,
-.main-header:not(.is-sticky) .nav-categories > li > button.link-like {
-    color: #ffffff !important;
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 600 !important;
+.nav-categories > li > a,
+.nav-categories > li > button.link-like {
+    color: #1C1917 !important;
 }
 
-.main-header:not(.is-sticky):hover .nav-categories > li > a,
-.main-header:not(.is-sticky):hover .nav-categories > li > button.link-like,
-.main-header.is-sticky .nav-categories > li > a,
-.main-header.is-sticky .nav-categories > li > button.link-like {
-    color: #111111 !important;
+.nav-categories > li > a:hover,
+.nav-categories > li > button.link-like:hover {
+    color: #C87D2A !important;
+    background: rgba(200, 125, 42, 0.08) !important;
 }
 
-.main-header .nav-categories > li > a.active {
-    color: #f85606 !important;
+.nav-categories > li > a.active {
+    color: #C87D2A !important;
+    background: rgba(200, 125, 42, 0.08) !important;
+}
+
+.nav-categories > li:nth-last-child(3)::before {
+    background: rgba(28,25,23,0.15);
+}
+
+.authpro img {
+    border-color: rgba(28,25,23,0.15) !important;
 }
 
 </style>

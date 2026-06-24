@@ -27,7 +27,7 @@
 
         /* Inner content wrapper — where your page content lives (centered, max-width) */
         .site-inner {
-            max-width: 100%px;
+            max-width: 100%;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
@@ -123,7 +123,6 @@
                 margin-top: 14%;
             }
             .site-inner{
-                margin-top:66px;
                 padding:0;
             }
         }
