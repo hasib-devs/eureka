@@ -10,7 +10,7 @@
         @csrf
         <ul class="cc row">
             <li class="col-6"><a href="{{route('login')}}">Login</a></li>
-            <li class="col-6" style="background:#07421c;color: white;"><a>Register</a></li>
+            <li class="col-6 bg-[#07421c] text-white"><a>Register</a></li>
         </ul>
         <?php
         $id='admin';
@@ -22,7 +22,7 @@
             <input type="hidden" name="refer" id="refer" class="form-control @error('refer') is-invalid @enderror"
                 value="{{$id}}" />
             <div class="form-group col-md-12">
-                <label for="name">Name <sup style="color: red;">*</sup></label>
+                <label for="name">Name <sup class="text-[red]">*</sup></label>
                 <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
                     required />
                 @error('name')
@@ -30,21 +30,21 @@
                 @enderror
             </div>
             {{-- <div class="form-group col-md-6">
-                <label for="username">Username (unique) <sup style="color: red;">*</sup></label>
+                <label for="username">Username (unique) <sup class="text-[red]">*</sup></label>
                 <input type="text" name="username" id="username" class="form-control @error('username') is-invalid @enderror" required />
                 @error('username')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
             @enderror
         </div> --}}
         <div class="form-group col-md-12">
-            <label for="email">Email <sup style="color: red;">*</sup></label>
+            <label for="email">Email <sup class="text-[red]">*</sup></label>
             <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" />
             @error('email')
             <span class="invalid-feedback" role="alert">{{ $message }}</span>
             @enderror
         </div>
         <div class="form-group col-md-12">
-            <label for="password">Phone <sup style="color: red;">*</sup></label>
+            <label for="password">Phone <sup class="text-[red]">*</sup></label>
             <input type="number" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror"
                 required />
             @error('phone')
@@ -52,7 +52,7 @@
             @enderror
         </div>
         <div class="form-group col-md-12">
-            <label for="password">Password <sup style="color: red;">*</sup>&nbsp;&nbsp;<i id="show_pass" class="fal fa-eye"></i></label>
+            <label for="password">Password <sup class="text-[red]">*</sup>&nbsp;&nbsp;<i id="show_pass" class="fal fa-eye"></i></label>
             <input type="password" name="password" id="password"
                 class="form-control @error('password') is-invalid @enderror" required />
             @error('password')
@@ -60,10 +60,10 @@
             @enderror
         </div>
         <div class="form-group col-md-12">
-            <label for="confirm-password">Confirm Password <sup style="color: red;">*</sup></label>
+            <label for="confirm-password">Confirm Password <sup class="text-[red]">*</sup></label>
             <input type="password" name="password_confirmation" id="confirm-password" class="form-control" required />
         </div>
-        <input class="form-control" type="submit" value="Submit" style="background:var(--primary_color)">
+        <input class="form-control bg-[var(--primary_color)]" type="submit" value="Submit">
 </div>
 </form>
 @push('js')
@@ -95,7 +95,7 @@
     </style>
 @endpush
 <br>
-<span style="display: block;text-align: center;">Already have an Account? <a href="{{route('login')}}">Sign
+<span class="block text-center">Already have an Account? <a href="{{route('login')}}">Sign
         In</a></span>
 </div>
 <input type="hidden" value="{{ csrf_token() }}" name="cr" id="cr">

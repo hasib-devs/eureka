@@ -136,11 +136,11 @@
                         width:100% ;
                     }
                 </style>
-                <table border="1" class="block" style="border: 1px solid gainsboro; border-radius: 5px;">
+                <table border="1" class="block border border-solid border-[gainsboro] rounded-[5px]">
                     <tr>
                         <td><i class="fas fa-phone"></i> {{$product->contact}}</td>
                     </tr>
-                     <tr style="border:1px solid gainsboro;">
+                     <tr class="border border-solid border-[gainsboro]">
                         <td><i class="far fa-map"></i> {{$product->location}}</td>
                     </tr>
                      <tr>

@@ -153,7 +153,7 @@ padding: 10px;
 border-radius: 5px;
                                      }
                                  </style>
-                                 <div class="form-row col-md-12 spec collapse" id="BookOpen" style="background: #dcdcdc3d;border-radius: 5px;padding: 10p;">
+                                 <div class="form-row col-md-12 spec collapse bg-[#dcdcdc3d] rounded-[5px]" id="BookOpen">
                                 <div class="form-group text-left">
                                     <label class="block">Upload Image</label>
                                     <input type="file" name="report2">

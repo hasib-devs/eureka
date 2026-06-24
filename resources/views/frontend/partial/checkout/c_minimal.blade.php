@@ -724,7 +724,7 @@ $stotal = 0;
                             $istotal = $item->subtotal;
                             $stotal += $item->subtotal;
                         }?>
-                                <span style="flex: 1 auto;text-align: right;">{{$istotal.'.00'}}</span>
+                                <span class="flex-[1_auto] text-right">{{$istotal.'.00'}}</span>
                             </div>
                         @endforeach
                         <?php

@@ -140,7 +140,7 @@
                 let htmlData = '<div class="input-group mt-2">';
                 htmlData += '<input type="file" class="form-control" accept="image/*" name="images[]" required>';
 
-                htmlData += '<div class="input-group-append" id="remove" style="cursor:context-menu">';
+                htmlData += '<div class="input-group-append cursor-context-menu" id="remove">';
                 htmlData += '<span class="input-group-text">Remove</span>';
                 htmlData += '</div>';
                 htmlData += '</div>';

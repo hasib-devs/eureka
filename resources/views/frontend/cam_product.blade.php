@@ -89,7 +89,7 @@
        $typeid = $product->slug;
     ?>
 
-    <div class="product-wrapper"   @if(setting('is_point')==1) style="height: 320px;" @endif>
+    <div class="product-wrapper @if(setting('is_point')==1) h-[320px] @endif">
         <div class="pin">
             <div class="thumbnail">
             <a href="{{route('product.cam.details', $product->pid)}}">
@@ -113,7 +113,7 @@
             <div class="quick-view">  <a href="{{route('product.cam.details', $product->pid)}}"><i class="icofont icofont-search"></i> Quick View</a></div>
        </div>
         <div class="home-add2">
-             <h6><strong style="color: var(--primary_color)">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->cprice ?? $product->discount_price}}</strong> <del>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</del></h6>
+             <h6><strong class="text-[var(--primary_color)]">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->cprice ?? $product->discount_price}}</strong> <del>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</del></h6>
           
            <div class="cbtn">
                 <button type="submit" class="redirect mt-[10px]" data-url="{{route('camp.product.info',$product->pid)}}" id="productInfo1" type="submit" title="Add To Cart"><i class="fal fa-shopping-cart" aria-hidden="true"></i> </button>
