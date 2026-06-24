@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Locate the correct PHP 8.5 binary for cPanel EasyApache 4
-if command -v /usr/local/php85/bin/php &>/dev/null; then
-    PHP=/usr/local/php85/bin/php
-elif command -v /opt/cpanel/ea-php85/root/usr/bin/php &>/dev/null; then
-    PHP=/opt/cpanel/ea-php85/root/usr/bin/php
-else
-    PHP=$(which php)
-fi
+PHP=/opt/alt/php85/usr/bin/php
 
 COMPOSER="$PHP $(which composer 2>/dev/null || echo composer)"
 
