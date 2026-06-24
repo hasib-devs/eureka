@@ -988,7 +988,7 @@
         <div class="container">
 
             {{-- CATEGORY TITLE --}}
-            <h3 class="lux-section-title" style="text-align:center margin:15px;">
+            <h3 class="lux-section-title text-center">
                 All Categories
             </h3>
 
@@ -1069,9 +1069,9 @@
                                     </div>
 
                                     <div class="lux-color-variants">
-                                        <span class="lux-color" style="background:#000;"></span>
-                                        <span class="lux-color" style="background:#fff;"></span>
-                                        <span class="lux-color" style="background:#FFCC00;"></span>
+                                        <span class="lux-color bg-[#000]"></span>
+                                        <span class="lux-color bg-[#fff]"></span>
+                                        <span class="lux-color bg-[#FFCC00]"></span>
                                     </div>
                                 </div>
 

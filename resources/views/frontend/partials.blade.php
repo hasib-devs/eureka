@@ -23,7 +23,7 @@
                @include('layouts.frontend.partials.userside')
             </div>
             <div class="col-md-9">
-                <div class="card" style="padding: 20px;margin-top: 20px;">
+                <div class="card p-5 mt-5">
                     <form action="{{route('order.pay.create',$order->id)}}" method="post" id="submit" enctype="multipart/form-data">
                         @csrf
                         <div class="form form2 row">
@@ -55,13 +55,13 @@
                                 <small class="form-text text-danger amount"></small>
                             </div>
                             
-                            <button style="background: #667eea;padding: 10px;border-radius: 10px;" type="submit" class="mt-1 btn btn-primary btn-block">Submit</button>
+                            <button type="submit" class="mt-1 btn btn-primary btn-block bg-[#667eea] p-[10px] rounded-[10px]">Submit</button>
                         </div>
                         
                     </form>
                 </div>
-                 <div class="col-md-12" style="margin-top:20px">
-                <table style="margin-top: 20px;background: white;" class="timetable_sub" id="example1">
+                 <div class="col-md-12 mt-5">
+                <table class="timetable_sub mt-5 bg-white" id="example1">
                     <thead>
                         <tr>
                             <th>Serial No.</th>

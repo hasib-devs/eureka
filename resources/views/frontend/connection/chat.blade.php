@@ -16,7 +16,7 @@
             <div class="col-md-6">
             <div class="flex flex-col justify-between">
           <div>
-            <h2 class="text-4xl lg:text-5xl font-bold leading-tight" style="font-weight: 800;margin-top: 20px;">Lets talk about everything!</h2>
+            <h2 class="text-4xl lg:text-5xl font-bold leading-tight font-extrabold mt-5">Lets talk about everything!</h2>
             <div class="text-gray-700 mt-8">
               Hate forms? Send us an <span class="underline">email</span> instead.
             </div>
@@ -521,7 +521,7 @@
         </div>
             </div>
             <div class="col-md-6">
-              <div class="main-area massanger" id="main" style="padding-top: 30px;">
+              <div class="main-area massanger pt-[30px]" id="main">
                     <div class="">
                         <div class=" justify-content-center">
                             <div class=" chat">
@@ -532,7 +532,7 @@
                                         <form action="{{route('connection.store.chat')}}" method="post">
                                             @csrf
                                             <div class="input-group">
-                                                <textarea style="color: black" name="message" id="message" class="form-control type_msg" placeholder="Type your message..."></textarea>
+                                                <textarea name="message" id="message" class="form-control type_msg text-black" placeholder="Type your message..."></textarea>
                                                 <div class="input-group-append" id="send_msg">
                                                     <span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
                                                 </div>

@@ -63,7 +63,7 @@
 
 @section('content')
 <!--================product  Area start=================-->
-<div class="container product-page" style="margin-top: 10px">
+<div class="container product-page mt-[10px]">
 
     <div class="row">
         <!-- tittle heading -->
@@ -77,7 +77,7 @@
         <div class="products col-md-9">
         
             <div class="container">
-                <div class="row" style="margin-bottom: 10px;">
+                <div class="row mb-[10px]">
                     <x-filter-component />
                 </div>
 
@@ -85,8 +85,8 @@
                     @forelse ($products as $product)
 
                         <div class="product col-lg-3 col-md-3 col-sm-4 col-4">
-    <?php 
-       $typeid=$product->slug;
+    <?php
+       $typeid = $product->slug;
     ?>
 
     <div class="product-wrapper"   @if(setting('is_point')==1) style="height: 320px;" @endif>
@@ -101,7 +101,7 @@
                     <h5>{{$product->title}}</h5>
                 </a>
                
-                 <span style="color: #ea6721;">
+                 <span class="text-[#ea6721]">
                     @php
                         $percent = round((($product->regular_price - $product->cprice ?? $product->discount_price) / $product->regular_price) * 100, 2);
                     @endphp
@@ -116,12 +116,12 @@
              <h6><strong style="color: var(--primary_color)">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->cprice ?? $product->discount_price}}</strong> <del>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</del></h6>
           
            <div class="cbtn">
-                <button type="submit" class="redirect" style="margin-top: 10px;" data-url="{{route('camp.product.info',$product->pid)}}" id="productInfo1" type="submit" title="Add To Cart"><i class="fal fa-shopping-cart" aria-hidden="true"></i> </button>
+                <button type="submit" class="redirect mt-[10px]" data-url="{{route('camp.product.info',$product->pid)}}" id="productInfo1" type="submit" title="Add To Cart"><i class="fal fa-shopping-cart" aria-hidden="true"></i> </button>
                 
                 <form action="{{route('wishlist.add')}}" method="post" id="submit_payment_form{{$typeid}}">
                 @csrf
                     <input type="hidden" name="product_id" value="{{$product->slug}}"> 
-                    <button style="margin-top: 5px;" class="redirect" type="submit" title="Wishlist"><i class="fal fa-heart" aria-hidden="true"></i> </button>
+                    <button class="redirect mt-[5px]" type="submit" title="Wishlist"><i class="fal fa-heart" aria-hidden="true"></i> </button>
                 </form>
            </div>
         </div>
@@ -208,7 +208,7 @@
                             <h2 id="title" class="skeletona"></h2>
                             <small id="subtitle" class="skeletona"></small>
                             <small id="subtitle" class="skeletona2 skeletona"></small>
-                            <div style="text-align: center;">
+                            <div class="text-center">
                             <p id="about" class="skeletona"></p>
                             <p id="about" class="skeletona"></p>
                             </div>
@@ -234,10 +234,10 @@
 }
 </style>
 <div class="bef-footer">
-        <div class="container" style="padding: 0">
+        <div class="container p-0">
             <div class="items">
                 <div class="search-box">
-                    <h5 style="text-align: center;margin-bottom: 20px;">Leave Your Commment For This Campaing</h5>
+                    <h5 class="text-center mb-5">Leave Your Commment For This Campaing</h5>
                    <div class="row">
                        <div class="col-md-2"></div>
                         <form class="col-md-8" action="{{route('campaing.comment')}}" method="Post">

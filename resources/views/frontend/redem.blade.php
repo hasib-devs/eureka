@@ -12,7 +12,7 @@
                   @include('layouts.frontend.partials.userside')
             </div>
             <div class="col-md-9">
-                <div class="card" style="padding: 20px;margin-top: 20px;">
+                <div class="card p-5 mt-5">
                    <section class="content">
 
     <div class="row">
@@ -24,7 +24,7 @@
                     @csrf
                     <div class="card-body">
                         <div class="form-group">
-                            <button class="mt-1 btn btn-primary " style="width:100%">
+                            <button class="mt-1 btn btn-primary w-full">
                                 <i class="fas fa-arrow-circle-up"></i>
                                 Convert Now
                             </button>

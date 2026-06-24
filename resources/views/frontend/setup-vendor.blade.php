@@ -14,7 +14,7 @@
     <div class="container">
         <div class="customar-access row">
             <div class="customar-menu col-md-3">
-                <h5 style="margin-top: 20px;"><b><i>Hello {{auth()->user()->name}}</i></b></h5>
+                <h5 class="mt-5"><b><i>Hello {{auth()->user()->name}}</i></b></h5>
                 <ul class="mt-2">
                     <li><a href="">Dashboard</a></li>
                     @auth
@@ -32,12 +32,12 @@
                 </ul>
             </div>
             <div class="col-md-9">
-                <div class="card" style="padding: 20px;margin-top: 20px;">
+                <div class="card p-5 mt-5">
                     <form action="{{route('setup.vendor')}}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="form form2">
                             <div class="form-row">
-                                <div class="col-md-12" style="text-align:center;"><h3><b>Basic Info</b></h3></div>
+                                <div class="col-md-12 text-center"><h3><b>Basic Info</b></h3></div>
                                 <div class="form-group col-md-6">
                                     <label for="shop_name">Shop Name:</label>
                                     <input type="text" name="shop_name" id="shop_name" placeholder="write shop name" class="form-control @error('shop_name') is-invalid @enderror" value="{{old('shop_name')}}" required>
@@ -117,7 +117,7 @@
                                         <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-                                <div class="col-md-12" style="text-align:center;"><h3><b>Mobile Banking</b></h3></div>
+                                <div class="col-md-12 text-center"><h3><b>Mobile Banking</b></h3></div>
                                 <div class="col-md-12"><hr></div> 
                                  <div class="form-group col-md-6">
                                     <label for="mobile">Bkash Number:</label>
@@ -140,7 +140,7 @@
                                         <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-                                <div class="col-md-12" style="text-align:center;"><h3><b>Bank Info</b></h3></div>
+                                <div class="col-md-12 text-center"><h3><b>Bank Info</b></h3></div>
                                 <div class="col-md-12"><hr></div>
                                 <div class="form-group col-md-6">
                                     <label for="bank_account">Bank Account:</label>

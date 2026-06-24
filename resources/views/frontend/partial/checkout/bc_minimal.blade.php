@@ -32,7 +32,7 @@
                         <div class="card">
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <label for="first_name">আপনার নাম <sup style="color: red;"></sup>*</label>
+                                    <label for="first_name">আপনার নাম <sup class="text-red-500"></sup>*</label>
                                     <input required value="{{ auth()->user()->name ?? '' }}" name="first_name"
                                         id="first_name" class="form-control @error('first_name') is-invalid @enderror"
                                         type="text" />
@@ -48,7 +48,7 @@
                                 </div> --}}
 
                                 <div class="form-group col-md-12">
-                                    <label for="phone">মোবাইল নম্বর <sup style="color: red;">*</sup></label>
+                                    <label for="phone">মোবাইল নম্বর <sup class="text-red-500">*</sup></label>
                                     <input @if (auth()->user())
                                     value="{{auth()->user()->phone}}"
                                     @endif required name="phone" id="phone"
@@ -59,7 +59,7 @@
                                 </div>
 
                                 <div class="form-group col-md-12 d-none" id="email_wrap">
-                                    <label for="email">Email Address <sup style="color: red;">*</sup></label>
+                                    <label for="email">Email Address <sup class="text-red-500">*</sup></label>
                                     <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="text"  />
                                     @error('email')
                                         <small class="form-text text-danger">{{$message}}</small>
@@ -126,7 +126,7 @@
 
                                 @if ($product->sheba == 1)
                                     <div class="form-group col-md-12">
-                                        <label style="font-size:15px">Service Recipte Date</label>
+                                        <label class="text-[15px]">Service Recipte Date</label>
                                         <input type="date" name="meet" id="meet" class="form-control"
                                             placeholder="Service Recipte Date">
                                         <small class="form-text text-danger phone"></small>
@@ -307,8 +307,7 @@
                                                 <small class="form-text text-danger">{{ $message }}</small>
                                             @enderror
                                         </div>
-                                        <p class="mt-2" id="appended"
-                                            style="background: #dcdcdc80;padding: 10px;border-radius: 5px;margin-bottom: 10px;">
+                                        <p class="mt-2 bg-[#dcdcdc80] p-[10px] rounded-[5px] mb-[10px]" id="appended">
                                         </p>
                                         <div id="payment-details"></div>
                                     </div>
@@ -324,34 +323,34 @@
                                 $sub_total = $request->dynamic_price * $request->qty;
                             }
                             ?>
-                            <div style="margin-bottom: 10px;display: flex;" class="product">
-                                <img style="width:50px" src="{{ asset('uploads/product/' . $product->image) }}"
+                            <div class="product mb-[10px] flex">
+                                <img class="w-[50px]" src="{{ asset('uploads/product/' . $product->image) }}"
                                     alt="">
-                                <a style="margin-left:10px"
+                                <a class="ml-[10px]"
                                     href="{{ route('product.details', $product->slug) }}">{{ $product->title }}</a>
-                                <span style="flex: 1 auto;text-align: right;"> {{ $sub_total }}</span>
+                                <span class="flex-auto text-right"> {{ $sub_total }}</span>
                                 <input type="hidden" name="id" value="{{ $request->id }}">
                                 <input type="hidden" name="qty" value="{{ $request->qty }}">
                                 <?php
                                 $attr = [];
-                                $attributes = DB::table('attributes')->get();
-                                foreach ($attributes as $attribute) {
-                                    $attribute_prouct = DB::table('attribute_product')
-                                        ->select('*')
-                                        ->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')
-                                        ->addselect('attribute_values.name as vName')
-                                        ->addselect('attribute_product.id as vid')
-                                        ->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')
-                                        ->where('attribute_product.product_id', $product->id)
-                                        ->where('attributes.id', $attribute->id)
-                                        ->get();
-                                    if ($attribute_prouct->count() > 0) {
-                                        $slug = $attribute->slug;
-                                
-                                        $attr[$slug] = $request->$slug;
-                                    }
+                            $attributes = DB::table('attributes')->get();
+                            foreach ($attributes as $attribute) {
+                                $attribute_prouct = DB::table('attribute_product')
+                                    ->select('*')
+                                    ->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')
+                                    ->addselect('attribute_values.name as vName')
+                                    ->addselect('attribute_product.id as vid')
+                                    ->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')
+                                    ->where('attribute_product.product_id', $product->id)
+                                    ->where('attributes.id', $attribute->id)
+                                    ->get();
+                                if ($attribute_prouct->count() > 0) {
+                                    $slug = $attribute->slug;
+
+                                    $attr[$slug] = $request->$slug;
                                 }
-                                ?>
+                            }
+                            ?>
                                 <input type="hidden" name="size"
                                     value="{{ $attr != '' ? json_encode($attr) : 'blank' }}">
                                 <input type="hidden" name="color" value="{{ $request->color }}">

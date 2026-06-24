@@ -301,7 +301,7 @@
 
                     <div class="calc-line">
                         <span>Estimated Shipping</span>
-                        <span style="color:#27ae60;font-weight:600;">Free</span>
+                        <span class="text-[#27ae60] font-semibold">Free</span>
                     </div>
 
                     <div class="calc-line">
@@ -323,7 +323,7 @@
                         Proceed to Checkout
                     </a>
 
-                    <p style="font-size:.75rem;color:#999;text-align:center;margin-top:20px;">
+                    <p class="text-xs text-[#999] text-center mt-5">
                         Complimentary shipping on all luxury collections.
                     </p>
                 </div>

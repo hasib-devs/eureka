@@ -27,9 +27,9 @@
             <div class="customar-menu col-md-3">
                   @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9" style="margin-top: 20px">
+            <div class="col-md-9 mt-5">
                 <div class="custmer-right ">
-                <form style="background: white;border-radius: 5px;" action="{{ isset($product) ? route('product.clasified.update') :route('product.clasified.create') }}" method="POST" enctype="multipart/form-data">
+                <form class="bg-white rounded-[5px]" action="{{ isset($product) ? route('product.clasified.update') :route('product.clasified.create') }}" method="POST" enctype="multipart/form-data">
                     
                     @csrf
                     @if(isset($product))
