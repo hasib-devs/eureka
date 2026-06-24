@@ -283,6 +283,28 @@
             padding-right: 34px;
         }
 
+        /* Per-category sections: same lux card, laid out as a responsive grid. */
+        .lux-product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            padding: 0 16px 40px;
+        }
+
+        @media (min-width: 640px) {
+            .lux-product-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lux-product-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 24px;
+                padding: 0 34px 50px;
+            }
+        }
+
         .product-slider .slick-slide {
             padding: 0 10px;
         }
@@ -1025,74 +1047,7 @@
 
                 <div class="product-slider">
                     @foreach ($products as $product)
-                        @php
-                            $images = is_array($product->image) ? $product->image : json_decode($product->image, true);
-                            if (!is_array($images)) {
-                                $images = !empty($product->image) ? [$product->image] : [];
-                            }
-
-                            $mainImage = !empty($images[0])
-                                ? asset('uploads/product/' . $images[0])
-                                : asset('frontend/images/placeholder.png');
-
-                            $price = $product->discount_price ?? $product->regular_price;
-                            $categoryName =
-                                optional($product->categories->first())->name ??
-                                (optional($product->category)->name ?? 'Cozy Lighting');
-                        @endphp
-
-                        <div class="lux-product-card">
-                            <div class="lux-product-thumb">
-                                <a href="{{ url('product/' . $product->slug) }}">
-                                    <img src="{{ $mainImage }}" alt="{{ $product->title }}">
-                                </a>
-                            </div>
-
-                            <div class="lux-product-info">
-                                <div class="lux-info-top-row">
-                                    <div>
-                                        <span class="lux-category-label">{{ $categoryName }}</span>
-                                        <h2 class="lux-product-name">
-                                            <a href="{{ url('product/' . $product->slug) }}">{{ $product->title }}</a>
-                                        </h2>
-                                    </div>
-
-                                    <button type="button" class="lux-wishlist-btn">
-                                        Save to Wishlist ♡
-                                    </button>
-                                </div>
-
-                                <div class="lux-variants-row">
-                                    <div>
-                                        <span class="lux-rating">★★★★★</span>
-                                        <span class="lux-rating-count">45 Review</span>
-                                    </div>
-
-                                    <div class="lux-color-variants">
-                                        <span class="lux-color bg-[#000]"></span>
-                                        <span class="lux-color bg-[#fff]"></span>
-                                        <span class="lux-color bg-[#FFCC00]"></span>
-                                    </div>
-                                </div>
-
-                                <div class="lux-purchase-row">
-                                    <p class="lux-product-price">৳ {{ number_format($price) }}</p>
-
-                                    <form id="lux-cart-form-{{ $product->id }}" action="{{ route('add.cart') }}"
-                                        method="POST">
-                                        @csrf
-                                        <input type="hidden" name="id" value="{{ $product->id }}">
-                                        <input type="hidden" name="qty" value="1">
-
-                                        <button type="button" class="lux-add-to-cart ajax-lux-cart-btn"
-                                            data-form-id="lux-cart-form-{{ $product->id }}">
-                                            Add to Cart
-                                        </button>
-
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        <x-lux-product-card :product="$product" />
                     @endforeach
                 </div>
             </div>
@@ -1106,9 +1061,9 @@
                 <div class="">
                     <h3 class="title"><span>{{ $homepage_category->name }}</span> <a
                             href="{{ url('category/' . $homepage_category->slug) }}">View All</a></h3>
-                    <div class="row autoplay slick-slides">
+                    <div class="lux-product-grid">
                         @forelse ($homepage_category->products->take(6) as $product)
-                            <x-product-grid-view :product="$product" classes="" />
+                            <x-lux-product-card :product="$product" :category="$homepage_category->name" />
                         @empty
                             <x-product-empty-component />
                         @endforelse
