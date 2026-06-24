@@ -5,6 +5,8 @@
 **Depends on:** [Foundation design](2026-06-24-tailwind-styling-foundation-design.md) (tokens, primitives, playbook)
 **Scope:** Migrate the **vendor** surface (19 views + shell) to Tailwind, **dropping AdminLTE**, while **preserving the current visual look exactly**. This is the first real surface migration (pilot) of the program.
 
+> **OVERRIDING PRINCIPLE (applies to the whole refactor):** Everything must look **exactly the same** as today — only the styling mechanism changes (rebuilt in TailwindCSS). This is a rebuild to visual parity, **never a redesign**. Any pixel difference from the current UI is a defect to fix, not an improvement.
+
 ---
 
 ## 1. Goal & reconciled decisions
