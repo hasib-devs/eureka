@@ -12,94 +12,93 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Cancel Order List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Cancel Order List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Cancel Order List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">Cancel Order List</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Cancel Order List</h3>
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+        <x-ui.card>
+            <x-slot:header>Cancel Order List</x-slot:header>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Payment</th>
+                        <th>Subtotal</th>
+                        <th>Discount</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($orders as $key => $data)
                         <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Payment</th>
-                            <th>Subtotal</th>
-                            <th>Discount</th>
-                            <th>Total</th>
-                            <th>Date</th>
-                            <th>Action</th>
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->first_name }}</td>
+                            <td>{{ $data->phone }}</td>
+                            <td>{{ $data->payment_method }}</td>
+                            <td>{{ $data->subtotal }}</td>
+                            <td>{{ $data->discount }}</td>
+                            <td>{{ $data->total }}</td>
+                            <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
+                            <td>
+                                <div class="inline-flex gap-1">
+                                    <x-ui.button
+                                        variant="warning"
+                                        size="sm"
+                                        :href="route('admin.order.invoice', $data->id)"
+                                        title="Invoice"
+                                        target="_blank"
+                                    >
+                                        <i class="fas fa-print"></i>
+                                    </x-ui.button>
+                                    <x-ui.button
+                                        variant="primary"
+                                        size="sm"
+                                        :href="routeHelper('order/status/processing/' . $data->id)"
+                                        id="btnStatus"
+                                        title="Done"
+                                        onclick="return confirm('Are you sure change this order status?')"
+                                    >
+                                        <i class="fas fa-check"></i>
+                                    </x-ui.button>
+                                    <x-ui.button
+                                        variant="danger"
+                                        size="sm"
+                                        :href="route('admin.order.delete', ['did' => $data->id])"
+                                    >
+                                        <i class="nav-icon fas fa-trash-alt"></i>
+                                    </x-ui.button>
+                                    <x-ui.button
+                                        variant="primary"
+                                        size="sm"
+                                        :href="routeHelper('order/' . $data->id)"
+                                        title="Show Information"
+                                    >
+                                        <i class="fas fa-eye"></i>
+                                    </x-ui.button>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($orders as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ $data->first_name }}</td>
-                                <td>{{ $data->phone }}</td>
-                                <td>{{ $data->payment_method }}</td>
-                                <td>{{ $data->subtotal }}</td>
-                                <td>{{ $data->discount }}</td>
-                                <td>{{ $data->total }}</td>
-                                <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a title="Invoice" href="{{ route('admin.order.invoice', $data->id) }}"
-                                            class="btn btn-warning btn-sm" target="_blank">
-                                            <i class="fas fa-print"></i>
-                                        </a>
-                                        <a title="Done" href="{{ routeHelper('order/status/processing/' . $data->id) }}"
-                                            id="btnStatus"
-                                            onclick="return confirm('Are you sure change this order status?')"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fas fa-check"></i>
-                                        </a>
-                                        <a href="{{ route('admin.order.delete', ['did' => $data->id]) }}"
-                                            class="btn btn-danger btn-sm">
-                                            <i class="nav-icon fas fa-trash-alt"></i>
-                                        </a>
-                                        <a title="Show Information" href="{{ routeHelper('order/' . $data->id) }}"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
+                    @endforeach
 
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
+                </tbody>
+            </x-ui.table>
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

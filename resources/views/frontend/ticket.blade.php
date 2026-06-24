@@ -11,7 +11,7 @@
             <div class="customar-menu col-md-3">
                   @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9" style="margin-top: 20px">
+            <div class="col-md-9 mt-5">
               <div class="customer-right">
                     <div class="info-wrapper">
                         <!-- Button trigger modal -->
@@ -37,11 +37,11 @@
                                         <input type="text" class="form-control " name="subject" placeholder="Subject" required="">
                                     </div>
                                     <div class="form-group">
-                                        <textarea class="form-control" name="message" id="" cols="30" rows="5" style="width: 100%;" placeholder="Write your problem"></textarea>
+                                        <textarea class="form-control w-full" name="message" id="" cols="30" rows="5" placeholder="Write your problem"></textarea>
                                     </div>
                                    
                                    <div class="form-group">
-                                        <input style="color: white;background:#007bff !important" class="mt-1 btn btn-primary btn-block" type="submit" value="send">
+                                        <input class="mt-1 btn btn-primary btn-block !text-white !bg-[#007bff]" type="submit" value="send">
                                     </div>
                                 </form>
                             </div>

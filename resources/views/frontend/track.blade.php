@@ -19,7 +19,7 @@ background: white
             <div class="form form2">
                 
                 <div class="form-group ">
-                    <label>Invoice No. <sup style="color: red;">*</sup></label>
+                    <label>Invoice No. <sup class="text-[red]">*</sup></label>
                     <p>Paste Your Invoice Number Without #</p>
                     <input type="text" name="invoice" id="invoice" class="form-control" required />
                 </div>
@@ -197,7 +197,7 @@ background: white
     </style>
         <div id="invoice">
     <div class="invoice overflow-auto">
-        <div style="min-width: 600px">
+        <div class="min-w-[600px]">
            
             <main>
            

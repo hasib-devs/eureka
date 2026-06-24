@@ -2,43 +2,41 @@
 
 @section('title', 'Ticket List')
 
-
-
 @section('content')
 
-    <!-- Main content -->
-    <section class="content">
+    <section class="py-4">
         <form action="{{ route('admin.ticket.update') }}" method="POST">
             @csrf
-            <div class="card-body">
-                <div class="form-group">
-                    <label for="name">Username:</label>
-                    <input type="text" name="name" value="{{ $tickets->user->username ?? '' }}" class="form-control"
-                        value="" readonly>
+            <x-ui.card>
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Username:</label>
+                    <input type="text" id="name" name="name" value="{{ $tickets->user->username ?? '' }}"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                        readonly>
                 </div>
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea cols="5" placeholder="Write size description" class="form-control" readonly>{{ $tickets->body }}</textarea>
+
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                    <textarea id="description" cols="5" placeholder="Write size description"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                        readonly>{{ $tickets->body }}</textarea>
                 </div>
-                <div class="form-group">
-                    <label for="description">Admin reply:</label>
-                    <textarea cols="5" name="replay" placeholder="Write  Replay" class="form-control"></textarea>
+
+                <div class="mb-4">
+                    <label for="replay" class="block text-sm font-medium text-slate-700 mb-1">Admin reply:</label>
+                    <textarea id="replay" cols="5" name="replay" placeholder="Write  Replay"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"></textarea>
                     <input type="hidden" value="{{ $tickets->id }}" name="gurdmen">
                 </div>
 
-            </div>
-            <div class="card-footer">
-                <div class="form-group">
-                    <button class="mt-1 btn btn-primary">
+                <x-slot:footer>
+                    <x-ui.button type="submit" variant="primary" class="mt-1">
                         <i class="fas fa-arrow-circle-up"></i>
                         Update
-                    </button>
-                </div>
-            </div>
+                    </x-ui.button>
+                </x-slot:footer>
+            </x-ui.card>
         </form>
-
-
     </section>
-    <!-- /.content -->
 
 @endsection

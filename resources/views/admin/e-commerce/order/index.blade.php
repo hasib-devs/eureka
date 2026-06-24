@@ -10,140 +10,129 @@
 
 @section('content')
 
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>All Order List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">All Order List</li>
-                    </ol>
-                </div>
-            </div>
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">All Order List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li>/</li>
+                <li class="text-slate-700">All Order List</li>
+            </ol>
         </div>
     </section>
 
-    <section class="content">
+    <section class="mb-6">
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">All Order List</h3>
-                    </div>
+        <x-ui.card>
+            <x-slot:header>All Order List</x-slot:header>
+
+            <form action="{{ route('admin.order.index') }}" method="GET" class="mb-4 flex flex-wrap gap-4">
+                <div class="w-full md:w-1/4">
+                    <x-ui.input
+                        name="keyword"
+                        label="Search by Invoice or Phone"
+                        type="text"
+                        :value="request('keyword')"
+                        placeholder="Invoice or Phone"
+                    />
                 </div>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('admin.order.index') }}" method="GET" class="row mb-3">
-                    <div class="form-group col-md-4">
-                        <label>Search by Invoice or Phone</label>
-                        <input type="text" name="keyword" class="form-control" value="{{ request('keyword') }}"
-                            placeholder="Invoice or Phone">
-                    </div>
 
-                    <div class="form-group col-md-3">
-                        <label>Status</label>
-                        <select class="form-control" name="status">
-                            <option value="" selected>All</option>
-                            <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Pending</option>
-                            <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Processing</option>
-                            <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Canceled</option>
-                            <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Delivered</option>
-                            <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Shipping</option>
-                        </select>
-                    </div>
+                <div class="w-full md:w-1/5">
+                    <x-ui.select name="status" label="Status">
+                        <option value="" selected>All</option>
+                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Pending</option>
+                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Processing</option>
+                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Canceled</option>
+                        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Delivered</option>
+                        <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Shipping</option>
+                    </x-ui.select>
+                </div>
 
-                    <div class="form-group col-md-3">
-                        <label>Pre Order</label>
-                        <select class="form-control" name="is_pre">
-                            <option value="" selected>All</option>
-                            <option value="0" {{ request('is_pre') === '0' ? 'selected' : '' }}>Pre Order</option>
-                            <option value="1" {{ request('is_pre') === '1' ? 'selected' : '' }}>Not Pre Order</option>
-                        </select>
-                    </div>
+                <div class="w-full md:w-1/5">
+                    <x-ui.select name="is_pre" label="Pre Order">
+                        <option value="" selected>All</option>
+                        <option value="0" {{ request('is_pre') === '0' ? 'selected' : '' }}>Pre Order</option>
+                        <option value="1" {{ request('is_pre') === '1' ? 'selected' : '' }}>Not Pre Order</option>
+                    </x-ui.select>
+                </div>
 
-                    <div class="form-group col-md-2 align-self-end">
-                        <button type="submit" class="btn btn-primary">Filter</button>
-                        <a href="{{ route('admin.order.index') }}" class="btn btn-secondary">Reset</a>
-                    </div>
-                </form>
+                <div class="flex items-end gap-2 pb-4">
+                    <x-ui.button type="submit" variant="primary">Filter</x-ui.button>
+                    <x-ui.button variant="secondary" :href="route('admin.order.index')">Reset</x-ui.button>
+                </div>
+            </form>
 
-                <h3 class="text-right">Total {{ $orders->total() }} results</h3>
+            <p class="mb-3 text-right text-base font-semibold text-slate-700">Total {{ $orders->total() }} results</p>
 
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Invoice</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Payment</th>
+                        <th>Subtotal</th>
+                        <th>Discount</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($orders as $key => $data)
                         <tr>
-                            <th>SL</th>
-                            <th>Invoice</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Payment</th>
-                            <th>Subtotal</th>
-                            <th>Discount</th>
-                            <th>Total</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($orders as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ $data->invoice }}</td>
-                                <td>{{ $data->first_name }}</td>
-                                <td>
-                                    {{ $data->phone }}
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->invoice }}</td>
+                            <td>{{ $data->first_name }}</td>
+                            <td>
+                                {{ $data->phone }}
 
-                                    <button class="fraud_checker btn btn-xs rounded-pill btn-primary"
-                                        data-id="{{ $data->id }}" data-toggle="modal"
-                                        data-target="#fraud_checker_modal">
-                                        Check Fraud
-                                    </button>
+                                <button class="fraud_checker inline-flex items-center rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-white hover:opacity-90"
+                                    data-id="{{ $data->id }}" data-toggle="modal"
+                                    data-target="#fraud_checker_modal">
+                                    Check Fraud
+                                </button>
 
-                                </td>
-                                <td>{{ $data->payment_method }}</td>
-                                <td>{{ $data->subtotal }}</td>
-                                <td>{{ $data->discount }}</td>
-                                <td>{{ $data->total }}</td>
-                                <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
-                                <td>
-                                    @if ($data->status == 0)
-                                        <span class="badge badge-warning">Pending</span>
-                                    @elseif ($data->status == 1)
-                                        <span class="badge badge-primary">order confirm</span>
-                                    @elseif ($data->status == 2)
-                                        <span class="badge badge-danger">Canceled</span>
-                                    @elseif ($data->status == 5)
-                                        <span class="badge badge-danger">refund</span>
-                                    @elseif ($data->status == 4)
-                                        <span class="badge" style="background: #7db1b1;">Shipping</span>
-                                    @elseif ($data->status == 6)
-                                        <span class="badge badge-warning"><small>Return<br>Requested</small></span>
-                                    @elseif ($data->status == 7)
-                                        <span class="badge badge-warning"><small>Returning by Customer</small></span>
-                                    @elseif ($data->status == 8)
-                                        <span class="badge badge-danger">Returned</span>
-                                    @elseif ($data->status == 9)
-                                        <span class="badge badge-danger"><small>Sended to Courier</small></span>
-                                    @elseif ($data->status == 3)
-                                        <span class="badge badge-success">Delivered</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn btn-group">
-                                        <a title="Invoice" href="{{ route('admin.order.invoice', $data->id) }}"
-                                            class="btn btn-warning btn-sm" target="_blank">
-                                            <i class="fas fa-print"></i>
-                                        </a>
-                                        <a title="Show Information" href="{{ routeHelper('order/' . $data->id) }}"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <!-- @if ($data->status == 0)
+                            </td>
+                            <td>{{ $data->payment_method }}</td>
+                            <td>{{ $data->subtotal }}</td>
+                            <td>{{ $data->discount }}</td>
+                            <td>{{ $data->total }}</td>
+                            <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
+                            <td>
+                                @if ($data->status == 0)
+                                    <x-ui.badge variant="warning">Pending</x-ui.badge>
+                                @elseif ($data->status == 1)
+                                    <x-ui.badge variant="primary">order confirm</x-ui.badge>
+                                @elseif ($data->status == 2)
+                                    <x-ui.badge variant="danger">Canceled</x-ui.badge>
+                                @elseif ($data->status == 5)
+                                    <x-ui.badge variant="danger">refund</x-ui.badge>
+                                @elseif ($data->status == 4)
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white" style="background: #7db1b1;">Shipping</span>
+                                @elseif ($data->status == 6)
+                                    <x-ui.badge variant="warning"><small>Return<br>Requested</small></x-ui.badge>
+                                @elseif ($data->status == 7)
+                                    <x-ui.badge variant="warning"><small>Returning by Customer</small></x-ui.badge>
+                                @elseif ($data->status == 8)
+                                    <x-ui.badge variant="danger">Returned</x-ui.badge>
+                                @elseif ($data->status == 9)
+                                    <x-ui.badge variant="danger"><small>Sended to Courier</small></x-ui.badge>
+                                @elseif ($data->status == 3)
+                                    <x-ui.badge variant="success">Delivered</x-ui.badge>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="inline-flex gap-1">
+                                    <x-ui.button variant="warning" size="sm" :href="route('admin.order.invoice', $data->id)" title="Invoice" target="_blank">
+                                        <i class="fas fa-print"></i>
+                                    </x-ui.button>
+                                    <x-ui.button variant="info" size="sm" :href="routeHelper('order/' . $data->id)" title="Show Information">
+                                        <i class="fas fa-eye"></i>
+                                    </x-ui.button>
+                                    <!-- @if ($data->status == 0)
     <a title="Done" href="{{ routeHelper('order/status/processing/' . $data->id) }}" id="btnStatus" onclick="return confirm('Are you sure change this order status?')" class="btn btn-primary btn-sm">
                                                 <i class="fas fa-check"></i>
                                             </a>
@@ -171,23 +160,24 @@
                                                     <i class="fas fa-window-close"></i>
                                                 </a>
     @endif -->
-                                    </div>
+                                </div>
 
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $orders->appends(request()->query())->links('pagination::bootstrap-4') }}
-                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-ui.table>
+            <div class="mt-4 flex justify-center">
+                {{ $orders->appends(request()->query())->links('pagination::bootstrap-4') }}
             </div>
-        </div>
-        <!-- quckview modal modal -->
+        </x-ui.card>
+
+        <!-- fraud checker modal -->
         <form>
-            <div class="modal fade" id="fraud_checker_modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content" id="fraud_checker_details">
+            <div class="fixed inset-0 z-50 hidden items-center justify-center p-4" id="fraud_checker_modal" tabindex="-1" role="dialog">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative z-10 w-full max-w-3xl rounded-lg bg-white shadow-xl" role="document">
+                    <div id="fraud_checker_details">
                         <!-- ajax content -->
                     </div>
                 </div>
@@ -249,6 +239,11 @@
                         '<div class="text-danger p-3">Something went wrong</div>'
                     );
                 }
+            });
+
+            $("#fraud_checker_modal").css("display", "flex");
+            $("#fraud_checker_modal .absolute.inset-0").on("click", function() {
+                $("#fraud_checker_modal").css("display", "none");
             });
         });
     </script>

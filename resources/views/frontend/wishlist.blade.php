@@ -11,7 +11,7 @@
             <div class="customar-menu col-md-3">
                   @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9 products " style="margin-top: 20px">
+            <div class="col-md-9 products mt-5">
               <div class="customer-right">
                   
                 <div class="row " id="list-view">
@@ -22,7 +22,7 @@
                     </div>
                     @forelse ($wishlist as $wish_prod)
                     @foreach($wish_prod->wishlist as $product)
-                    <div class="product col-lg-12" style="height: initial;">
+                    <div class="product col-lg-12 h-auto">
     <div class="product-wrapper list-comp">
         <div class="pin row">
             <div class="col-md-4">
@@ -36,7 +36,7 @@
             <div class="details col-md-8">
                 <a href="{{route('product.details', $product->slug)}}">
                     <h4><strong>{{$product->title}}</strong></h4>
-                    <p style="margin-bottom: 10px">  {!!$product->short_description !!}</p>
+                    <p class="mb-[10px]">  {!!$product->short_description !!}</p>
                 </a> 
               
                 <table>
@@ -46,22 +46,22 @@
 
                           <td>
                              @if($product->discount_price>0 || $product->price)
-             <h6><strong style="color: #28a745">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->price ?? $product->discount_price}}</strong> <del>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</del></h6>
+             <h6><strong class="text-[#28a745]">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->price ?? $product->discount_price}}</strong> <del>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</del></h6>
             @else
-               <h6><strong style="color: #28a745">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</strong></h6>
+               <h6><strong class="text-[#28a745]">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.{{$product->regular_price}}</strong></h6>
             @endif</td>
                     </tr>
                     <tr>
                         <th>Brand  </th>
-                        <td><strong style="margin: 0px 10px">:</strong>{{$product->brand->name}}</td>
+                        <td><strong class="my-0 mx-[10px]">:</strong>{{$product->brand->name}}</td>
                     </tr>
                      <tr>
                         <th>Size  </th>
-                        <td><strong style="margin: 0px 10px">:</strong>@foreach ($product->sizes as $size) {{$size->name}}@endforeach</td>
+                        <td><strong class="my-0 mx-[10px]">:</strong>@foreach ($product->sizes as $size) {{$size->name}}@endforeach</td>
                     </tr>
                      <tr>
                         <th>Colour  </th>
-                        <td><strong style="margin: 0px 10px">:</strong>@foreach ($product->colors as $color){{$color->name}} @endforeach</td>
+                        <td><strong class="my-0 mx-[10px]">:</strong>@foreach ($product->colors as $color){{$color->name}} @endforeach</td>
                     </tr>
                    </tbody>
                 </table>
@@ -135,14 +135,14 @@
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                         @endif
-                         <span style="color: #333;display: inline-block;">{{$average_rating}} rating</span>
+                         <span class="text-[#333] inline-block">{{$average_rating}} rating</span>
                     </div>
                 </div>
                
                 
                 <div class="list-card">
-                    <input style="margin-right: 10px;" data-url="{{route('product.info', $product->slug)}}" id="productInfo" type="submit" value="add to cart">
-                    <a style="text-align: center;" href="{{route('wishlist.remove',['item'=>$wish_prod->id])}}" class="redirect">Remove</a>
+                    <input class="mr-[10px]" data-url="{{route('product.info', $product->slug)}}" id="productInfo" type="submit" value="add to cart">
+                    <a href="{{route('wishlist.remove',['item'=>$wish_prod->id])}}" class="redirect text-center">Remove</a>
                 </div>
             </div>
         </div>

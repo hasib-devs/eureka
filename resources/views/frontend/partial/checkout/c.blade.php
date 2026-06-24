@@ -50,7 +50,7 @@ if(empty($order)){
                     <div class="card">
                         <div class="row">
                             <div class="form-group col-md-12">
-                                <label for="first_name">Full Name <sup style="color: red;"></sup>*</label>
+                                <label for="first_name">Full Name <sup class="text-[red]"></sup>*</label>
                                 <input required value="{{auth()->user()->name}}" name="first_name" id="first_name"
                                     class="form-control @error('first_name') is-invalid @enderror" type="text" />
                                 @error('first_name')
@@ -73,7 +73,7 @@ if(empty($order)){
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="city">Division <sup style="color: red;">*</sup></label>
+                                <label for="city">Division <sup class="text-[red]">*</sup></label>
                                 <select name="city" id="divisions"
                                     class="form-control @error('city') is-invalid @enderror"
                                     onchange="divisionsList();">
@@ -103,7 +103,7 @@ if(empty($order)){
 
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="district">District <sup style="color: red;">*</sup></label>
+                                <label for="district">District <sup class="text-[red]">*</sup></label>
                                 <select name="district" class="form-control @error('district') is-invalid @enderror"
                                     id="distr" onchange="thanaList();">
                                     <option disabled>Select District</option>
@@ -117,7 +117,7 @@ if(empty($order)){
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="district">Thana <sup style="color: red;">*</sup></label>
+                                <label for="district">Thana <sup class="text-[red]">*</sup></label>
                                 <select name="thana" class="form-control @error('district') is-invalid @enderror"
                                     id="polic_sta">
                                     <option disabled>Select Thana</option>
@@ -127,7 +127,7 @@ if(empty($order)){
                                 </select>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="address">Address <sup style="color: red;">*</sup></label>
+                                <label for="address">Address <sup class="text-[red]">*</sup></label>
                                 <input required name="address"
                                     placeholder="For Example: House# 123, Street# 123, ABC Road" id="address"
                                     class="form-control @error('address') is-invalid @enderror" type="text"
@@ -147,7 +147,7 @@ if(empty($order)){
                         </div> -->
 
                             <div class="form-group col-md-6">
-                                <label for="phone">Phone <sup style="color: red;">*</sup></label>
+                                <label for="phone">Phone <sup class="text-[red]">*</sup></label>
                                 <input value="" required name="phone" id="phone"
                                     class="form-control @error('phone') is-invalid @enderror" type="number" />
                                 @error('phone')
@@ -155,7 +155,7 @@ if(empty($order)){
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="email">Email Address <sup style="color: red;">*</sup></label>
+                                <label for="email">Email Address <sup class="text-[red]">*</sup></label>
                                 <input value="{{auth()->user()->email}}" required name="email" id="email"
                                     class="form-control @error('email') is-invalid @enderror" type="text" />
                                 @error('email')
@@ -359,8 +359,7 @@ if(empty($order)){
                                         <small class="form-text text-danger">{{$message}}</small>
                                         @enderror
                                     </div>
-                                    <p class="mt-2" id="appended"
-                                        style="background: #dcdcdc80;padding: 10px;border-radius: 5px;margin-bottom: 10px;">
+                                    <p class="mt-2 bg-[#dcdcdc80] p-[10px] rounded-[5px] mb-[10px]" id="appended">
                                     </p>
                                     <div id="payment-details">
 
@@ -371,42 +370,43 @@ if(empty($order)){
                     </div>
                     <h4 class="form-title"><span>4</span>Order Summary </h4>
                     <div class="card">
-                        <?php 
-                            $stotal=0;
-                            $ids=[];
-                            $cartCollection= Cart::content();
-                            $data= $cartCollection->sortBy('weight');
-         
+                        <?php
+use App\Models\Product;
+
+$stotal = 0;
+                        $ids = [];
+                        $cartCollection = Cart::content();
+                        $data = $cartCollection->sortBy('weight');
+
                         ?>
                         @foreach ($data as $item)
 
 
 
-                        <div style="margin-bottom: 10px;display: flex;" class="product">
-                            <img style="width:50px" src="{{asset('uploads/product/'.$item->options->image)}}" alt="">
-                            <a style="margin-left:10px"
+                        <div class="product mb-[10px] flex">
+                            <img class="w-[50px]" src="{{asset('uploads/product/'.$item->options->image)}}" alt="">
+                            <a class="ml-[10px]"
                                 href="{{route('product.details', $item->options->slug)}}">{{$item->name}}</a>
-                            <?php 
-                            
-                             $whole=\App\Models\Product::find($item->id);
-                             if (!in_array("$whole->user_id", $ids)) {
-                                 $ids[]=$whole->user_id;
-                             }
+                            <?php
 
-                            
-                                if($item->qty>=6 && $whole->whole_price >0){
+                             $whole = Product::find($item->id);
+                        if (! in_array("$whole->user_id", $ids)) {
+                            $ids[] = $whole->user_id;
+                        }
 
-                                 $istotal=$item->qty*$whole->whole_price;
-                                 $stotal+=$item->qty*$whole->whole_price;
-                            }else{
-                                $istotal=$item->subtotal;
-                                $stotal+=$item->subtotal;
-                            }?>
-                            <span style="flex: 1 auto;text-align: right;">{{$istotal.'.00'}}</span>
+                        if ($item->qty >= 6 && $whole->whole_price > 0) {
+
+                            $istotal = $item->qty * $whole->whole_price;
+                            $stotal += $item->qty * $whole->whole_price;
+                        } else {
+                            $istotal = $item->subtotal;
+                            $stotal += $item->subtotal;
+                        }?>
+                            <span class="flex-[1_auto] text-right">{{$istotal.'.00'}}</span>
                         </div>
                         @endforeach
                         <?php
-                            $seller_count= sizeof($ids);
+                        $seller_count = count($ids);
                         ?>
                         <input type="hidden" name="stotal" value="{{$stotal}}">
                         <input type="hidden" name="seller_count" id="seller_count" value="{{$seller_count}}">

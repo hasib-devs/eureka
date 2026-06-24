@@ -4,27 +4,12 @@
 
 
 @section('content')
-    <style>
-        .dr img {
-            width: 100%;
-            height: 230px;
-            object-fit: contain;
-            background: white;
-            padding: 10px;
-            border-radius: 5px
-        }
-
-        .dr {
-            background: white;
-            text-align: center
-        }
-    </style>
     <div class="container">
-        <div class="row">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             @foreach ($images as $img)
-                <div class="col-md-4 col-sm-4 col-6 dr">
-
-                    <img src="{{ asset('uploads/product/' . $img->name) }}" style="">
+                <div class="bg-white text-center">
+                    <img src="{{ asset('uploads/product/' . $img->name) }}"
+                         class="w-full h-[230px] object-contain bg-white p-[10px] rounded-[5px]">
                     <a href="{{ routeHelper('product/' . $img->product_id . '/edit') }}">edit or delete</a>
                 </div>
             @endforeach

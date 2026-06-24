@@ -25,9 +25,9 @@
         <form class="col-md-4 offset-md-4" action="{{ route('super.login') }}" method="post">
             @csrf
             <div class="form form2">
-                <h4 style="color:#002f5f;text-align: left;padding:10px 0px;"><b>Sign in </b></h4>
+                <h4 class="text-[#002f5f] text-left py-[10px] px-0"><b>Sign in </b></h4>
                 <div class="form-group">
-                    <label>Username or Phone<sup style="color: red;">*</sup></label>
+                    <label>Username or Phone<sup class="text-[red]">*</sup></label>
                     <input type="text" name="username" id="username"
                         class="form-control @error('username') is-in-valid @enderror" required />
                     @error('username')
@@ -35,7 +35,7 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label>Password <sup style="color: red;">*</sup></label>
+                    <label>Password <sup class="text-[red]">*</sup></label>
                     <input type="password" name="password" id="password"
                         class="form-control @error('password') is-in-valid @enderror" required />
                     @error('password')
@@ -43,9 +43,9 @@
                     @enderror
                 </div>
                 <input class="form-control" type="submit" value="Login">
-                <p style="text-align: center;margin: 10px 0px !important;margin-bottom: 0 !important;">Or</p>
+                <p class="text-center !mt-[10px] !mb-0 !mx-0">Or</p>
 
-                <span style="display: block;text-align: center;"><a href="{{ route('password.request') }}">Forgot
+                <span class="block text-center"><a href="{{ route('password.request') }}">Forgot
                         Password?</a></span>
             </div>
         </form>

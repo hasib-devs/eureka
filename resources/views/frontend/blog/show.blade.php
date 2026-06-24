@@ -130,7 +130,7 @@
             <div class="thumbnail">
                 <img src="{{asset('/')}}uploads/blogs/{{$blog->thumbnail}}" alt="">
             </div>
-            <div style="font-weight: 600;" class="single-blog-descritption">
+            <div class="single-blog-descritption font-semibold">
                <p>
                    {!! $blog->description !!}
                </p>
@@ -163,8 +163,8 @@
                                                                 </div>
                                                             </div>
                                                         </div> 
-                                                       <p style="margin-top:-7px"> {{$comment->body}}</p>
-                                                        <p style="font-size: 11px;color: #3e3939;">{{$comment->created_at->diffForHumans()}}</p>
+                                                       <p class="mt-[-7px]"> {{$comment->body}}</p>
+                                                        <p class="text-[11px] text-[#3e3939]">{{$comment->created_at->diffForHumans()}}</p>
                                                         @forelse ($comment->replies as $reply)
                                                         <div class="media mt-4"> 
                                                             <a class="pr-3" href="#">
@@ -176,8 +176,8 @@
                                                                         <h5>{{$reply->user->name}}</h5>
                                                                     </div>
                                                                 </div> 
-                                                                  <p style="margin-top:-7px"> {{$reply->body}}</p>
-                                                        <p style="font-size: 11px;color: #3e3939;">{{$reply->created_at->diffForHumans()}}</p>
+                                                                  <p class="mt-[-7px]"> {{$reply->body}}</p>
+                                                        <p class="text-[11px] text-[#3e3939]">{{$reply->created_at->diffForHumans()}}</p>
                                                             </div>
                                                         </div>
                                                         @empty
@@ -196,18 +196,18 @@
                                     
                         </div>
                         @auth
-                        <form style="margin-top: 30px;" action="{{route('blog.comment',['slug'=>$blog->id])}}" method="POST">
+                        <form class="mt-[30px]" action="{{route('blog.comment',['slug'=>$blog->id])}}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="form-group col-md-12">
                                     <label for=""><b>Write Comment</b></label>
-                                    <textarea style="width: 100%;" class="form-control"  name="comment" id="comment" required></textarea>
+                                    <textarea class="form-control w-full"  name="comment" id="comment" required></textarea>
                                     @error('comment')
                                         <small class="form-text text-danger">{{$message}}</small>
                                     @enderror
                                 </div>
                                 <div class="col-md-4">
-                                    <input style="margin-top: 20px;background: #f57224;" type="submit"" value="Save" class="button">
+                                    <input type="submit" value="Save" class="button mt-[20px] bg-[#f57224]">
                                 </div>
                             </div>
                         </form>

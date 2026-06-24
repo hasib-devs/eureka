@@ -20,126 +20,129 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($subCategory)
-                            Edit Sub Category
-                        @else
-                            Add Sub Category
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($subCategory)
-                                Edit Sub Category
-                            @else
-                                Add Sub Category
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($subCategory)
+                    Edit Sub Category
+                @else
+                    Add Sub Category
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:mx-1 before:content-['/']">
+                    @isset($subCategory)
+                        Edit Sub Category
+                    @else
+                        Add Sub Category
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
-
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($subCategory)
-                                        Edit Sub Category Details
-                                    @else
-                                        Add New Sub Category
-                                    @endisset
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-
-                                <a href="{{ routeHelper('sub-category') }}" class="btn btn-danger">
-
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List
-                                </a>
-                            </div>
-                        </div>
+    {{-- Main content --}}
+    <section>
+        <div class="mx-auto max-w-3xl">
+            <x-ui.card>
+                <x-slot:header>
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-semibold text-slate-800">
+                            @isset($subCategory)
+                                Edit Sub Category Details
+                            @else
+                                Add New Sub Category
+                            @endisset
+                        </h3>
+                        <x-ui.button variant="danger" :href="routeHelper('sub-category')">
+                            <i class="fas fa-long-arrow-alt-left"></i>
+                            Back to List
+                        </x-ui.button>
                     </div>
-                    <form
-                        action="{{ isset($subCategory) ? routeHelper('sub-category/' . $subCategory->id) : routeHelper('sub-category') }}"
-                        method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @isset($subCategory)
-                            @method('PUT')
-                        @endisset
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="category">Select Category:</label>
-                                <select name="category" id="category"
-                                    class="form-control @error('category') is-invalid @enderror">
-                                    <option value="">Select Category</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            @isset($subCategory) {{ $subCategory->category_id == $category->id ? 'selected' : '' }} @endisset>
-                                            {{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('category')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" name="name" id="name" placeholder="Write sub category name"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $subCategory->name ?? old('name') }}" required autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="cover_photo">Cover Photo:</label>
-                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                    class="form-control @error('cover_photo') is-invalid @enderror" data-default-file="@isset($subCategory) /uploads/sub category/{{ $subCategory->cover_photo }}@enderror">
-                            @error('cover_photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                </x-slot:header>
+
+                <form
+                    action="{{ isset($subCategory) ? routeHelper('sub-category/' . $subCategory->id) : routeHelper('sub-category') }}"
+                    method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @isset($subCategory)
+                        @method('PUT')
+                    @endisset
+
+                    <div class="space-y-4">
+                        {{-- Category select --}}
+                        <div class="mb-4">
+                            <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Select Category:</label>
+                            <select name="category" id="category"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('category') border-danger @else border-slate-300 @enderror">
+                                <option value="">Select Category</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        @isset($subCategory) {{ $subCategory->category_id == $category->id ? 'selected' : '' }} @endisset>
+                                        {{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('category')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive_______________________________________________________________________________4___>
-                                <label class="custom-control-label" for="status">Status</label>
+
+                        {{-- Name --}}
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name:</label>
+                            <input type="text" name="name" id="name" placeholder="Write sub category name"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
+                                value="{{ $subCategory->name ?? old('name') }}" required autocomplete="off">
+                            @error('name')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Cover Photo (Dropify — keep raw input, JS hooks preserved) --}}
+                        <div class="mb-4">
+                            <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                            <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
+                                class="block w-full @error('cover_photo') border border-danger rounded-md @enderror"
+                                data-default-file="@isset($subCategory) /uploads/sub category/{{ $subCategory->cover_photo }}@endisset">
+                            @error('cover_photo')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Status toggle --}}
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="peer sr-only" name="status" id="status" ___inline_directive_______________________________________________________________________________4___>
+                                <label for="status"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
+                                <span class="text-sm text-slate-700">Status</span>
                             </div>
                             @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                          <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="is_feature" id="is_feature" ___inline_directive___________________________________________________________________________________5___>
-                                <label class="custom-control-label" for="is_feature">is_features</label>
+
+                        {{-- Is Feature toggle --}}
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="peer sr-only" name="is_feature" id="is_feature" ___inline_directive___________________________________________________________________________________5___>
+                                <label for="is_feature"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
+                                <span class="text-sm text-slate-700">is_features</span>
                             </div>
                             @error('is_feature')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button class="mt-1 btn btn-primary">
+                    <x-slot:footer>
+                        <div class="flex items-center">
+                            <x-ui.button type="submit" variant="primary">
                                 @isset($subCategory)
                                     <i class="fas fa-arrow-circle-up"></i>
                                     Update
@@ -147,25 +150,20 @@
                                     <i class="fas fa-plus-circle"></i>
                                     Submit
                                 @endisset
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- /.card -->
-                </div>
-            </div>
-
-
-        </section>
-        <!-- /.content -->
+                            </x-ui.button>
+                        </div>
+                    </x-slot:footer>
+                </form>
+            </x-ui.card>
+        </div>
+    </section>
 @endsection
 
 @push('js')
     <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-            <script>
-                $(function() {
-                    $('#cover_photo').dropify();
-                });
-            </script>
+    <script>
+        $(function() {
+            $('#cover_photo').dropify();
+        });
+    </script>
 @endpush

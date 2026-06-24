@@ -114,15 +114,15 @@
         <!-- tittle heading -->
     
         <!-- //tittle heading -->
-        <div class="row" style="background: white;margin-top: 20px;">
+        <div class="row bg-white mt-5">
             <div class="col-md-4 single-right-left ">
                 <div class="grid images_3_of_2">
                     <img src="{{asset('uploads/product/'.$product->thumbnail)}}" class="my-gallery-image" class="img-responsive" alt="" draggable="false"> 
                 </div>
             </div>
             <div class="col-md-7 single-right-left simpleCart_shelfItem">
-                <h4 style="padding-top: 20px"><b>{{$product->title}}</b></h4>
-                <p style="display: flex;margin: 10px 0px;">
+                <h4 class="pt-5"><b>{{$product->title}}</b></h4>
+                <p class="flex my-[10px]">
                 <b>Price:</b> <span class="item_price">{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}.<span id="dynamic_price">{{$product->price}}</span></span>
                 </p>
                 <style>
@@ -136,9 +136,7 @@
                         width:100% ;
                     }
                 </style>
-                <table border="1" style="display: block;
-border: 1px solid gainsboro;
-border-radius: 5px;">
+                <table border="1" class="block" style="border: 1px solid gainsboro; border-radius: 5px;">
                     <tr>
                         <td><i class="fas fa-phone"></i> {{$product->contact}}</td>
                     </tr>
@@ -153,8 +151,8 @@ border-radius: 5px;">
             </div>
         </div>
         <br>
-        <div class="row" style="background: white;margin-top: 20px;">
-            <div id="accordion" style="width: 100%;">
+        <div class="row bg-white mt-5">
+            <div id="accordion" class="w-full">
                 <div class="lc-4">
                     <button class="collapsed" data-toggle="collapse" data-target="#description" aria-expanded="true" aria-controls="description">
                             Description

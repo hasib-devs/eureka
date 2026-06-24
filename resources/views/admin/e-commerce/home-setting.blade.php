@@ -12,129 +12,101 @@
         }
     </style>
 @endpush
+
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6 offse">
-                    <h1>Setting</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">My Profile</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
+    {{-- Page header --}}
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">Setting</h1>
+        <ol class="flex items-center gap-1 text-sm text-slate-500">
+            <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+            <li class="before:mx-1 before:content-['/']">My Profile</li>
+        </ol>
+    </div>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Application Settings</h3>
-            </div>
-            <div class="card-body">
-                <div class="row">
+    {{-- Main content --}}
+    <x-ui.card>
+        <x-slot:header>Application Settings</x-slot:header>
 
-                    <div class="col-sm-8 offset-md-2">
-                        <!-- Default box -->
-                        <div class="card card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">Setting</h3>
-                            </div>
-                            <!-- /.card-header -->
-                            <!-- form start -->
-                            <form action="{{ routeHelper('setting') }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <div class="card-body">
-                                    <input type="hidden" name="type" value="3">
+        <div class="flex justify-center">
+            <div class="w-full max-w-2xl">
 
-                                    <div class="form-group col-md-12">
-                                        <label for="mega" class="text-capitalize">Mega Category</label>
-                                        <select name="mega[]" id="mega" class="select2 form-control" multiple
-                                            required>
-                                            <option value="">Hide</option>
-                                            @foreach (\App\Models\Category::where('status', true)->get() as $category)
+                <x-ui.card>
+                    <x-slot:header>Setting</x-slot:header>
 
-                                                <option value="{{ $category->id }}"
-                                                    @if (!empty($mega_cat->value)) @foreach (json_decode($mega_cat->value) as $c) @if ($category->id == $c)Selected @endif
-                                                    @endforeach
-                                            @endif>{{ $category->name }}</option>
-                                            @endforeach
+                    <form action="{{ routeHelper('setting') }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
+                        <input type="hidden" name="type" value="3">
 
-                                        </select>
-
-                                    </div>
-                                    <div class="form-group col-md-12">
-                                        <label for="sub" class="text-capitalize">Sub Category</label>
-                                        <select name="sub[]" id="sub" class="select2 form-control" multiple
-                                            required>
-                                            <option value="">Hide</option>
-                                            @foreach (\App\Models\SubCategory::where('status', true)->get() as $category)
-                                                <option value="{{ $category->id }}"
-                                                    @if (!empty($sub_cat->value)) @foreach (json_decode($sub_cat->value) as $c) @if ($category->id == $c)Selected @endif
-                                                    @endforeach
-                                            @endif>{{ $category->name }}</option>
-                                            @endforeach
-                                        </select>
-
-                                    </div>
-                                    <div class="form-group col-md-12">
-                                        <label for="mini" class="text-capitalize">Mini Category</label>
-                                        <select name="mini[]" id="mini" class="select2 form-control" multiple
-                                            required>
-                                            <option value="">Hide</option>
-                                            @foreach (\App\Models\miniCategory::where('status', true)->get() as $category)
-                                                <option value="{{ $category->id }}"
-                                                    @if (!empty($mini_cat->value)) @foreach (json_decode($mini_cat->value) as $c) @if ($category->id == $c)Selected @endif
-                                                    @endforeach
-                                            @endif>{{ $category->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-md-12">
-                                        <label for="extra" class="text-capitalize">Extra Mini Category</label>
-                                        <select name="extra[]" class="select2 form-control" id="extra" multiple
-                                            required>
-                                            <option value="">Hide</option>
-                                            @foreach (\App\Models\ExtraMiniCategory::where('status', true)->get() as $category)
-                                                <option value="{{ $category->id }}"
-                                                    @if (!empty($extra_cat->value)) @foreach (json_decode($extra_cat->value) as $c) @if ($category->id == $c)Selected @endif
-                                                    @endforeach
-                                            @endif>{{ $category->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-
-                                </div>
-                                <!-- /.card-body -->
-                                <div class="card-footer">
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-arrow-circle-up"></i>
-                                        Update
-                                    </button>
-                                </div>
-                                <!-- /.card-footer -->
-                            </form>
-
+                        <div class="mb-4">
+                            <label for="mega" class="mb-1 block text-sm font-medium capitalize text-slate-700">Mega Category</label>
+                            <select name="mega[]" id="mega" class="select2 form-control w-full" multiple required>
+                                <option value="">Hide</option>
+                                @foreach (\App\Models\Category::where('status', true)->get() as $category)
+                                    <option value="{{ $category->id }}"
+                                        @if (!empty($mega_cat->value)) @foreach (json_decode($mega_cat->value) as $c) @if ($category->id == $c)Selected @endif
+                                        @endforeach
+                                @endif>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <!-- /.card -->
-                    </div>
-                </div>
+
+                        <div class="mb-4">
+                            <label for="sub" class="mb-1 block text-sm font-medium capitalize text-slate-700">Sub Category</label>
+                            <select name="sub[]" id="sub" class="select2 form-control w-full" multiple required>
+                                <option value="">Hide</option>
+                                @foreach (\App\Models\SubCategory::where('status', true)->get() as $category)
+                                    <option value="{{ $category->id }}"
+                                        @if (!empty($sub_cat->value)) @foreach (json_decode($sub_cat->value) as $c) @if ($category->id == $c)Selected @endif
+                                        @endforeach
+                                @endif>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mini" class="mb-1 block text-sm font-medium capitalize text-slate-700">Mini Category</label>
+                            <select name="mini[]" id="mini" class="select2 form-control w-full" multiple required>
+                                <option value="">Hide</option>
+                                @foreach (\App\Models\miniCategory::where('status', true)->get() as $category)
+                                    <option value="{{ $category->id }}"
+                                        @if (!empty($mini_cat->value)) @foreach (json_decode($mini_cat->value) as $c) @if ($category->id == $c)Selected @endif
+                                        @endforeach
+                                @endif>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="extra" class="mb-1 block text-sm font-medium capitalize text-slate-700">Extra Mini Category</label>
+                            <select name="extra[]" class="select2 form-control w-full" id="extra" multiple required>
+                                <option value="">Hide</option>
+                                @foreach (\App\Models\ExtraMiniCategory::where('status', true)->get() as $category)
+                                    <option value="{{ $category->id }}"
+                                        @if (!empty($extra_cat->value)) @foreach (json_decode($extra_cat->value) as $c) @if ($category->id == $c)Selected @endif
+                                        @endforeach
+                                @endif>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-4">
+                            <x-ui.button type="submit" variant="success">
+                                <i class="fas fa-arrow-circle-up"></i>
+                                Update
+                            </x-ui.button>
+                        </div>
+
+                    </form>
+
+                </x-ui.card>
+
             </div>
         </div>
 
-
-
-    </section>
-    <!-- /.content -->
+    </x-ui.card>
 
 @endsection
 

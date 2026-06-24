@@ -77,12 +77,12 @@ margin: 10px 0px;}
      
   
 </style>
-<ul style="display:flex" class="under-menu">
+<ul class="under-menu flex">
     <li><a href="{{route('campaing')}}" class="{{Request::is('campaing*') ? 'active':''}}">Campaign</a> </li>
     <li><a href="{{route('blogs')}}" class="{{Request::is('blogs*') ? 'active':''}}">Blogs</a></li>
     <li><a href="{{route('blog.ceo')}}" class="{{Request::is('blog/ceo*') ? 'active':''}}">CEO</a></li>
 </ul>
-<div class="category-thumbanial" style="padding-bottom: 40px;margin-top:20px">
+<div class="category-thumbanial pb-[40px] mt-5">
     <div class="containe box-sh">
             <div class="blog-section-4">
                 <div class="contain">

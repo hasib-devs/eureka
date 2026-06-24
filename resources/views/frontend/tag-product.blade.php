@@ -11,7 +11,7 @@
 @section('content')
 <!--================product  Area start=================-->
 <div class="container product-page">
-    <h3 class="title" style="text-align: center;padding: 30px 0px;">Customer Favorites</h3>
+    <h3 class="title text-center py-[30px] px-0">Customer Favorites</h3>
     <div class="row">
         <!-- tittle heading -->
         <div class="side-bar col-md-3">
@@ -19,19 +19,19 @@
             <form action="">
                     
                 <div class="range">
-                    <h3 class="title" style="padding-top: 10px;margin-bottom: 5px;">Customer Favorites</h3>
+                    <h3 class="title pt-[10px] mb-[5px]">Customer Favorites</h3>
                     <ul class="dropdown-menu6">
                         <li>
                             <div id="slider-range"></div>
                             
-                            <input type="text" id="amount" style="border: 0; color: #ffffff; font-weight: normal;" />
+                            <input type="text" id="amount" class="border-0 text-white font-normal" />
                             
                         </li>
                     </ul>
                 </div>
                 
                 <div class="left-side">
-                    <h3 class="title" style="padding-top: 10px;margin-bottom: 5px;">Customer Favorites</h3>
+                    <h3 class="title pt-[10px] mb-[5px]">Customer Favorites</h3>
                     <ul>
                         <li>
                             <input type="checkbox" class="checked">
@@ -45,7 +45,7 @@
                 </div>
                 
                 <div class="customer-rev left-side">
-                    <h3 class="title" style="padding-top: 10px;margin-bottom: 5px;">Customer Favorites</h3>
+                    <h3 class="title pt-[10px] mb-[5px]">Customer Favorites</h3>
                     <ul>
                         <li>
                             <a href="#">
@@ -74,7 +74,7 @@
         
         <div class="products col-md-9">
             <div class="container">
-                <div class="row " style="border-left: 1px solid #ccc;border-top: 1px solid #ccc;">
+                <div class="row  border-l border-t border-[#ccc]">
                     
                     @forelse ($tag->products as $product)
                         <x-product-grid-view :product="$product" />

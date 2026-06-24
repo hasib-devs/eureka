@@ -13,118 +13,116 @@
 
 @section('content')
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($author)
-                            Edit author
-                        @else
-                            Add author
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($author)
-                                Edit author
-                            @else
-                                Add author
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($author)
+                    Edit author
+                @else
+                    Add author
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">
+                    @isset($author)
+                        Edit author
+                    @else
+                        Add author
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
-        <!-- Default box -->
+    <section>
         @if ($errors->any())
-            {!! implode('', $errors->all('<div class="alert alert-danger">:message</div>')) !!}
+            @foreach ($errors->all() as $error)
+                <x-ui.alert variant="danger" class="mb-2">{{ $error }}</x-ui.alert>
+            @endforeach
         @endif
-        <div class="card">
-            <div class="card-header">
 
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">
-                            @isset($author)
-                                Edit Author
-                            @else
-                                Add New Author
-                            @endisset
-                        </h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-
-                        <a href="{{ routeHelper('author') }}" class="btn btn-danger">
-                            <i class="fas fa-long-arrow-alt-left"></i>
-                            Back to List
-                        </a>
-                    </div>
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-medium text-slate-900">
+                        @isset($author)
+                            Edit Author
+                        @else
+                            Add New Author
+                        @endisset
+                    </h3>
+                    <x-ui.button variant="danger" :href="routeHelper('author')">
+                        <i class="fas fa-long-arrow-alt-left"></i>
+                        Back to List
+                    </x-ui.button>
                 </div>
             </div>
+
             <form action="{{ route('admin.author.update', $author->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="name">Name:</label>
-                            <input type="text" name="name" id="name" placeholder="Write author name"
-                                class="form-control @error('name') is-invalid @enderror"
-                                value="{{ $author->name ?? old('name') }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+
+                <div class="p-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div class="mb-4">
+                            <x-ui.input
+                                name="name"
+                                label="Name:"
+                                type="text"
+                                placeholder="Write author name"
+                                :value="$author->name ?? old('name')"
+                                required
+                            />
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="profile">Profile</label>
-                            <img width="50px" src="{{ asset('/') }}/uploads/admin/{{ $author->img }}">
-                            <input class="form-control" type="file" name="profile">
+
+                        <div class="mb-4">
+                            <label for="profile" class="block text-sm font-medium text-slate-700 mb-1">Profile</label>
+                            <img width="50" src="{{ asset('/') }}/uploads/admin/{{ $author->img }}" class="mb-2">
+                            <input
+                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                                type="file"
+                                name="profile"
+                                id="profile"
+                            >
                             @error('profile')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group col-md-12">
-                            <label for="bio">Bio:</label>
-                            <textarea name="bio" id="bio" rows="3" placeholder="Write   bio"
-                                class="form-control @error('bio') is-invalid @enderror">{{ $author->bio ?? old('bio') }}</textarea>
+
+                        <div class="mb-4 md:col-span-2">
+                            <label for="bio" class="block text-sm font-medium text-slate-700 mb-1">Bio:</label>
+                            <textarea
+                                name="bio"
+                                id="bio"
+                                rows="3"
+                                placeholder="Write   bio"
+                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('bio') border-danger @enderror"
+                            >{{ $author->bio ?? old('bio') }}</textarea>
                             @error('bio')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-
-
                     </div>
-
                 </div>
-                <div class="card-footer">
-                    <div class="form-group">
-                        <button class="mt-1 btn btn-primary">
-                            @isset($author)
-                                <i class="fas fa-arrow-circle-up"></i>
-                                Update
-                            @else
-                                <i class="fas fa-plus-circle"></i>
-                                Submit
-                            @endisset
-                        </button>
-                    </div>
+
+                <div class="border-t border-slate-200 px-4 py-3">
+                    <x-ui.button type="submit" variant="primary">
+                        @isset($author)
+                            <i class="fas fa-arrow-circle-up"></i>
+                            Update
+                        @else
+                            <i class="fas fa-plus-circle"></i>
+                            Submit
+                        @endisset
+                    </x-ui.button>
                 </div>
             </form>
         </div>
-        <!-- /.card -->
-
-
     </section>
-    <!-- /.content -->
 @endsection
+
 @push('js')
     <script src="/assets/plugins/summernote/summernote-bs4.min.js"></script>
     <script>

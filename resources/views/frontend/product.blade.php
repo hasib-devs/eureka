@@ -62,7 +62,7 @@
 
 @section('content')
 <!--================product  Area start=================-->
-<div class="container product-page" style="margin-top: 10px">
+<div class="container product-page mt-[10px]">
 
     <div class="row">
         <!-- tittle heading -->
@@ -76,7 +76,7 @@
         <div class="products col-md-9">
 
             <div class="container">
-                <div class="row" style="margin-bottom: 10px;">
+                <div class="row mb-[10px]">
                     <x-filter-component />
                 </div>
 
@@ -109,7 +109,7 @@
                             <h2 id="title" class="skeletona"></h2>
                             <small id="subtitle" class="skeletona"></small>
                             <small id="subtitle" class="skeletona2 skeletona"></small>
-                            <div style="text-align: center;">
+                            <div class="text-center">
                             <p id="about" class="skeletona"></p>
                             <p id="about" class="skeletona"></p>
                             </div>

@@ -11,12 +11,12 @@
 
 <!--================product  Area start=================-->
 <br>
-<div class="products" style="text-align: center;">
+<div class="products text-center">
     <div class="containe" >
         <div class="row" id="grid-view">
            @foreach ($products as $product)
                 <div class="product col-lg-2 col-md-3 col-sm-4 col-4">
-                    <div class="product-wrapper"  style="height:240px">
+                    <div class="product-wrapper h-[240px]">
                         <div class="pin">
                             <div class="thumbnail">
                             <a href="{{route('clasified.show',['slug'=>$product->slug])}}">
@@ -43,7 +43,7 @@
                             <h2 id="title" class="skeletona"></h2>
                             <small id="subtitle" class="skeletona"></small>
                             <small id="subtitle" class="skeletona2 skeletona"></small>
-                            <div style="text-align: center;">
+                            <div class="text-center">
                             <p id="about" class="skeletona"></p>
                             <p id="about" class="skeletona"></p>
                             </div>

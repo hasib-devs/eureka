@@ -14,7 +14,7 @@
 
 @if (setting('TOP_CAT_STATUS') != 0 || setting('TOP_CAT_STATUS') == "")
 <!--================ top category Area =================-->
-<div class="shop-category oc" style="padding-bottom: 10px;text-align: center;">
+<div class="shop-category oc pb-[10px] text-center">
     <div class="container">
         <div class="cat-row">
             @foreach ($categories_f as $category)
@@ -68,9 +68,9 @@
 
 
 @if (setting('CATEGORY_SMALL_SUMMERY') != 0 || setting('CATEGORY_SMALL_SUMMERY') == "")
-<div class="category-thumbanial" style="padding-bottom: 40px;">
+<div class="category-thumbanial pb-[40px]">
     <div class="container box-sh">
-        <div class="row" style="text-align: center;">
+        <div class="row text-center">
             @foreach ($collections as $key => $collection)
             <div class="category-item  col-md-3 col-sm-3 col-6">
                 <div class="item-in">
@@ -79,7 +79,7 @@
                             <img src="{{asset('uploads/collection/'.$collection->cover_photo)}}" alt="Collection Image">
                         </a>
                     </div>
-                    <p style=" font-weight: 600;margin: 5px 0px 0px 0px;">{{$collection->name}} </p>
+                    <p class="font-semibold mt-[5px]">{{$collection->name}} </p>
                     @php
                     $categoryIds = $collection->categories->pluck('id');
                     $productIds = DB::table('category_product')->whereIn('category_id',

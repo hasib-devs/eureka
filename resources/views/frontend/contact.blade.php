@@ -32,8 +32,8 @@
             <div class="col-md-6">
             <div class="flex flex-col justify-between">
           <div>
-            <h2 class="text-4xl lg:text-5xl font-bold leading-tight" style="font-weight: 800;margin-top: 20px;">Lets talk about everything!</h2>
-              <h2 class="text-4xl lg:text-5xl font-bold leading-tight nl" style="font-weight: 800;margin-top: 20px;">With <a style="color:red" href="{{route('connection.live.chat')}}" >Live Chat</a></h2>
+            <h2 class="text-4xl lg:text-5xl font-bold leading-tight font-extrabold mt-5">Lets talk about everything!</h2>
+              <h2 class="text-4xl lg:text-5xl font-bold leading-tight nl font-extrabold mt-5">With <a class="text-[red]" href="{{route('connection.live.chat')}}" >Live Chat</a></h2>
           </div>
           <div class="mt-8 text-center m-hidec">
             <svg class="w-full" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -535,7 +535,7 @@
         </div>
             </div>
             <div class="col-md-6">
-                <div class="card" style="padding: 20px;margin-top: 20px;">
+                <div class="card p-5 mt-5">
                     <form action="{{route('contact.store')}}" method="post" id="submit" enctype="multipart/form-data">
                         @csrf
                         <div class="form form2 row">
@@ -554,7 +554,7 @@
                             </div>
                             @if($service==1)
                             <div class="form-group col-md-6">
-                                <label style="font-size:15px">Service Recipte Date</label>
+                                <label class="text-[15px]">Service Recipte Date</label>
                               
                                 <input type="date" name="meet" id="meet" class="form-control" placeholder="Service Recipte Date">
                                 <small class="form-text text-danger phone"></small>
@@ -577,7 +577,7 @@
                            
                             <div class="form-group col-md-12">
                                      @if($service!=1)
-                                <label style="font-size:15px">Upload a Photo or Screenshot of your Problem</label>
+                                <label class="text-[15px]">Upload a Photo or Screenshot of your Problem</label>
                                 @endif
                                 <input type="file" name="cover_photo" id="cover_photo" accept="image/*" class="form-control @error('cover_photo') is-invalid @enderror" data-default-file="@isset($category) /uploads/category/{{$category->cover_photo}}@enderror">
                                 @error('cover_photo')

@@ -23,150 +23,149 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($collection)
-                            Edit Collection
-                        @else
-                            Add Collection
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($collection)
-                                Edit Collection
-                            @else
-                                Add Collection
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($collection)
+                    Edit Collection
+                @else
+                    Add Collection
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="text-slate-400">/</li>
+                <li class="text-slate-700">
+                    @isset($collection)
+                        Edit Collection
+                    @else
+                        Add Collection
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+    {{-- Main content --}}
+    <section class="mb-6">
+        <div class="mx-auto max-w-3xl">
+            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($collection)
-                                        Edit Collection Details
-                                    @else
-                                        Add New Collection
-                                    @endisset
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                @isset($collection)
-                                    <a href="{{ routeHelper('collection/' . $collection->id) }}" class="btn btn-info">
-                                        <i class="fas fa-eye"></i>
-                                        Show
-                                    </a>
-                                @endisset
-
-                                <a href="{{ routeHelper('collection') }}" class="btn btn-danger">
-
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <form
-                        action="{{ isset($collection) ? routeHelper('collection/' . $collection->id) : routeHelper('collection') }}"
-                        method="POST" enctype="multipart/form-data">
-                        @csrf
+                {{-- Card header --}}
+                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+                    <h3 class="text-base font-semibold text-slate-800">
                         @isset($collection)
-                            @method('PUT')
+                            Edit Collection Details
+                        @else
+                            Add New Collection
                         @endisset
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" name="name" id="name" placeholder="Write category name"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $collection->name ?? old('name') }}" required autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="category">Select Category:</label>
-                                <select name="categories[]" id="category" multiple data-placeholder="Select Category"
-                                    class="form-control select2 @error('categories') is-invalid @enderror" required>
-                                    <option value="">Select Category</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            @isset($collection) @foreach ($collection->categories as $pro_category) {{ $category->id == $pro_category->id ? 'selected' : '' }} @endforeach @endisset>
-                                            {{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('categories')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="cover_photo">Cover Photo:</label>
-                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                    class="form-control @error('cover_photo') is-invalid @enderror" data-default-file="@isset($collection) /uploads/collection/{{ $collection->cover_photo }}@enderror">
-                            @error('cover_photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive______________________________________________________________________________4___>
-                                <label class="custom-control-label" for="status">Status</label>
-                            </div>
-                            @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        @isset($collection)
+                            <x-ui.button variant="info" :href="routeHelper('collection/' . $collection->id)">
+                                <i class="fas fa-eye"></i>
+                                Show
+                            </x-ui.button>
+                        @endisset
+                        <x-ui.button variant="danger" :href="routeHelper('collection')">
+                            <i class="fas fa-long-arrow-alt-left"></i>
+                            Back to List
+                        </x-ui.button>
                     </div>
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button class="mt-1 btn btn-primary">
-                                @isset($collection)
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                @else
-                                    <i class="fas fa-plus-circle"></i>
-                                    Submit
-                                @endisset
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- /.card -->
                 </div>
+
+                {{-- Form wraps body + footer --}}
+                <form
+                    action="{{ isset($collection) ? routeHelper('collection/' . $collection->id) : routeHelper('collection') }}"
+                    method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @isset($collection)
+                        @method('PUT')
+                    @endisset
+
+                    {{-- Card body --}}
+                    <div class="p-4 space-y-4">
+
+                        {{-- Name --}}
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name:</label>
+                            <input type="text" name="name" id="name" placeholder="Write category name"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
+                                value="{{ $collection->name ?? old('name') }}" required autocomplete="off">
+                            @error('name')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Categories --}}
+                        <div class="mb-4">
+                            <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Select Category:</label>
+                            <select name="categories[]" id="category" multiple data-placeholder="Select Category"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 @error('categories') border-danger @else border-slate-300 @enderror"
+                                required>
+                                <option value="">Select Category</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        @isset($collection) @foreach ($collection->categories as $pro_category) {{ $category->id == $pro_category->id ? 'selected' : '' }} @endforeach @endisset>
+                                        {{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('categories')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Cover Photo (dropify JS widget — keep raw input, only restyle wrapper) --}}
+                        <div class="mb-4">
+                            <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                            <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
+                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm @error('cover_photo') border-danger @enderror"
+                                data-default-file="@isset($collection) /uploads/collection/{{ $collection->cover_photo }}@enderror">
+                            @error('cover_photo')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Status toggle --}}
+                        <div class="mb-4">
+                            <label class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="status" id="status" ___inline_directive______________________________________________________________________________4___>
+                                <span class="text-sm font-medium text-slate-700">Status</span>
+                            </label>
+                            @error('status')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    {{-- Card footer --}}
+                    <div class="border-t border-slate-200 px-4 py-3">
+                        <x-ui.button type="submit" variant="primary">
+                            @isset($collection)
+                                <i class="fas fa-arrow-circle-up"></i>
+                                Update
+                            @else
+                                <i class="fas fa-plus-circle"></i>
+                                Submit
+                            @endisset
+                        </x-ui.button>
+                    </div>
+
+                </form>
             </div>
-
-
-        </section>
-        <!-- /.content -->
+        </div>
+    </section>
 @endsection
 
 @push('js')
     <script src="/assets/plugins/select2/js/select2.full.min.js"></script>
-            <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-            <script>
-                $(function() {
-                    $('#cover_photo').dropify();
-                    $('.select2').select2();
-                });
-            </script>
+    <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
+    <script>
+        $(function() {
+            $('#cover_photo').dropify();
+            $('.select2').select2();
+        });
+    </script>
 @endpush

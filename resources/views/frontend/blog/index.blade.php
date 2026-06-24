@@ -27,9 +27,9 @@
             <div class="customar-menu col-md-3">
                   @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9" style="margin-top: 20px">
+            <div class="col-md-9 mt-5">
                 <div class="custmer-right ">
-                <form style="background: white;border-radius: 5px;" action="{{ isset($eblog) ? route('update_exit_blog') :route('create_blog') }}" method="POST" enctype="multipart/form-data">
+                <form class="bg-white rounded-[5px]" action="{{ isset($eblog) ? route('update_exit_blog') :route('create_blog') }}" method="POST" enctype="multipart/form-data">
                     
                     @csrf
                     @if(isset($eblog))
@@ -95,7 +95,7 @@
             </div>
         </div>
         <br>
-        <div class="row"  style="background: white;border-radius: 5px;" >
+        <div class="row bg-white rounded-[5px]">
             <div class="col-md-12 customar-menu">
             <table id="example1" class="table table-bordered table-striped">
                 <thead>
@@ -113,9 +113,9 @@
                             <td>{{$data->title}}</td>
                             <td>
                                 @if($data->status==1)
-                                <span class="btn-success" style="padding: 5px;border-radius: 5px;font-size: 14px;">Active</span>
+                                <span class="btn-success p-[5px] rounded-[5px] text-[14px]">Active</span>
                                 @else
-                                <span class="btn-danger" style="padding: 5px;border-radius: 5px;font-size: 14px;">Dective</span>
+                                <span class="btn-danger p-[5px] rounded-[5px] text-[14px]">Dective</span>
                                 @endif
                             </td>
                            

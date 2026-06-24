@@ -35,7 +35,7 @@
                         <!--<button type="button" class="more"  data-toggle="modal" data-target="#exampleModalLong">-->
                         <!--    More Details About The Shop-->
                         <!--</button>-->
-                        <div style="margin-bottom: 20px;" class="search-box">
+                        <div class="search-box mb-5">
                             <form action="{{route('search.product.vendor')}}" method="GET" id="form">
                                 <div class="input-group">
                                     <input type="hidden" name="id" value="{{$shop->slug}}">
@@ -92,7 +92,7 @@
 <div class="products product-page-vendor">
     <div class="container ">
         <h3 class="title">Top Product</h3>
-            <div class="row" style="margin-bottom: 10px;">
+            <div class="row mb-[10px]">
                 <x-filter-component />
             </div>
             <div class="row" id="grid-view">

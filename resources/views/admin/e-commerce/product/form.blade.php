@@ -59,65 +59,55 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
+    {{-- Content Header --}}
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($product)
+                    Edit Product
+                @else
+                    Add Product
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">
+                    @isset($product)
+                        Edit Product
+                    @else
+                        Add Product
+                    @endisset
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    {{-- Main content --}}
+    <section>
+        @if ($errors->any())
+            {!! implode('', $errors->all('<div class="mb-2 rounded-md bg-red-50 border border-red-300 px-4 py-2 text-sm text-red-700">:message</div>')) !!}
+        @endif
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-4 py-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="font-medium text-slate-900">
                         @isset($product)
                             Edit Product
                         @else
-                            Add Product
+                            Add New Product
                         @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($product)
-                                Edit Product
-                            @else
-                                Add Product
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-        <!-- Default box -->
-        @if ($errors->any())
-            {!! implode('', $errors->all('<div class="alert alert-danger">:message</div>')) !!}
-        @endif
-        <div class="card">
-            <div class="card-header">
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">
-                            @isset($product)
-                                Edit Product
-                            @else
-                                Add New Product
-                            @endisset
-                        </h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
+                    </h3>
+                    <div class="flex gap-2">
                         @isset($product)
-                            <a href="{{ routeHelper('product/' . $product->id) }}" class="btn btn-info">
+                            <x-ui.button :href="routeHelper('product/' . $product->id)" variant="info">
                                 <i class="fas fa-eye"></i>
                                 Show
-                            </a>
+                            </x-ui.button>
                         @endisset
-                        <a href="{{ routeHelper('product') }}" class="btn btn-danger">
+                        <x-ui.button :href="routeHelper('product')" variant="danger">
                             <i class="fas fa-long-arrow-alt-left"></i>
                             Back to List
-                        </a>
+                        </x-ui.button>
                     </div>
                 </div>
             </div>
@@ -127,8 +117,8 @@
                     margin-top: 10px;
                 }
             </style>
-            <div class="row">
-                <form class="col-sm-8"
+            <div class="flex flex-wrap">
+                <form class="w-full lg:w-2/3"
                     action="{{ isset($product) ? routeHelper('product/' . $product->id) : routeHelper('product') }}"
                     method="POST" enctype="multipart/form-data">
                     @csrf
@@ -138,38 +128,38 @@
                     @endisset
                     <input type="hidden" value="{{ $type ?? '' }}" name="ptypen">
 
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="title">Product name <span class="text-danger">(*)</span>:</label>
+                    <div class="p-4">
+                        <div class="mb-4">
+                            <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Product name <span class="text-danger">(*)</span>:</label>
                             <input type="text" name="title" id="title" placeholder="Write product title"
-                                class="form-control @error('title') is-invalid @enderror"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('title') border-danger @else border-slate-300 @enderror"
                                 value="{{ $product->title ?? old('title') }}">
                             @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="title">Product Code (SKU):</label>
+                        <div class="mb-4">
+                            <label for="sku" class="block text-sm font-medium text-slate-700 mb-1">Product Code (SKU):</label>
                             <input type="text" name="sku" id="sku" placeholder="Product Code/SKU"
-                                class="form-control @error('title') is-invalid @enderror"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('sku') border-danger @else border-slate-300 @enderror"
                                 value="{{ $product->sku ?? old('sku') }}">
-                            @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            @error('sku')
+                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="short_description">Short Description:</label>
+                        <div class="mb-4">
+                            <label for="short_description" class="block text-sm font-medium text-slate-700 mb-1">Short Description:</label>
                             <textarea name="short_description" id="short_description" rows="3" placeholder="Write product short description"
-                                class="form-control @error('short_description') is-invalid @enderror">{{ $product->short_description ?? old('short_description') }}</textarea>
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('short_description') border-danger @else border-slate-300 @enderror">{{ $product->short_description ?? old('short_description') }}</textarea>
                             @error('short_description')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <label for="full_description">Select Vendor:</label>
-                            <select class="form-control" name="vendor">
+                        <div class="mb-4">
+                            <label for="vendor" class="block text-sm font-medium text-slate-700 mb-1">Select Vendor:</label>
+                            <select class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" name="vendor">
                                 <option value="">Select Vendor Optional</option>
                                 @foreach (App\Models\ShopInfo::get(['name', 'user_id']) as $vend)
                                     <option
@@ -180,61 +170,61 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="full_description">Full Description <span class="text-danger"></span>:</label>
-                            <textarea name="full_description" id="full_description" class="form-control">{{ $product->full_description ?? old('full_description') }}</textarea>
+                        <div class="mb-4">
+                            <label for="full_description" class="block text-sm font-medium text-slate-700 mb-1">Full Description:</label>
+                            <textarea name="full_description" id="full_description" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">{{ $product->full_description ?? old('full_description') }}</textarea>
                             @error('full_description')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="buying_price">Buying Price:</label>
+                        <div class="flex flex-wrap -mx-2">
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="buying_price" class="block text-sm font-medium text-slate-700 mb-1">Buying Price:</label>
                                 <input step="0.01" type="number" name="buying_price" id="buying_price"
                                     placeholder="Enter product buying price"
-                                    class="form-control @error('buying_price') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('buying_price') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->buying_price ?? old('buying_price') }}">
                                 @error('buying_price')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="regular_price">Whole Sell Price:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="whole_price" class="block text-sm font-medium text-slate-700 mb-1">Whole Sell Price:</label>
                                 <input step="0.01" type="number" name="whole_price" id="whole_price"
                                     placeholder="Enter product whole sell price"
-                                    class="form-control @error('whole_price') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('whole_price') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->whole_price ?? old('whole_price') }}">
                                 @error('whole_price')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="regular_price">Regular Price <span class="text-danger">(*)</span>:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="regular_price" class="block text-sm font-medium text-slate-700 mb-1">Regular Price <span class="text-danger">(*)</span>:</label>
                                 <input step="0.01" type="number" name="regular_price" id="regular_price"
                                     placeholder="Enter product regular price"
-                                    class="form-control @error('regular_price') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('regular_price') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->regular_price ?? old('regular_price') }}" required>
                                 @error('regular_price')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label for="prdct_extra_msg">Product Extra Message:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="prdct_extra_msg" class="block text-sm font-medium text-slate-700 mb-1">Product Extra Message:</label>
                                 <input type="text" name="prdct_extra_msg" id="prdct_extra_msg"
                                     placeholder="Express Delivery in Dhaka"
-                                    class="form-control @error('prdct_extra_msg') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('prdct_extra_msg') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->prdct_extra_msg ?? '' }}">
                                 @error('prdct_extra_msg')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label for="dis_type">Discount Type:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="dis_type" class="block text-sm font-medium text-slate-700 mb-1">Discount Type:</label>
                                 <select name="dis_type" id="dis_type"
-                                    class="form-control @error('dis_type') is-invalid @enderror">
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('dis_type') border-danger @else border-slate-300 @enderror">
                                     <option value="0"
                                         @isset($product) {{ $product->dis_type == '0' ? 'selected' : '' }} @endisset>
                                         None</option>
@@ -246,7 +236,7 @@
                                         Parcent %</option>
                                 </select>
                                 @error('dis_type')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             @isset($product)
@@ -260,43 +250,43 @@
                                     @endif
                                 @endif
                             @endisset
-                            <div class="form-group col-md-6">
-                                <label for="discount_price">Discount:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="discount_price" class="block text-sm font-medium text-slate-700 mb-1">Discount:</label>
                                 <input step="0.01" type="number" name="discount_price" id="discount_price"
                                     placeholder="Enter product discount price"
-                                    class="form-control @error('discount_price') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('discount_price') border-danger @else border-slate-300 @enderror"
                                     value="{{ $discount_price ?? old('discount_price') }}">
                                 @error('discount_price')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="quantity">Point:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="point" class="block text-sm font-medium text-slate-700 mb-1">Point:</label>
                                 <input type="number" name="point" id="point" placeholder="Enter product point"
-                                    class="form-control @error('point') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('point') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->point ?? old('point') }}">
                                 @error('point')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
 
 
-                            <div class="form-group col-md-6">
-                                <label for="quantity">Quantity <span class="text-danger">(*)</span>:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="quantity" class="block text-sm font-medium text-slate-700 mb-1">Quantity <span class="text-danger">(*)</span>:</label>
                                 <input type="number" name="quantity" id="quantity"
                                     placeholder="Enter product quantity"
-                                    class="form-control @error('quantity') is-invalid @enderror"
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('quantity') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->quantity ?? old('quantity') }}" required>
                                 @error('quantity')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label for="brand">Select Brand <span class="text-danger">(*)</span>:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="brand" class="block text-sm font-medium text-slate-700 mb-1">Select Brand <span class="text-danger">(*)</span>:</label>
                                 <select name="brand" id="brand" data-placeholder="Select Brand"
-                                    class="form-control select2 @error('brand') is-invalid @enderror">
+                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 @error('brand') border-danger @else border-slate-300 @enderror">
                                     <option value="">Select Brand</option>
                                     @foreach ($brands as $brand)
                                         <option value="{{ $brand->id }}"
@@ -305,13 +295,13 @@
                                     @endforeach
                                 </select>
                                 @error('brand')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="category">Select Campaing:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="campaign" class="block text-sm font-medium text-slate-700 mb-1">Select Campaing:</label>
                                 <select name="campaigns[]" id="campaign" multiple data-placeholder="Select Campaing"
-                                    class="category form-control select2 @error('campaigns') is-invalid @enderror">
+                                    class="category block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 @error('campaigns') border-danger @else border-slate-300 @enderror">
                                     <option value="">Select Campaing</option>
                                     @foreach ($campaigns as $campaign)
                                         <option value="{{ $campaign->id }}"
@@ -320,14 +310,14 @@
                                     @endforeach
                                 </select>
                                 @error('campaigns')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label for="category">Select Category <span class="text-danger">(*)</span>:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Select Category <span class="text-danger">(*)</span>:</label>
                                 <select name="categories[]" id="category" multiple data-placeholder="Select Category"
-                                    class="category form-control select2 @error('categories') is-invalid @enderror"
+                                    class="category block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 @error('categories') border-danger @else border-slate-300 @enderror"
                                     required>
                                     <option value="">Select Category</option>
                                     @foreach ($categories as $category)
@@ -337,14 +327,14 @@
                                     @endforeach
                                 </select>
                                 @error('categories')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label for="sub_category">Select Sub Category:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="sub_category" class="block text-sm font-medium text-slate-700 mb-1">Select Sub Category:</label>
                                 <select name="sub_categories[]" id="sub_category" data-placeholder="Select Sub Category"
-                                    class="sub_category form-control {{ isset($product) ? 'select2' : '' }} @error('sub_categories') is-invalid @enderror"
+                                    class="sub_category block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary {{ isset($product) ? 'select2' : '' }} @error('sub_categories') border-danger @enderror"
                                     {{ isset($product) ? 'multiple' : '' }}>
                                     @isset($product)
                                         @foreach ($product->sub_categories as $sub_category)
@@ -354,14 +344,14 @@
                                     @endisset
                                 </select>
                                 @error('sub_categories')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="mini_category">Select Mini Category:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="mini_category" class="block text-sm font-medium text-slate-700 mb-1">Select Mini Category:</label>
                                 <select name="mini_categories[]" id="mini_category"
                                     data-placeholder="Select Mini Category"
-                                    class="mini_category form-control {{ isset($product) ? 'select2' : '' }} @error('mini_categories') is-invalid @enderror"
+                                    class="mini_category block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary {{ isset($product) ? 'select2' : '' }} @error('mini_categories') border-danger @enderror"
                                     {{ isset($product) ? 'multiple' : '' }}>
                                     @isset($product)
                                         @foreach ($product->mini_categories as $mini_category)
@@ -371,14 +361,14 @@
                                     @endisset
                                 </select>
                                 @error('mini_categories')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="extra_categories">Select Extra Category:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="extra_category" class="block text-sm font-medium text-slate-700 mb-1">Select Extra Category:</label>
                                 <select name="extra_categories[]" id="extra_category"
                                     data-placeholder="Select Mini Category"
-                                    class="extra_categories form-control {{ isset($product) ? 'select2' : '' }} @error('mini_categories') is-invalid @enderror"
+                                    class="extra_categories block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary {{ isset($product) ? 'select2' : '' }} @error('mini_categories') border-danger @enderror"
                                     {{ isset($product) ? 'multiple' : '' }}>
                                     @isset($product)
                                         @foreach ($product->extra_categories as $extra_category)
@@ -388,13 +378,13 @@
                                     @endisset
                                 </select>
                                 @error('extra_categories')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="tag">Select Tag:</label>
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="tag" class="block text-sm font-medium text-slate-700 mb-1">Select Tag:</label>
                                 <select name="tags[]" id="tag" multiple data-placeholder="Select Tag"
-                                    class="form-control select2 @error('tags') is-invalid @enderror">
+                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 @error('tags') border-danger @enderror">
                                     <option value="">Select Tag</option>
                                     @foreach ($tags as $tag)
                                         <option value="{{ $tag->id }}"
@@ -403,7 +393,7 @@
                                     @endforeach
                                 </select>
                                 @error('tags')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -431,22 +421,21 @@
     @enderror
                                 </div> -->
 
-                            <div class="form-group col-md-12">
-                                <div style="background: #eeeeee;padding: 10px;border-radius: 5px;">
-                                    <div class="row">
-                                        <div class="form-group col-md-12"
-                                            style="margin-bottom: 5px;border:1px solid gainsboro;">
-                                            <label style="display: block;" for="color"> <button
-                                                    style="width: 100%;text-align:left;" type="button"
+                            <div class="mb-4 w-full px-2">
+                                <div class="rounded-md bg-slate-100 p-3">
+                                    <div>
+                                        <div class="mb-1 border border-slate-300 rounded">
+                                            <label class="block" for="color">
+                                                <button class="w-full text-left px-3 py-2 font-medium" type="button"
                                                     data-toggle="collapse" data-target="#collapseExampleColor"
-                                                    aria-expanded="false" aria-controls="collapseExampleColor">Select
-                                                    Color:<i style="float: right;top: 8px;position: relative;"
-                                                        class="fas fa-arrow-down"></i> </button></label>
+                                                    aria-expanded="false" aria-controls="collapseExampleColor">
+                                                    Select Color:<i class="fas fa-arrow-down float-right mt-2"></i>
+                                                </button>
+                                            </label>
                                             <div class="collapse" id="collapseExampleColor">
-                                                <div style="display: flex;" class="input-group ">
-
+                                                <div class="flex input-group px-2 pb-2">
                                                     <select id="select_color" data-placeholder="Select Color"
-                                                        class="form-control  @error('colors') is-invalid @enderror">
+                                                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('colors') border-danger @enderror">
                                                         <option value="">Select Color</option>
                                                         @foreach ($colors as $color)
                                                             <option style="color:white;background: {{ $color->code }}"
@@ -455,9 +444,8 @@
                                                         @endforeach
                                                     </select>
                                                     @error('colors')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                                     @enderror
-
                                                 </div>
                                                 <div id="increment_color">
                                                     @isset($product)
@@ -483,31 +471,28 @@
                                                             </div>
                                                         @endforeach
                                                     @endisset
-
                                                 </div>
                                             </div>
                                         </div>
-
-
-
                                     </div>
-                                    <div id="sho_attributes" class="row">
-
+                                    <div id="sho_attributes" class="flex flex-wrap">
                                     </div>
                                 </div>
                             </div>
-                            <h4 class="col-12"> <button style="width: 100%;text-align:left;" type="button"
+                            <div class="w-full px-2 mb-2">
+                                <button class="w-full text-left px-3 py-2 font-medium text-slate-800" type="button"
                                     data-toggle="collapse" data-target="#BookOpen" aria-expanded="false"
-                                    aria-controls="BookOpen">Specification for book:<i
-                                        style="float: right;top: 8px;position: relative;" class="fas fa-arrow-down"></i>
-                                </button></h4>
+                                    aria-controls="BookOpen">
+                                    Specification for book:<i class="fas fa-arrow-down float-right mt-2"></i>
+                                </button>
+                            </div>
 
 
-                            <div class="form-row col-md-12 spec collapse" id="BookOpen">
+                            <div class="flex flex-wrap -mx-2 w-full spec collapse px-2" id="BookOpen">
 
-                                <div class="form-group col-md-6">
-                                    <label for="full_description">Select Author:</label>
-                                    <select class="form-control" name="author_id">
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="author_id" class="block text-sm font-medium text-slate-700 mb-1">Select Author:</label>
+                                    <select class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" name="author_id">
                                         <option value="">Select Vendor </option>
                                         @foreach (App\Models\Author::get(['name', 'id']) as $author)
                                             <option
@@ -516,98 +501,99 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="full_description">PDF file:</label>
-                                    <input type="file" name="pdf">
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="pdf" class="block text-sm font-medium text-slate-700 mb-1">PDF file:</label>
+                                    <input type="file" name="pdf" class="block w-full text-sm text-slate-700">
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="title">isbn:</label>
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="isbn" class="block text-sm font-medium text-slate-700 mb-1">isbn:</label>
                                     <input type="text" name="isbn" id="isbn" placeholder="Write product isbn"
-                                        class="form-control @error('isbn') is-invalid @enderror"
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('isbn') border-danger @else border-slate-300 @enderror"
                                         value="{{ $product->isbn ?? old('isbn') }}">
                                     @error('isbn')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="title">edition:</label>
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="edition" class="block text-sm font-medium text-slate-700 mb-1">edition:</label>
                                     <input type="text" name="edition" id="edition"
                                         placeholder="Write product edition"
-                                        class="form-control @error('edition') is-invalid @enderror"
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('edition') border-danger @else border-slate-300 @enderror"
                                         value="{{ $product->edition ?? old('edition') }}">
                                     @error('edition')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="title">pages:</label>
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="pages" class="block text-sm font-medium text-slate-700 mb-1">pages:</label>
                                     <input type="text" name="pages" id="pages"
                                         placeholder="Write product edition"
-                                        class="form-control @error('pages') is-invalid @enderror"
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('pages') border-danger @else border-slate-300 @enderror"
                                         value="{{ $product->pages ?? old('pages') }}">
                                     @error('pages')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="title">country:</label>
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="country" class="block text-sm font-medium text-slate-700 mb-1">country:</label>
                                     <input type="text" name="country" id="country"
                                         placeholder="Write product country"
-                                        class="form-control @error('country') is-invalid @enderror"
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('country') border-danger @else border-slate-300 @enderror"
                                         value="{{ $product->country ?? old('country') }}">
                                     @error('country')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label for="title">language:</label>
+                                <div class="mb-4 w-full md:w-1/2 px-2">
+                                    <label for="language" class="block text-sm font-medium text-slate-700 mb-1">language:</label>
                                     <input type="text" name="language" id="language"
                                         placeholder="Write product language"
-                                        class="form-control @error('language') is-invalid @enderror"
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('language') border-danger @else border-slate-300 @enderror"
                                         value="{{ $product->language ?? old('language') }}">
                                     @error('language')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="mb-4 w-full px-2">
                                 @isset($product)
-                                    <div><a target="_blank"
-                                            href="{{ asset('uploads/product/video/' . $product->video) }}">Click View
-                                            Video</a>
+                                    <div class="mb-2">
+                                        <a target="_blank"
+                                            href="{{ asset('uploads/product/video/' . $product->video) }}"
+                                            class="text-primary hover:underline">Click View Video</a>
                                         <br>
                                         <a target="_blank"
-                                            href="{{ asset('uploads/product/video/' . $product->video_thumb) }}">Click View
-                                            Video Thumbnail</a>
+                                            href="{{ asset('uploads/product/video/' . $product->video_thumb) }}"
+                                            class="text-primary hover:underline">Click View Video Thumbnail</a>
                                     </div>
                                 @endisset
-                                <label for="video">Product Video:</label>
+                                <label for="video" class="block text-sm font-medium text-slate-700 mb-1">Product Video:</label>
                                 <input type="file" name="video"
-                                    class="form-control @error('video') is-invalid @enderror">
-                                <label for="video">OR Youtbe Video:</label>
+                                    class="block w-full text-sm text-slate-700 mb-2 @error('video') border-danger @enderror">
+                                <label for="yvideo" class="block text-sm font-medium text-slate-700 mb-1">OR Youtbe Video:</label>
                                 <input {{ $product->yvideo ?? old('yvideo') }} type="text" name="yvideo"
-                                    class="form-control @error('yvideo') is-invalid @enderror">
-                                <label for="video_thumb">Product Video Thumbnail:</label>
+                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary mb-2 @error('yvideo') border-danger @enderror">
+                                <label for="video_thumb" class="block text-sm font-medium text-slate-700 mb-1">Product Video Thumbnail:</label>
                                 <input type="file" name="video_thumb"
-                                    class="form-control @error('video_thumb') is-invalid @enderror">
+                                    class="block w-full text-sm text-slate-700 @error('video_thumb') border-danger @enderror">
                                 @error('video')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="image">Product Thumbnail Image <span class="text-danger">(*)</span>: <a
-                                        target="_blank" href="https://youtu.be/JsZc-I_Wygk">How to Optimize
+                            <div class="mb-4 w-full md:w-1/2 px-2">
+                                <label for="image" class="block text-sm font-medium text-slate-700 mb-1">Product Thumbnail Image <span class="text-danger">(*)</span>: <a
+                                        target="_blank" href="https://youtu.be/JsZc-I_Wygk" class="text-primary hover:underline">How to Optimize
                                         Image</a></label>
                                 <input type="file" name="image" id="image" accept="image/*"
-                                    class="form-control dropify @error('image') is-invalid @enderror"
+                                    class="dropify @error('image') is-invalid @enderror"
                                     data-default-file="@isset($product) /uploads/product/{{ $product->image }}@enderror">
                             @error('image')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group col-md-6">
-                            <label>Product Gallery Image <span class="text-danger">(*)</span>: <a target="_blank" href="https://youtu.be/JsZc-I_Wygk">How to Optimize Image</a></label>
+                        <div class="mb-4 w-full md:w-1/2 px-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Product Gallery Image <span class="text-danger">(*)</span>: <a target="_blank" href="https://youtu.be/JsZc-I_Wygk" class="text-primary hover:underline">How to Optimize Image</a></label>
                             <div class="input-group" id="increment">
                                 <input type="file" class="form-control" accept="image/*" id="images" name="images[]"  ___inline_directive______________________________________40___  >
                                 <select name="imagesc[]" id="imagesc">
@@ -622,7 +608,7 @@
                             </div>
                             {{-- <div class="input-images-1" style="padding-top: .5rem;"></div> --}}
                             @error('images')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
 
                             <style type="text/css">
@@ -639,8 +625,8 @@
                                 @foreach ($product->images as $image)
                                     <div class="d" ___inline_directive_________________________________________________________________________________________________41___each>
                                         <img src="{{ asset('uploads/product/' . $image->name) }}" style="width: 100px;height: 70px;object-fit: cover;">
-                                        <div style="flex: 1;text-align: right;">
-                                            <a  class="btn btn-danger" href="{{ route('admin.idelte', $image->id) }}">Delete</a>
+                                        <div class="flex-1 text-right">
+                                            <x-ui.button :href="route('admin.idelte', $image->id)" variant="danger" size="sm">Delete</x-ui.button>
                                         </div>
                                     </div>
                                 @endforeach
@@ -649,55 +635,48 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                                <div class="form-group col-sm-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" name="status"
-                                            id="status"
-                                            @isset($product) {{ $product->status ? 'checked' : '' }} @else checked @endisset>
-                                        <label class="custom-control-label" for="status">Status</label>
-                                    </div>
+                    <div class="flex flex-wrap gap-4 px-2 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="status"
+                                        id="status"
+                                        @isset($product) {{ $product->status ? 'checked' : '' }} @else checked @endisset>
+                                    <label class="text-sm font-medium text-slate-700" for="status">Status</label>
                                     @error('status')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-sm-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" name="book"
-                                            id="book"
-                                            @isset($product) {{ $product->book ? 'checked' : '' }} @else  @endisset>
-                                        <label class="custom-control-label" for="book">book</label>
-                                    </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="book"
+                                        id="book"
+                                        @isset($product) {{ $product->book ? 'checked' : '' }} @else  @endisset>
+                                    <label class="text-sm font-medium text-slate-700" for="book">book</label>
                                     @error('book')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-sm-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" name="sheba"
-                                            id="sheba"
-                                            @isset($product) {{ $product->sheba ? 'checked' : '' }} @else  @endisset>
-                                        <label class="custom-control-label" for="sheba">sheba</label>
-                                    </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="sheba"
+                                        id="sheba"
+                                        @isset($product) {{ $product->sheba ? 'checked' : '' }} @else  @endisset>
+                                    <label class="text-sm font-medium text-slate-700" for="sheba">sheba</label>
                                     @error('sheba')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group col-sm-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" name="download_able"
-                                            id="download_able"
-                                            @isset($product){{ $product->download_able ? 'checked' : '' }} @endisset>
-                                        <label class="custom-control-label" for="download_able">Download able</label>
-                                    </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="download_able"
+                                        id="download_able"
+                                        @isset($product){{ $product->download_able ? 'checked' : '' }} @endisset>
+                                    <label class="text-sm font-medium text-slate-700" for="download_able">Download able</label>
                                     @error('download_able')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-sm text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
 
                             @isset($product)
                                 @if ($product->downloads->count() < 1)
+                                    {{-- Bootstrap modal — kept because Bootstrap JS drives it --}}
                                     <div class="modal fade" id="modal-default">
                                         <div class="modal-dialog modal-xl">
                                             <div class="modal-content">
@@ -709,68 +688,59 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <div class="form-horizontal">
-                                                        <div class="card-body">
-                                                            <div class="form-group row">
+                                                    <div class="mb-4">
+                                                        <div class="mb-4">
+                                                            <div class="flex flex-wrap items-start gap-4 mb-4">
                                                                 <label for="inputEmail3"
-                                                                    class="col-sm-2 col-form-label">Downloadable Files</label>
-                                                                <div class="col-sm-10">
-                                                                    <div class="card border">
-                                                                        <div class="card-header">
-                                                                            <div class="row">
-                                                                                <div class="col-md-4">
-                                                                                    <strong>Name:</strong>
-                                                                                </div>
-                                                                                <div class="col-md-4"><strong>File
-                                                                                        URL:</strong></div>
+                                                                    class="w-full sm:w-1/6 text-sm font-medium text-slate-700 pt-2">Downloadable Files</label>
+                                                                <div class="flex-1">
+                                                                    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                                                                        <div class="border-b border-slate-200 px-4 py-3">
+                                                                            <div class="flex gap-4">
+                                                                                <div class="w-1/3"><strong>Name:</strong></div>
+                                                                                <div class="w-1/3"><strong>File URL:</strong></div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="card-body px-1 py-2">
-                                                                            <div class="row">
-                                                                                <div class="col-12" id="increment-file">
-
-                                                                                </div>
-                                                                            </div>
+                                                                        <div class="p-2">
+                                                                            <div id="increment-file"></div>
                                                                         </div>
-                                                                        <div class="card-footer">
-                                                                            <span id="add-file" class="btn btn-success">Add
-                                                                                File</span>
+                                                                        <div class="border-t border-slate-200 px-4 py-3">
+                                                                            <span id="add-file" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-success text-white hover:opacity-90 h-10 px-4 text-sm cursor-pointer">Add File</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group row">
+                                                            <div class="flex flex-wrap items-center gap-4 mb-4">
                                                                 <label for="download_limit"
-                                                                    class="col-sm-2 col-form-label">Download Limit</label>
-                                                                <div class="col-sm-4">
-                                                                    <input type="number" class="form-control"
+                                                                    class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Limit</label>
+                                                                <div class="w-full sm:w-1/3">
+                                                                    <input type="number"
+                                                                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
                                                                         id="download_limit" name="download_limit"
                                                                         value="{{ $product->download_limit ?? old('download_limit') }}">
                                                                 </div>
-                                                                <div class="col-sm-6">
-                                                                    <span>Leave blank for unlimited re-downloads</span>
+                                                                <div class="flex-1">
+                                                                    <span class="text-sm text-slate-500">Leave blank for unlimited re-downloads</span>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group row">
+                                                            <div class="flex flex-wrap items-center gap-4 mb-4">
                                                                 <label for="download_expire"
-                                                                    class="col-sm-2 col-form-label">Download Expire</label>
-                                                                <div class="col-sm-4">
-                                                                    <input type="date" class="form-control"
+                                                                    class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Expire</label>
+                                                                <div class="w-full sm:w-1/3">
+                                                                    <input type="date"
+                                                                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
                                                                         id="download_expire" name="download_expire"
                                                                         value="{{ $product->download_expire ?? old('download_expire') }}">
                                                                 </div>
-                                                                <div class="col-sm-6">
-                                                                    <span>Enter the number of days before a downlink link
-                                                                        expires, or leave blank</span>
+                                                                <div class="flex-1">
+                                                                    <span class="text-sm text-slate-500">Enter the number of days before a downlink link expires, or leave blank</span>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!-- /.card-body -->
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer justify-content-between">
-                                                    <button type="button" class="btn btn-default"
-                                                        data-dismiss="modal">Close</button>
+                                                    <x-ui.button type="button" variant="secondary" data-dismiss="modal">Close</x-ui.button>
                                                     {{-- <button type="submit" class="btn btn-primary">Add</button> --}}
                                                 </div>
                                             </div>
@@ -780,6 +750,7 @@
                                     </div>
                                 @endif
                             @else
+                                {{-- Bootstrap modal — kept because Bootstrap JS drives it --}}
                                 <div class="modal fade" id="modal-default">
                                     <div class="modal-dialog modal-xl">
                                         <div class="modal-content">
@@ -791,68 +762,59 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="form-horizontal">
-                                                    <div class="card-body">
-                                                        <div class="form-group row">
+                                                <div class="mb-4">
+                                                    <div class="mb-4">
+                                                        <div class="flex flex-wrap items-start gap-4 mb-4">
                                                             <label for="inputEmail3"
-                                                                class="col-sm-2 col-form-label">Downloadable Files</label>
-                                                            <div class="col-sm-10">
-                                                                <div class="card border">
-                                                                    <div class="card-header">
-                                                                        <div class="row">
-                                                                            <div class="col-md-4">
-                                                                                <strong>Name:</strong>
-                                                                            </div>
-                                                                            <div class="col-md-4"><strong>File URL:</strong>
-                                                                            </div>
+                                                                class="w-full sm:w-1/6 text-sm font-medium text-slate-700 pt-2">Downloadable Files</label>
+                                                            <div class="flex-1">
+                                                                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                                                                    <div class="border-b border-slate-200 px-4 py-3">
+                                                                        <div class="flex gap-4">
+                                                                            <div class="w-1/3"><strong>Name:</strong></div>
+                                                                            <div class="w-1/3"><strong>File URL:</strong></div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="card-body px-1 py-2">
-                                                                        <div class="row">
-                                                                            <div class="col-12" id="increment-file">
-
-                                                                            </div>
-                                                                        </div>
+                                                                    <div class="p-2">
+                                                                        <div id="increment-file"></div>
                                                                     </div>
-                                                                    <div class="card-footer">
-                                                                        <span id="add-file" class="btn btn-success">Add
-                                                                            File</span>
+                                                                    <div class="border-t border-slate-200 px-4 py-3">
+                                                                        <span id="add-file" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-success text-white hover:opacity-90 h-10 px-4 text-sm cursor-pointer">Add File</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="form-group row">
+                                                        <div class="flex flex-wrap items-center gap-4 mb-4">
                                                             <label for="download_limit"
-                                                                class="col-sm-2 col-form-label">Download Limit</label>
-                                                            <div class="col-sm-4">
-                                                                <input type="number" class="form-control"
+                                                                class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Limit</label>
+                                                            <div class="w-full sm:w-1/3">
+                                                                <input type="number"
+                                                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
                                                                     id="download_limit" name="download_limit"
                                                                     value="{{ $product->download_limit ?? old('download_limit') }}">
                                                             </div>
-                                                            <div class="col-sm-6">
-                                                                <span>Leave blank for unlimited re-downloads</span>
+                                                            <div class="flex-1">
+                                                                <span class="text-sm text-slate-500">Leave blank for unlimited re-downloads</span>
                                                             </div>
                                                         </div>
-                                                        <div class="form-group row">
+                                                        <div class="flex flex-wrap items-center gap-4 mb-4">
                                                             <label for="download_expire"
-                                                                class="col-sm-2 col-form-label">Download Expire</label>
-                                                            <div class="col-sm-4">
-                                                                <input type="date" class="form-control"
+                                                                class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Expire</label>
+                                                            <div class="w-full sm:w-1/3">
+                                                                <input type="date"
+                                                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
                                                                     id="download_expire" name="download_expire"
                                                                     value="{{ $product->download_expire ?? old('download_expire') }}">
                                                             </div>
-                                                            <div class="col-sm-6">
-                                                                <span>Enter the number of days before a downlink link expires,
-                                                                    or leave blank</span>
+                                                            <div class="flex-1">
+                                                                <span class="text-sm text-slate-500">Enter the number of days before a downlink link expires, or leave blank</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <!-- /.card-body -->
                                                 </div>
                                             </div>
                                             <div class="modal-footer justify-content-between">
-                                                <button type="button" class="btn btn-default"
-                                                    data-dismiss="modal">Close</button>
+                                                <x-ui.button type="button" variant="secondary" data-dismiss="modal">Close</x-ui.button>
                                                 {{-- <button type="submit" class="btn btn-primary">Add</button> --}}
                                             </div>
                                         </div>
@@ -864,8 +826,8 @@
 
 
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" class="mt-1 btn btn-primary">
+                        <div class="border-t border-slate-200 px-4 py-3">
+                            <x-ui.button type="submit" variant="primary">
                                 @isset($product)
                                     <i class="fas fa-arrow-circle-up"></i>
                                     Update
@@ -873,106 +835,102 @@
                                     <i class="fas fa-plus-circle"></i>
                                     Submit
                                 @endisset
-                            </button>
-
+                            </x-ui.button>
                         </div>
                 </form>
-                <div class="col-sm-4">
+                <div class="w-full lg:w-1/3 p-4">
                     @include('components.product-sidebar')
                 </div>
             </div>
         </div>
-        <!-- /.card -->
 
 
 
 
         @if (isset($product->downloads) && $product->downloads->count() > 0)
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Update Product Download File</h3>
-                </div>
-                <form action="{{ routeHelper('update/product/download') }}" class="form-horizontal" method="POST"
+            <div class="rounded-lg border border-slate-200 bg-white shadow-sm mt-4">
+                <div class="border-b border-slate-200 px-4 py-3 font-medium text-slate-900">Update Product Download File</div>
+                <form action="{{ routeHelper('update/product/download') }}" method="POST"
                     enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <div class="card-body">
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-2 col-form-label">Downloadable Files</label>
-                            <div class="col-sm-10">
-                                <div class="card border">
-                                    <div class="card-header">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <strong>Name:</strong>
-                                            </div>
-                                            <div class="col-md-4"><strong>File URL:</strong></div>
+                    <div class="p-4">
+                        <div class="flex flex-wrap items-start gap-4 mb-4">
+                            <label for="inputEmail3" class="w-full sm:w-1/6 text-sm font-medium text-slate-700 pt-2">Downloadable Files</label>
+                            <div class="flex-1">
+                                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                                    <div class="border-b border-slate-200 px-4 py-3">
+                                        <div class="flex gap-4">
+                                            <div class="w-1/3"><strong>Name:</strong></div>
+                                            <div class="w-1/3"><strong>File URL:</strong></div>
                                         </div>
                                     </div>
-                                    <div class="card-body px-1 py-2">
-                                        <div class="row">
-                                            <div class="col-12" id="increment-file">
-                                                @isset($product->downloads)
-                                                    @foreach ($product->downloads as $download)
-                                                        <div class="row mt-2">
-                                                            <div class="col-md-4">
-                                                                <input type="text" name="file_name[]" class="form-control"
-                                                                    placeholder="Enter file name"
-                                                                    value="{{ $download->name }}">
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <input type="text" name="file_url[]" class="form-control"
-                                                                    placeholder="Enter file url"
-                                                                    value="{{ $download->url }}">
-
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input type="file" name="files[]" class="custom-file">
-                                                            </div>
-                                                            <div class="col-md-2">
-                                                                <input type="hidden" name="ids[]"
-                                                                    value="{{ $download->id }}">
-                                                                <a href="#" id="remove-file"
-                                                                    data-id="{{ $download->id }}"
-                                                                    class="btn btn-danger btn-sm"><i
-                                                                        class="fa fa-trash-alt"></i></a>
-                                                            </div>
+                                    <div class="p-2">
+                                        <div id="increment-file">
+                                            @isset($product->downloads)
+                                                @foreach ($product->downloads as $download)
+                                                    <div class="flex flex-wrap gap-2 mt-2">
+                                                        <div class="w-full md:w-1/3">
+                                                            <input type="text" name="file_name[]"
+                                                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                                                                placeholder="Enter file name"
+                                                                value="{{ $download->name }}">
                                                         </div>
-                                                    @endforeach
-                                                @endisset
-                                            </div>
+                                                        <div class="w-full md:w-1/3">
+                                                            <input type="text" name="file_url[]"
+                                                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                                                                placeholder="Enter file url"
+                                                                value="{{ $download->url }}">
+                                                        </div>
+                                                        <div class="w-full md:w-1/6">
+                                                            <input type="file" name="files[]" class="block w-full text-sm text-slate-700">
+                                                        </div>
+                                                        <div class="w-full md:w-auto">
+                                                            <input type="hidden" name="ids[]"
+                                                                value="{{ $download->id }}">
+                                                            <a href="#" id="remove-file"
+                                                                data-id="{{ $download->id }}"
+                                                                class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-danger text-white hover:opacity-90 h-8 px-3 text-sm"><i
+                                                                    class="fa fa-trash-alt"></i></a>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endisset
                                         </div>
                                     </div>
-                                    <div class="card-footer">
-                                        <span id="add-file" class="btn btn-success">Add File</span>
+                                    <div class="border-t border-slate-200 px-4 py-3">
+                                        <span id="add-file" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-success text-white hover:opacity-90 h-10 px-4 text-sm cursor-pointer">Add File</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="download_limit" class="col-sm-2 col-form-label">Download Limit</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="download_limit" name="download_limit"
+                        <div class="flex flex-wrap items-center gap-4 mb-4">
+                            <label for="download_limit" class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Limit</label>
+                            <div class="w-full sm:w-1/3">
+                                <input type="number"
+                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                                    id="download_limit" name="download_limit"
                                     value="{{ $product->download_limit ?? old('download_limit') }}">
                             </div>
-                            <div class="col-sm-6">
-                                <span>Leave blank for unlimited re-downloads</span>
+                            <div class="flex-1">
+                                <span class="text-sm text-slate-500">Leave blank for unlimited re-downloads</span>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="download_expire" class="col-sm-2 col-form-label">Download Expire</label>
-                            <div class="col-sm-4">
-                                <input type="date" class="form-control" id="download_expire" name="download_expire"
+                        <div class="flex flex-wrap items-center gap-4 mb-4">
+                            <label for="download_expire" class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Expire</label>
+                            <div class="w-full sm:w-1/3">
+                                <input type="date"
+                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                                    id="download_expire" name="download_expire"
                                     value="{{ $product->download_expire ?? old('download_expire') }}">
                             </div>
-                            <div class="col-sm-6">
-                                <span>Enter the number of days before a downlink link expires, or leave blank</span>
+                            <div class="flex-1">
+                                <span class="text-sm text-slate-500">Enter the number of days before a downlink link expires, or leave blank</span>
                             </div>
                         </div>
                     </div>
-                    <!-- /.card-body -->
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">Update</button>
+                    <div class="border-t border-slate-200 px-4 py-3">
+                        <x-ui.button type="submit" variant="primary">Update</x-ui.button>
                     </div>
                 </form>
             </div>
@@ -980,7 +938,6 @@
 
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

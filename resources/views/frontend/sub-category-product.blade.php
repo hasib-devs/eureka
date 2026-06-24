@@ -60,7 +60,7 @@
 @section('content')
 <!--================product  Area start=================-->
 <div class="container product-page">
-    <h3 class="title" style="text-align: center;padding: 30px 0px;">Customer Favorites</h3>
+    <h3 class="title text-center py-[30px] px-0">Customer Favorites</h3>
     <div class="row">
         <!-- tittle heading -->
         <div class="menu-overly2"></div>
@@ -84,7 +84,7 @@
          <div class="products col-md-9">
 
             <div class="container">
-                <div class="row" style="margin-bottom: 10px;">
+                <div class="row mb-[10px]">
                     <x-filter-component />
                 </div>
 

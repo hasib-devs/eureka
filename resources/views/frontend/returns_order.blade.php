@@ -31,8 +31,8 @@ border-radius: 5px;
             <div class="customar-menu col-md-3">
                 @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9" style="margin-top:20px">
-                <table style="margin-top: 20px;background: white;" class="timetable_sub" id="example1">
+            <div class="col-md-9 mt-[20px]">
+                <table class="timetable_sub mt-[20px] bg-white" id="example1">
                     <thead>
                         <tr>
                             <th>Order NO.</th>
@@ -59,15 +59,15 @@ border-radius: 5px;
                                 @elseif ($order->status == 2)
                                     <span class="badge badge-danger">Canceled</span>
                                 @elseif ($order->status == 4)
-                                    <span class="badge" style="background: #7db1b1;">Shipping</span>
+                                    <span class="badge bg-[#7db1b1]">Shipping</span>
                                 @elseif ($order->status == 5)
                                     <span class="badge  badge-danger">Refund</span>
                                 @elseif ($order->status == 6)
                                     <span class="badge badge-warning">Return Requested</span>
                                 @elseif ($order->status == 7)
-                                    <span class="badge" style="background: #7db1b1;"><small>Return Accepted<br>you can now return this product</small></span>
+                                    <span class="badge bg-[#7db1b1]"><small>Return Accepted<br>you can now return this product</small></span>
                                 @elseif ($order->status == 8)
-                                    <span class="badge" style="background: #7db1b1;">Returned</span>
+                                    <span class="badge bg-[#7db1b1]">Returned</span>
                                 @else 
                                     <span class="badge badge-success">Delivered</span>
                                 @endif  

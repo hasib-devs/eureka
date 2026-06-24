@@ -70,7 +70,7 @@
 
     }
 </style>
-<section class="hero-area" style="margin-top:2px">
+<section class="hero-area mt-[2px]">
     <div class="">
         <div class="row">
             <div class="hero-slider col-lg-12">

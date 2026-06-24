@@ -14,9 +14,9 @@
         margin: 0 !important;
     }
 </style>
-<div class="shop-category shop-brand" style="padding-bottom: 20px;text-align: center;">
+<div class="shop-category shop-brand pb-[20px] text-center">
     <div class="container">
-        <div class="cat-row" style="display:block;">
+        <div class="cat-row block">
             @foreach ($brands as $brand)
             <a href="{{route('brand.product',['slug'=>$brand->slug])}}" class="cat-item">
                 <div class="">

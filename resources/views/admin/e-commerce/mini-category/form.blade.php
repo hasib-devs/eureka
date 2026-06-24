@@ -21,74 +21,63 @@
 
 @section('content')
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($category)
-                            Edit Category
-                        @else
-                            Add Category
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($category)
-                                Edit Category
-                            @else
-                                Add Category
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($category)
+                    Edit Category
+                @else
+                    Add Category
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="text-slate-400">/</li>
+                <li class="text-slate-700">
+                    @isset($category)
+                        Edit Category
+                    @else
+                        Add Category
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+    <section>
+        <div class="flex justify-center">
+            <div class="w-full max-w-2xl">
+                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                    <!-- Card header -->
+                    <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 font-medium text-slate-900">
+                        <span>
+                            @isset($category)
+                                Edit Category Details
+                            @else
+                                Add New Category
+                            @endisset
+                        </span>
+                        <div class="flex items-center gap-2">
+                            @isset($category)
+                                <x-ui.button variant="info" size="sm" :href="routeHelper('category/' . $category->id)">
+                                    <i class="fas fa-eye"></i>
+                                    Show
+                                </x-ui.button>
+                            @endisset
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($category)
-                                        Edit Category Details
-                                    @else
-                                        Add New Category
-                                    @endisset
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                @isset($category)
-                                    <a href="{{ routeHelper('category/' . $category->id) }}" class="btn btn-info">
-                                        <i class="fas fa-eye"></i>
-                                        Show
-                                    </a>
-                                @endisset
-
-                                <a href="{{ routeHelper('category') }}" class="btn btn-danger">
-
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List
-                                </a>
-                            </div>
+                            <x-ui.button variant="danger" size="sm" :href="routeHelper('category')">
+                                <i class="fas fa-long-arrow-alt-left"></i>
+                                Back to List
+                            </x-ui.button>
                         </div>
                     </div>
-                    @if (!empty(Session::get('massage2')))
-                        <span
-                            style="margin-bottom: 20px;display: block;color: #1cc88a;text-align: center;background: white;padding: 5px;border-radius: 5px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;">
-                            {{ Session::get('massage2') }}</span>
-                    @endif
 
+                    @if (!empty(Session::get('massage2')))
+                        <div class="px-4 pt-3 text-center text-success">
+                            {{ Session::get('massage2') }}
+                        </div>
+                    @endif
 
                     @isset($mini)
                         <form action="{{ route('admin.edit.mini') }}" method="POST" enctype="multipart/form-data">
@@ -97,11 +86,13 @@
                             <form action="{{ route('admin.create.mini') }}" method="POST" enctype="multipart/form-data">
                             @endisset
                             @csrf
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="category">Select Sub Category:</label>
+
+                            <!-- Card body -->
+                            <div class="p-4">
+                                <div class="mb-4">
+                                    <label for="category" class="mb-1 block text-sm font-medium text-slate-700">Select Sub Category:</label>
                                     <select name="category" id="category"
-                                        class="form-control @error('category') is-invalid @enderror">
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('category') border-danger @else border-slate-300 @enderror">
                                         <option value="">Select Category</option>
                                         @foreach ($sub_categories as $category)
                                             <option value="{{ $category->id }}"
@@ -110,73 +101,77 @@
                                         @endforeach
                                     </select>
                                     @error('category')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group">
-                                    <label for="name">Name:</label>
+
+                                <div class="mb-4">
+                                    <label for="name" class="mb-1 block text-sm font-medium text-slate-700">Name:</label>
                                     <input type="text" name="name" id="name" placeholder="Write category name"
-                                        class="form-control @error('name') is-invalid @enderror"
+                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
                                         value="{{ $mini->name ?? old('name') }}" required autocomplete="off">
                                     @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                <div class="form-group">
-                                    <label for="cover_photo">Cover Photo:</label>
+
+                                <div class="mb-4">
+                                    <label for="cover_photo" class="mb-1 block text-sm font-medium text-slate-700">Cover Photo:</label>
                                     <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                        class="form-control @error('cover_photo') is-invalid @enderror" data-default-file="@isset($mini) /uploads/mini-category/{{ $mini->cover_photo }}@enderror">
-                            @error('cover_photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive________________________________________________________________________4___>
-                                <label class="custom-control-label" for="status">Status</label>
-                            </div>
-                            @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="is_feature" id="is_feature" ___inline_directive_____________________________________________________________________________5___>
-                                <label class="custom-control-label" for="is_feature">is_features</label>
-                            </div>
-                            @error('is_feature')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button class="mt-1 btn btn-primary">
-                                @isset($category)
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                @else
-                                    <i class="fas fa-plus-circle"></i>
-                                    Submit
-                                @endisset
-                                    </button>
+                                        class="block w-full @error('cover_photo') border border-danger rounded-md @enderror"
+                                        data-default-file="@isset($mini)/uploads/mini-category/{{ $mini->cover_photo }}@endisset">
+                                    @error('cover_photo')
+                                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="inline-flex cursor-pointer items-center gap-2">
+                                        <input type="checkbox" name="status" id="status"
+                                            class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" ___inline_directive________________________________________________________________________4___>
+                                        <span class="text-sm font-medium text-slate-700">Status</span>
+                                    </label>
+                                    @error('status')
+                                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="inline-flex cursor-pointer items-center gap-2">
+                                        <input type="checkbox" name="is_feature" id="is_feature"
+                                            class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" ___inline_directive_____________________________________________________________________________5___>
+                                        <span class="text-sm font-medium text-slate-700">is_features</span>
+                                    </label>
+                                    @error('is_feature')
+                                        <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
+
+                            <!-- Card footer -->
+                            <div class="border-t border-slate-200 px-4 py-3">
+                                <x-ui.button type="submit" variant="primary">
+                                    @isset($category)
+                                        <i class="fas fa-arrow-circle-up"></i>
+                                        Update
+                                    @else
+                                        <i class="fas fa-plus-circle"></i>
+                                        Submit
+                                    @endisset
+                                </x-ui.button>
+                            </div>
                         </form>
-                    </div>
-                    <!-- /.card -->
                 </div>
             </div>
-
-
-        </section>
-        <!-- /.content -->
+        </div>
+    </section>
 @endsection
+
 @push('js')
     <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-            <script>
-                $(function() {
-                    $('#cover_photo').dropify();
-                });
-            </script>
+    <script>
+        $(function() {
+            $('#cover_photo').dropify();
+        });
+    </script>
 @endpush
