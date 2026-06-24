@@ -23,6 +23,6 @@ class subscriptionController extends Controller
     }
     public function show(){
     	$subscribes=subscription::all();
-    	 return view('admin..e-commerce.customer.subscribe',['subscribes'=>$subscribes]);
+    	 return view('admin.e-commerce.customer.subscribe',['subscribes'=>$subscribes]);
     }
 }
