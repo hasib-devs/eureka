@@ -20,7 +20,7 @@ background: white
             <div class="form form2">
                
                 <div class="form-group">
-                    <label>Otp<sup style="color: red;">*</sup></label>
+                    <label>Otp<sup class="text-[red]">*</sup></label>
                     <input type="text" name="otp" id="otp" class="form-control @error('otp') is-in-valid @enderror" required />
                     @error('otp')
                         <span class="invalid-feedback" role="alert">{{ $message }}</span>

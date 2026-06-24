@@ -3,15 +3,15 @@
 @section('content')
 
 <div class="wrapper">
-    <p style="text-align: center;">
-        <img style="width: 120px;padding: 10px 0px;" src="{{asset('uploads/setting/'.setting('auth_logo'))}}" alt="">
+    <p class="text-center">
+        <img class="w-[120px] px-0 py-[10px]" src="{{asset('uploads/setting/'.setting('auth_logo'))}}" alt="">
     </p>
     <form action="{{route('password.update')}}" method="post">
         @csrf
         <div class="form form2">
-            <h4 style="color:#002f5f;text-align: left;padding:10px 0px;"><b>Sign in </b></h4>
+            <h4 class="text-[#002f5f] text-left px-0 py-[10px]"><b>Sign in </b></h4>
             <div class="form-group">
-                <label for="username">Username <sup style="color: red;">*</sup></label>
+                <label for="username">Username <sup class="text-[red]">*</sup></label>
                 <input type="text" name="username" id="username"
                     class="form-control @error('username') is-in-valid @enderror"
                     value="{{ $username ?? old('username') }}" required />
@@ -20,7 +20,7 @@
                 @enderror
             </div>
             <div class="form-group">
-                <label for="password">Password <sup style="color: red;">*</sup></label>
+                <label for="password">Password <sup class="text-[red]">*</sup></label>
                 <input type="password" name="password" id="password"
                     class="form-control @error('password') is-in-valid @enderror" required />
                 @error('password')
@@ -28,7 +28,7 @@
                 @enderror
             </div>
             <div class="form-group">
-                <label for="password-confirm">Password <sup style="color: red;">*</sup></label>
+                <label for="password-confirm">Password <sup class="text-[red]">*</sup></label>
                 <input type="password" name="password_confirmation" id="password-confirm" class="form-control"
                     required />
 

@@ -52,19 +52,19 @@ padding: 7px;
         @csrf
          <ul class="cc row">
         <li class="col-6" ><a href="{{route('login')}}">Login</a></li>
-        <li class="col-6"  style="background:#07421c;color: white;"><a>Vendor Register</a></li>
+        <li class="col-6 bg-[#07421c] text-white"><a>Vendor Register</a></li>
     </ul>
         <div class="form form2 ">
             <div class="row">
             <div class="form-group col-md-6">
-                <label for="name">Name <sup style="color: red;">*</sup></label>
+                <label for="name">Name <sup class="text-[red]">*</sup></label>
                 <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" required />
                 @error('name')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group col-md-6">
-                <label for="username">Username (unique) <sup style="color: red;">*</sup></label>
+                <label for="username">Username (unique) <sup class="text-[red]">*</sup></label>
                 <input type="text" name="username" id="username" class="form-control @error('username') is-invalid @enderror" required />
                 @error('username')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
@@ -72,21 +72,21 @@ padding: 7px;
             </div></div>
             <div class="row">
             <div class="form-group col-md-12">
-                <label for="email">Email <sup style="color: red;">*</sup></label>
+                <label for="email">Email <sup class="text-[red]">*</sup></label>
                 <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" required />
                 @error('email')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group col-md-12">
-                <label for="address">Address <sup style="color: red;">*</sup></label>
+                <label for="address">Address <sup class="text-[red]">*</sup></label>
                 <input type="address" name="address" id="address" class="form-control @error('address') is-invalid @enderror" required />
                 @error('address')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group col-md-12">
-                <label for="password">Phone <sup style="color: red;">*</sup></label>
+                <label for="password">Phone <sup class="text-[red]">*</sup></label>
                 <input type="number" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" required />
                 @error('phone')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
@@ -98,7 +98,7 @@ padding: 7px;
             <!--    <div type="submit" id="otp-send" style="margin-top: 33px" class="btn btn-primary">Send Otp</div>-->
             <!--</div>-->
             <!--<div class="form-group col-md-12">-->
-            <!--    <label for="otp">Otp (Check Your Phone) <sup style="color: red;">*</sup></label>-->
+            <!--    <label for="otp">Otp (Check Your Phone) <sup class="text-[red]">*</sup></label>-->
             <!--    <input type="number" name="otp" id="otp" class="form-control @error('otp') is-invalid @enderror"  required />-->
             <!--    <p id="sm"></p>-->
             <!--    @error('otp')-->
@@ -108,14 +108,14 @@ padding: 7px;
             </div>
             <div class="row">
             <div class="form-group col-md-6">
-                <label for="password">Password <sup style="color: red;">*</sup></label>
+                <label for="password">Password <sup class="text-[red]">*</sup></label>
                 <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" required />
                 @error('password')
                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group col-md-6">
-                <label for="confirm-password">Confirm Password <sup style="color: red;">*</sup></label>
+                <label for="confirm-password">Confirm Password <sup class="text-[red]">*</sup></label>
                 <input type="password" name="password_confirmation" id="confirm-password" class="form-control" required />
                 
             </div>
@@ -125,7 +125,7 @@ padding: 7px;
         
     </form>
     <br>
-    <span style="display: block;text-align: center;">Already have an Account? <a href="{{route('login')}}">Sign In</a></span>
+    <span class="block text-center">Already have an Account? <a href="{{route('login')}}">Sign In</a></span>
 </div>
 <input type="hidden" value="{{ csrf_token() }}" name="cr" id="cr">
 @endsection

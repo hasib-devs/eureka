@@ -15,10 +15,10 @@
     <form class="col-md-4 offset-md-4" action="{{route('password.send')}}" method="POST">
         @csrf
         <div class="form form2">
-            <h4 style="color:#002f5f;text-align: left;padding:10px 0px;"><b>Forgot Password </b></h4>
+            <h4 class="text-[#002f5f] text-left py-[10px] px-0"><b>Forgot Password </b></h4>
             <input type="hidden" value="Phone" name="method">
             <div class="form-group">
-                <label> Mobile <sup style="color: red;">*</sup></label>
+                <label> Mobile <sup class="text-[red]">*</sup></label>
                 <input type="text" name="phone" id="phone"
                     class="form-control @error('phone') is-in-valid @enderror" required />
                     

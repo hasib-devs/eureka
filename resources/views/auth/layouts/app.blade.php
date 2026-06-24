@@ -36,7 +36,7 @@
                     </ul>
                 </div>
             </div>
-            <p style="text-align: center;" >{{setting('copy_right_text')}}</p>
+            <p class="text-center">{{setting('copy_right_text')}}</p>
         </div>
     </footer>
     <!--================footer  Area end=================-->
