@@ -4,6 +4,10 @@
         @endphp
 
         <aside class="dashboard-sidebar">
+            <button type="button" class="sidebar-toggle" aria-label="Collapse sidebar" data-sidebar-toggle>
+                <i class="bx bx-menu"></i>
+            </button>
+
             <div class="profile">
                 <div>
                     <h4 class="text-lg">ANAS LUXY WORLD</h4>
@@ -364,33 +368,148 @@
             .menu-section.collapsed label .chev {
                 transform: rotate(-90deg);
             }
+
+            /* Sidebar collapse toggle */
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                margin: 0 20px 16px auto;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                border-radius: 8px;
+                background: #fff;
+                color: #444;
+                cursor: pointer;
+                font-size: 1.25rem;
+                transition: 0.2s;
+            }
+
+            .sidebar-toggle:hover {
+                background: #f2d231;
+                color: #000;
+            }
+
+            /* ---- Icons-only (rail) mode ---- */
+            .dashboard-sidebar.rail {
+                width: 76px;
+                min-width: 76px;
+            }
+
+            .dashboard-sidebar.rail .sidebar-toggle {
+                margin: 0 auto 16px auto;
+            }
+
+            /* Hide the brand card and section headers when collapsed */
+            .dashboard-sidebar.rail .profile,
+            .dashboard-sidebar.rail .menu-section label {
+                display: none;
+            }
+
+            .dashboard-sidebar.rail .nav-container {
+                padding: 0 10px;
+            }
+
+            /* In rail mode every group is reachable, so never hide its items */
+            .dashboard-sidebar.rail .menu-section > ul {
+                display: block;
+            }
+
+            /* Center each item and drop its text label, keeping only the icon */
+            .dashboard-sidebar.rail li {
+                justify-content: center;
+                gap: 0;
+                font-size: 0;
+                padding: 10px 0;
+            }
+
+            .dashboard-sidebar.rail li i {
+                font-size: 1.35rem;
+            }
+
+            /* Account actions: stack into icon-only buttons */
+            .dashboard-sidebar.rail .account-actions {
+                flex-direction: column;
+                margin: 0 10px 16px 10px;
+            }
+
+            .dashboard-sidebar.rail .account-actions .account-link,
+            .dashboard-sidebar.rail .account-actions .logout-btn {
+                font-size: 0;
+                gap: 0;
+                padding: 9px 0;
+            }
+
+            .dashboard-sidebar.rail .account-actions .account-link i,
+            .dashboard-sidebar.rail .account-actions .logout-btn i {
+                font-size: 1.2rem;
+            }
         </style>
 
         <script>
             (function () {
-                const KEY = 'adminNavCollapsed';
-                let state = {};
-                try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { state = {}; }
+                const sidebar = document.querySelector('.dashboard-sidebar');
+                if (!sidebar) return;
 
-                // If the active page isn't represented by any nav item (e.g. the Profile
-                // account link), keep every group expanded rather than collapsing all.
-                const anyActive = !!document.querySelector('.nav-container li.active');
+                /* ---------- Collapse the sidebar to an icon-only rail ---------- */
+                const RAIL_KEY = 'adminSidebarRail';
+                const toggle = sidebar.querySelector('[data-sidebar-toggle]');
 
-                document.querySelectorAll('.dashboard-sidebar .menu-section').forEach(function (section) {
+                function applyRail(on) {
+                    sidebar.classList.toggle('rail', on);
+                    if (toggle) {
+                        toggle.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar');
+                    }
+                }
+
+                let rail = false;
+                try { rail = localStorage.getItem(RAIL_KEY) === '1'; } catch (e) {}
+                applyRail(rail);
+
+                if (toggle) {
+                    toggle.addEventListener('click', function () {
+                        rail = !sidebar.classList.contains('rail');
+                        applyRail(rail);
+                        try { localStorage.setItem(RAIL_KEY, rail ? '1' : '0'); } catch (e) {}
+                    });
+                }
+
+                /* ---------- Single-open accordion for the menu groups ---------- */
+                const OPEN_KEY = 'adminNavOpenSection';
+                const sections = Array.from(sidebar.querySelectorAll('.menu-section'));
+                const nameOf = (s) => s.querySelector('label')?.dataset.section;
+
+                function openOnly(name) {
+                    sections.forEach(function (section) {
+                        section.classList.toggle('collapsed', nameOf(section) !== name);
+                    });
+                }
+
+                // Pick the group to open on load: the saved one, else the group that
+                // holds the active page, else the first group. Only one is ever open.
+                let saved = null;
+                try { saved = localStorage.getItem(OPEN_KEY); } catch (e) {}
+                const activeSection = sections.find(s => s.querySelector('li.active'));
+                const savedSection = saved && sections.find(s => nameOf(s) === saved);
+
+                const openName = savedSection ? saved
+                    : activeSection ? nameOf(activeSection)
+                    : (sections[0] ? nameOf(sections[0]) : null);
+                if (openName) openOnly(openName);
+
+                sections.forEach(function (section) {
                     const label = section.querySelector('label');
                     if (!label) return;
-                    const name = label.dataset.section;
-                    const hasActive = !!section.querySelector('li.active');
-
-                    // On first visit, collapse every group except the one holding the active
-                    // page; if nothing is active, leave all expanded. Saved choices win after.
-                    let collapsed = (name in state) ? state[name] : (anyActive && !hasActive);
-                    section.classList.toggle('collapsed', collapsed);
-
                     label.addEventListener('click', function () {
-                        const now = section.classList.toggle('collapsed');
-                        state[name] = now;
-                        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+                        const name = label.dataset.section;
+                        if (section.classList.contains('collapsed')) {
+                            openOnly(name);                      // open this, close the others
+                            try { localStorage.setItem(OPEN_KEY, name); } catch (e) {}
+                        } else {
+                            section.classList.add('collapsed');  // close the open one
+                            try { localStorage.removeItem(OPEN_KEY); } catch (e) {}
+                        }
                     });
                 });
             })();

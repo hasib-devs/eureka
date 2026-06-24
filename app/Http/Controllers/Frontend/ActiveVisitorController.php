@@ -3,34 +3,41 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\ActiveVisitor;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ActiveVisitorController extends Controller
 {
+    /**
+     * A visitor counts as "active" when their last heartbeat landed within this
+     * many seconds. The client beats every 5s, so this is the grace window that
+     * keeps the live count stable between beats and forgives a missed ping or two.
+     */
+    private const ACTIVE_WINDOW_SECONDS = 60;
+
     public function heartbeat(Request $request)
     {
         $visitorId = $request->cookie('visitor_id');
 
-        if (!$visitorId) {
+        if (! $visitorId) {
             $visitorId = Str::uuid()->toString();
         }
 
         $visitor = ActiveVisitor::updateOrCreate(
             ['visitor_id' => $visitorId],
             [
-                'user_id'     => auth()->check() ? auth()->id() : null,
-                'ip_address'  => $request->ip(),
-                'user_agent'  => $request->userAgent(),
+                'user_id' => auth()->check() ? auth()->id() : null,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
                 'current_url' => $request->fullUrl(),
-                'last_seen_at'=> now(),
-                'left_at'     => null,
+                'last_seen_at' => now(),
+                'left_at' => null,
             ]
         );
 
         $activeCount = ActiveVisitor::whereNull('left_at')
-            ->where('last_seen_at', '>=', now()->subSeconds(15))
+            ->where('last_seen_at', '>=', now()->subSeconds(self::ACTIVE_WINDOW_SECONDS))
             ->count();
 
         return response()->json([
@@ -47,7 +54,7 @@ class ActiveVisitorController extends Controller
         if ($visitorId) {
             ActiveVisitor::where('visitor_id', $visitorId)
                 ->update([
-                    'left_at' => now()
+                    'left_at' => now(),
                 ]);
         }
 
@@ -57,7 +64,7 @@ class ActiveVisitorController extends Controller
     public function count()
     {
         $activeCount = ActiveVisitor::whereNull('left_at')
-            ->where('last_seen_at', '>=', now()->subSeconds(15))
+            ->where('last_seen_at', '>=', now()->subSeconds(self::ACTIVE_WINDOW_SECONDS))
             ->count();
 
         return response()->json([

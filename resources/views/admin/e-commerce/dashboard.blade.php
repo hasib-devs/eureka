@@ -136,7 +136,6 @@ use App\Models\Product;
 @endsection
 
 @push('js')
-@endpush
 <script>
     (function() {
         const url = "{{ route('visitor.count') }}";
@@ -157,3 +156,4 @@ use App\Models\Product;
         setInterval(updateCount, 5000);
     })();
 </script>
+@endpush
