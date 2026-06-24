@@ -19,11 +19,6 @@
     {{-- Dashboard CSS --}}
     <link rel="stylesheet" href="{{ asset('dashboard-assets/style.css') }}">
 
-    <!-- Styles / Scripts -->
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
-
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
 
@@ -31,8 +26,14 @@
 
     @stack('css')
 
-    <!-- Theme style -->
+    <!-- adminlte.css retained as the Bootstrap base for the JS widgets; the admin chrome is
+         the dashboard-assets sidebar + a Tailwind shell. -->
     <link rel="stylesheet" href="/assets/dist/css/adminlte.css">
+
+    <!-- Tailwind LAST so its utilities win on the (being-)converted content. -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
 
 </head>
 
