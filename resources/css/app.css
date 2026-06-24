@@ -42,4 +42,13 @@
     --color-danger:    #dc2626; /* red-600 */
     --color-warning:   #ffc107; /* amber */
     --color-info:      #0284c7; /* sky-600 */
+
+    /* ---- Dashboard accent (gold) + stat-tile solids (match AdminLTE small-box) ---- */
+    --color-accent:       #f2d231;
+    --color-accent-fg:    #000000;
+    --color-tile-info:    #17a2b8;
+    --color-tile-warning: #ffc107;
+    --color-tile-success: #28a745;
+    --color-tile-primary: #007bff;
+    --color-tile-danger:  #dc3545;
 }
