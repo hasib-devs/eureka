@@ -995,7 +995,7 @@
             <div class="lux-category-wrap">
 
                 @foreach ($categories as $category)
-                    <a href="{{ route('category', $category->slug) }}" class="lux-cat-item">
+                    <a href="{{ route('category.product', $category->slug) }}" class="lux-cat-item">
 
                         <div class="lux-cat-img">
                             <img src="{{ asset('uploads/category/' . $category->cover_photo) }}"

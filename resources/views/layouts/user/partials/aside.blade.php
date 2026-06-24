@@ -29,7 +29,7 @@
                 </li>
 
                 <li class="nav-item {{Request::is('level*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="{{route('level')}}" class="nav-link">
+                    <a href="#" class="nav-link">
                       <i class="nav-icon fas fa-layer-group"></i>
                       <p>Level</p>
                     </a>
