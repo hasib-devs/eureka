@@ -13,6 +13,9 @@
         'secondary' => 'bg-secondary text-white hover:bg-slate-700',
         'ghost'     => 'bg-transparent text-primary hover:bg-primary-50',
         'danger'    => 'bg-danger text-white hover:opacity-90',
+        'success'   => 'bg-success text-white hover:opacity-90',
+        'warning'   => 'bg-tile-warning text-black hover:opacity-90',
+        'info'      => 'bg-tile-info text-white hover:opacity-90',
     ];
 
     $sizes = [
