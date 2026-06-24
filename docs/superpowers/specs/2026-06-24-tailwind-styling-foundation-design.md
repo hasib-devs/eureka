@@ -233,6 +233,7 @@ storefront (74, last — most brand-sensitive, Bootstrap + purchased theme).
 | Enshrining non-brand colors (undraw SVGs `#3f3d56`/`#2f2e41`) | Token palette is the single source; illustration colors stay inline in their SVGs, never tokenized |
 | Per-surface fonts add complexity | Tokens (`font-store`/`font-dash`) applied at layout root only; default `--font-sans` unchanged |
 | Scope creep into widget replacement | Widgets explicitly out of scope (§7) |
+| New semantic tokens (`bg-info`/`bg-primary`/…) collide with same-named Bootstrap/AdminLTE classes on surfaces where Tailwind loads last (storefront) | **Verified neutral at foundation time:** Bootstrap's `.bg-*`/`.text-*`/`.border-*` utilities are all `!important`, so they beat Tailwind's non-important utilities regardless of load order — no color shift. **Forward note:** this same `!important` means the storefront migration cannot rely on Tailwind "winning" by load order; it must remove Bootstrap's utilities (or use Tailwind's `!` important modifier / scoping) as it converts each component. |
 
 ---
 
