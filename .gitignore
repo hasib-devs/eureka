@@ -28,3 +28,8 @@ u562520413_eureka2.sqlite
 
 error_log
 public/fonts-manifest.dev.json
+
+.claire/worktrees/
+
+# Subagent-driven-development scratch
+.superpowers/

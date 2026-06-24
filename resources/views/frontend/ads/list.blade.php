@@ -23,9 +23,9 @@ border-radius: 5px;
             <div class="customar-menu col-md-3">
                   @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9" style="margin-top: 20px">
+            <div class="col-md-9 mt-5">
                 <div class="custmer-right ">
-                <div class="row"  style="background: white;border-radius: 5px;" >
+                <div class="row bg-white rounded-[5px]">
             <div class="col-md-12 customar-menu">
             <table id="example1" class="table table-bordered table-striped">
                 <thead>
@@ -43,9 +43,9 @@ border-radius: 5px;
                             <td>{{$data->title}}</td>
                             <td>
                                 @if($data->status==1)
-                                <span class="btn-success" style="padding: 5px;border-radius: 5px;font-size: 14px;">Active</span>
+                                <span class="btn-success p-[5px] rounded-[5px] text-sm">Active</span>
                                 @else
-                                <span class="btn-danger" style="padding: 5px;border-radius: 5px;font-size: 14px;">Dective</span>
+                                <span class="btn-danger p-[5px] rounded-[5px] text-sm">Dective</span>
                                 @endif
                             </td>
                            

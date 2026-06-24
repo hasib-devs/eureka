@@ -149,9 +149,11 @@ database/migrations/   # schema
 
 ## Working with AI coding agents
 
-This repo ships instruction files for AI coding agents (Claude Code, Gemini, Cursor, GitHub Copilot).
-All rules and project context live in a single source of truth — **[AGENTS.md](AGENTS.md)**. The other
-agent files are thin pointers to it.
+All rules and project context for AI coding agents live in a single source of truth —
+**[AGENTS.md](AGENTS.md)**. Most agents (Codex, Cursor, Windsurf, Cline, Copilot in VS Code/CLI)
+read it natively; the rest load it through a thin pointer (`CLAUDE.md`, `GEMINI.md`,
+`.aider.conf.yml`, `.github/copilot-instructions.md`). See **[docs/ai-agents/](docs/ai-agents/README.md)**
+for the coverage matrix and token-cost notes.
 
 ---
 

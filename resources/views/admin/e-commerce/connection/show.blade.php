@@ -2,92 +2,61 @@
 
 @section('title', 'mails List')
 
-@push('css')
-    <!-- DataTables -->
-    <link rel="stylesheet" href="/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-@endpush
-
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>mails List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">mails List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-
-        <div class="card">
-
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table>
-                    <tr>
-                        <th>Name :</th>
-                        <td>{{ $mail->name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email :</th>
-                        <td>{{ $mail->email }}</td>
-                    </tr>
-                    <tr>
-                        <th>Phone :</th>
-                        <td>{{ $mail->phone }}</td>
-                    </tr>
-                    <tr>
-                        <th>Subject :</th>
-                        <td>{{ $mail->title }}</td>
-                    </tr>
-                    <tr>
-                        <th>Body :</th>
-                        <td>{{ $mail->body }}</td>
-                    </tr>
-                    @if (!empty($mail->meet))
-                        <tr>
-                            <th>Meet Time :</th>
-                            <td>{{ $mail->meet }}</td>
-                        </tr>
-                    @endif
-                    <tr>
-                        <th>Photo :</th>
-
-                    </tr>
-                    <tr>
-                        <td><img src="{{ asset('/') }}uploads/contact/{{ $mail->documents }}"></td>
-                    </tr>
-                </table>
-            </div>
-            <!-- /.card-body -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">mails List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a></li>
+                <li><span class="mx-1">/</span></li>
+                <li class="text-slate-700">mails List</li>
+            </ol>
         </div>
-        <!-- /.card -->
+    </section>
+
+    <section>
+
+        <x-ui.card>
+            <table class="w-full text-sm text-slate-700">
+                <tr class="border-b border-slate-100">
+                    <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Name :</th>
+                    <td class="py-2">{{ $mail->name }}</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                    <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Email :</th>
+                    <td class="py-2">{{ $mail->email }}</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                    <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Phone :</th>
+                    <td class="py-2">{{ $mail->phone }}</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                    <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Subject :</th>
+                    <td class="py-2">{{ $mail->title }}</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                    <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Body :</th>
+                    <td class="py-2">{{ $mail->body }}</td>
+                </tr>
+                @if (!empty($mail->meet))
+                    <tr class="border-b border-slate-100">
+                        <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Meet Time :</th>
+                        <td class="py-2">{{ $mail->meet }}</td>
+                    </tr>
+                @endif
+                <tr class="border-b border-slate-100">
+                    <th class="py-2 pr-4 text-left font-medium text-slate-900 w-32">Photo :</th>
+                    <td class="py-2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="py-2">
+                        <img src="{{ asset('/') }}uploads/contact/{{ $mail->documents }}">
+                    </td>
+                </tr>
+            </table>
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
-
-@push('js')
-    <!-- DataTables  & Plugins -->
-    <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script>
-        $(function() {
-            $("#example1").DataTable();
-        })
-    </script>
-@endpush

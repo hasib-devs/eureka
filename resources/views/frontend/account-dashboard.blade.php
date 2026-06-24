@@ -33,10 +33,12 @@
 <div class="customar-dashboard">
     <div class="container">
         <div class="customar-access row">
-            <?php 
-                $low_products=\App\Models\Product::where('quantity','<','6')->where('user_id',auth()->id())->count();
-                if($low_products>0){
-            ?>
+            <?php
+use App\Models\Product;
+
+$low_products = Product::where('quantity', '<', '6')->where('user_id', auth()->id())->count();
+            if ($low_products > 0) {
+                ?>
             <style>
                 .low-warning{
             padding: 8px 30px;
@@ -52,8 +54,8 @@
           <div class="customar-menu col-md-3">
                   @include('layouts.frontend.partials.userside')
             </div>
-            <div class="col-md-9 dasboard" style="padding:0">
-                <div class="cr row" style="padding: 20px;">
+            <div class="col-md-9 dasboard p-0">
+                <div class="cr row p-[20px]">
                    <!--  <div class="col-lg-6 col-md-6 col-sm-6 col-6 item">
                         <div class="card">
                              

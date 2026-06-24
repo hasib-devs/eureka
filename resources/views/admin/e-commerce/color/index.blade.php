@@ -10,115 +10,88 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Color List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Color List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
+    {{-- Page header --}}
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">Color List</h1>
+        <ol class="flex items-center gap-1 text-sm text-slate-500">
+            <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+            <li class="before:mr-1 before:content-['/']">Color List</li>
+        </ol>
+    </div>
 
-    <!-- Main content -->
-    <section class="content">
-
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Color List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ routeHelper('color/create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Color
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Color Code</th>
-                            <th>Color</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($colors as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ $data->name }}</td>
-                                <td>{{ Str::words($data->description, 5, '...') }}</td>
-                                <td>{{ $data->code }}</td>
-                                <td>
-                                    <div style="width:60px;height:30px;background:{{ $data->code }}"></div>
-                                </td>
-                                <td>
-                                    @if ($data->status)
-                                        <span class="badge badge-success">Active</span>
-                                    @else
-                                        <span class="badge badge-danger">Disable</span>
-                                    @endif
-                                </td>
-
-                                <td>
-                                    <a title="More Details" href="{{ routeHelper('color/' . $data->id) }}"
-                                        class="btn btn-primary btn-sm">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a title="Edit Data" href="{{ routeHelper('color/' . $data->id . '/edit') }}"
-                                        class="btn btn-info btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
-                                        <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
-                                    <form id="delete-data-form-{{ $data->id }}"
-                                        action="{{ routeHelper('color/' . $data->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Color Code</th>
-                            <th>Color</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <!-- /.card-body -->
+    {{-- Main content --}}
+    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+            <h3 class="font-medium text-slate-900">Color List</h3>
+            <x-ui.button variant="success" :href="routeHelper('color/create')">
+                <i class="fas fa-plus-circle"></i>
+                Add Color
+            </x-ui.button>
         </div>
-        <!-- /.card -->
 
-    </section>
-    <!-- /.content -->
+        <div class="p-4">
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Color Code</th>
+                        <th>Color</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($colors as $key => $data)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->name }}</td>
+                            <td>{{ Str::words($data->description, 5, '...') }}</td>
+                            <td>{{ $data->code }}</td>
+                            <td>
+                                <div style="width:60px;height:30px;background:{{ $data->code }}"></div>
+                            </td>
+                            <td>
+                                @if ($data->status)
+                                    <x-ui.badge variant="success">Active</x-ui.badge>
+                                @else
+                                    <x-ui.badge variant="danger">Disable</x-ui.badge>
+                                @endif
+                            </td>
+                            <td>
+                                <x-ui.button variant="primary" size="sm" :href="routeHelper('color/' . $data->id)" title="More Details">
+                                    <i class="fas fa-eye"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="info" size="sm" :href="routeHelper('color/' . $data->id . '/edit')" title="Edit Data">
+                                    <i class="fas fa-edit"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="danger" size="sm" href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData">
+                                    <i class="nav-icon fas fa-trash-alt"></i>
+                                </x-ui.button>
+                                <form id="delete-data-form-{{ $data->id }}"
+                                    action="{{ routeHelper('color/' . $data->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Color Code</th>
+                        <th>Color</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+            </x-ui.table>
+        </div>
+    </div>
 
 @endsection
 

@@ -24,7 +24,7 @@
                             <div class="cover">
                                 <img src="{{asset('uploads/shop/cover/'.$shop->cover_photo)}}" alt="Cover Photo">
                             </div>
-                            <div class="profile-d" style="background: white;">
+                            <div class="profile-d bg-white">
                                 <img src="{{asset('uploads/shop/profile/'.$shop->profile)}}" alt="">
                                 <p>{{$shop->name}}</p>
                                 <p>{{$shop->routing}}</p>

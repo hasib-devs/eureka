@@ -1,8 +1,8 @@
 @php
     [$app, $route] = match (auth()->user()?->is_admin) {
         true => ['layouts.admin.app', route('admin.dashboard')],
-        false => ['layouts.user.app', route('dashboard')],
-        default => ['layouts.user.app', route('dashboard')],
+        false => ['layouts.frontend.app', route('home')],
+        default => ['layouts.frontend.app', route('home')],
     };
 @endphp
 

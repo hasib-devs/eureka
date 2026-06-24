@@ -332,7 +332,7 @@
                     <div class="card">
                         <div class="row">
                             <div class="form-group col-md-12">
-                                <label for="first_name">আপনার নাম <sup style="color: red;"></sup>*</label>
+                                <label for="first_name">আপনার নাম <sup class="text-[red]"></sup>*</label>
                                 <input required @if (auth()->user())
                                 value="{{auth()->user()->name}}"
                                 @endif name="first_name" id="first_name"
@@ -403,7 +403,7 @@
                                 </select>
                             </div> --}}
                             <div class="form-group col-md-12">
-                                <label for="phone">মোবাইল নম্বর <sup style="color: red;">*</sup></label>
+                                <label for="phone">মোবাইল নম্বর <sup class="text-[red]">*</sup></label>
                                 <input @if (auth()->user())
                                 value="{{auth()->user()->phone}}"
                                 @endif required name="phone" id="phone"
@@ -415,7 +415,7 @@
 
 
                             <div class="form-group col-md-12 d-none" id="email_wrap">
-                                <label for="email">Email Address <sup style="color: red;">*</sup></label>
+                                <label for="email">Email Address <sup class="text-[red]">*</sup></label>
                                 <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="text"  />
                                 @error('email')
                                     <small class="form-text text-danger">{{$message}}</small>
@@ -690,8 +690,7 @@
                                         <small class="form-text text-danger">{{$message}}</small>
                                         @enderror
                                     </div>
-                                    <p class="mt-2" id="appended"
-                                        style="background: #dcdcdc80;padding: 10px;border-radius: 5px;margin-bottom: 10px;">
+                                    <p class="mt-2 bg-[#dcdcdc80] p-[10px] rounded-[5px] mb-[10px]" id="appended">
                                     </p>
                                     <!--<div id="payment-details">পণ্য হাতে পেয়ে টাকা দিন।{{-- for COD auto Select --}}</div>-->
                                 </div>
@@ -700,34 +699,36 @@
                     </div>
                     <h4 class="form-title"><span>৩</span>অর্ডারের তথ্য</h4>
                     <div class="card">
-                        <?php 
-                            $stotal=0;
-                            $ids=[];
-                            $cartCollection= Cart::content();
-                            $data= $cartCollection->sortBy('weight');
+                        <?php
+use App\Models\Product;
+
+$stotal = 0;
+                        $ids = [];
+                        $cartCollection = Cart::content();
+                        $data = $cartCollection->sortBy('weight');
                         ?>
                         @foreach ($data as $item)
-                            <div style="margin-bottom: 10px;display: flex;" class="product">
-                                <img style="width:50px" src="{{asset('uploads/product/'.$item->options->image)}}" alt="">
-                                <a style="margin-left:10px"
+                            <div class="product mb-[10px] flex">
+                                <img class="w-[50px]" src="{{asset('uploads/product/'.$item->options->image)}}" alt="">
+                                <a class="ml-[10px]"
                                     href="{{route('product.details', $item->options->slug)}}">{{$item->name}}</a>
                                 <?php
-                                    $whole=\App\Models\Product::find($item->id);
-                                    if (!in_array("$whole->user_id", $ids)) {
-                                        $ids[]=$whole->user_id;
-                                    }
-                                    if($item->qty>=6 && $whole->whole_price >0){
-                                    $istotal=$item->qty*$whole->whole_price;
-                                    $stotal+=$item->qty*$whole->whole_price;
-                                    }else{
-                                    $istotal=$item->subtotal;
-                                    $stotal+=$item->subtotal;
-                                }?>
-                                <span style="flex: 1 auto;text-align: right;">{{$istotal.'.00'}}</span>
+                                    $whole = Product::find($item->id);
+                        if (! in_array("$whole->user_id", $ids)) {
+                            $ids[] = $whole->user_id;
+                        }
+                        if ($item->qty >= 6 && $whole->whole_price > 0) {
+                            $istotal = $item->qty * $whole->whole_price;
+                            $stotal += $item->qty * $whole->whole_price;
+                        } else {
+                            $istotal = $item->subtotal;
+                            $stotal += $item->subtotal;
+                        }?>
+                                <span class="flex-[1_auto] text-right">{{$istotal.'.00'}}</span>
                             </div>
                         @endforeach
                         <?php
-                            $seller_count= sizeof($ids);
+                            $seller_count = count($ids);
                         ?>
                         <input type="hidden" name="stotal" value="{{$stotal}}">
                         <input type="hidden" name="seller_count" id="seller_count" value="{{$seller_count}}">

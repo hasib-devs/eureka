@@ -9,253 +9,129 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <?php
-                $low_products = \App\Models\Product::where('quantity', '<', '6')->where('user_id', auth()->id())->count();
-                if ($low_products > 0) {
-                    ?>
-                <style>
-                    .low-warning {
-                        padding: 8px 30px;
-                        border-radius: 5px;
-                        color: white;
-                        margin-top: 20px;
-                    }
-                </style>
-                <a class="btn-danger col-md-12 low-warning" href="{{ route('admin.low.product') }}">
-                    You have {{ $low_products }} low quantity product.
-                </a>
-                <?php }?>
-                <div class="col-sm-6">
-                    <h1>Dashboard</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                    </ol>
-                </div>
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div>
+            <?php
+
+use App\Models\Product;
+
+            $low_products = Product::where('quantity', '<', '6')->where('user_id', auth()->id())->count();
+            if ($low_products > 0) {
+                ?>
+            <a href="{{ route('admin.low.product') }}"
+               class="mb-4 block w-full rounded bg-red-600 px-6 py-2 text-sm text-white hover:bg-red-700">
+                You have {{ $low_products }} low quantity product.
+            </a>
+            <?php }?>
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-slate-800">Dashboard</h1>
+                <ol class="flex items-center gap-1 text-sm text-slate-500">
+                    <li><a href="{{ route('admin.dashboard') }}" class="hover:text-slate-700">Home</a></li>
+                </ol>
             </div>
         </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
+    {{-- Main content --}}
+    <section>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
-            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card shadow-sm border-0" style="border-radius: 12px;">
-                    <div class="card-body">
-                        <p class="mb-1 text-muted" style="font-size: 13px;">Live Active Visitors</p>
-                        <h3 class="mb-0" id="live-active-visitors">0</h3>
-                        <small class="text-success">Realtime website users</small>
-                    </div>
+            {{-- Live Active Visitors --}}
+            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                <div class="p-4">
+                    <p class="mb-1 text-xs text-slate-500">Live Active Visitors</p>
+                    <h3 class="mb-0 text-3xl font-bold text-slate-800" id="live-active-visitors">0</h3>
+                    <small class="text-green-600">Realtime website users</small>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{ $products }}</h3>
-                        <p>Total Products</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-procedures"></i>
-                    </div>
-                    <a href="{{ routeHelper('product') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>{{ $quantity }}</h3>
-                        <p>Product Qty</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-sort-numeric-down-alt"></i>
-                    </div>
-                    <a href="{{ routeHelper('product') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{{ $orders }}</h3>
-                        <p>Total Orders</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fab fa-jedi-order"></i>
-                    </div>
-                    <a href="{{ routeHelper('order') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{ $pending_orders }}</h3>
-                        <p>Pending Orders</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-hourglass-start"></i>
-                    </div>
-                    <a href="{{ routeHelper('order/pending') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-primary">
-                    <div class="inner">
-                        <h3>{{ $processing_orders }}</h3>
-                        <p>Processing Orders</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-running"></i>
-                    </div>
-                    <a href="{{ routeHelper('order/processing') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>{{ $cancel_orders }}</h3>
-                        <p>Cancel Orders</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-window-close"></i>
-                    </div>
-                    <a href="{{ routeHelper('order/cancel') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{{ $delivered_orders }}</h3>
-                        <p>Delivered Orders</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-thumbs-up"></i>
-                    </div>
-                    <a href="{{ routeHelper('order/delivered') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-primary">
-                    <div class="inner">
-                        <h3>{{ $vendor_amount }}</h3>
-                        <p>Vendor Amount</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-money-check-alt"></i>
-                    </div>
-                    <a href="{{ routeHelper('vendor') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-primary">
-                    <div class="inner">
-                        <h3>{{ $vendor_pamount }}</h3>
-                        <p>Vendor Pending Amount</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-money-check-alt"></i>
-                    </div>
-                    <a href="{{ routeHelper('vendor') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{ $admin_amount }}</h3>
-                        <p>Self Amount</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-money-bill-alt"></i>
-                    </div>
-                    <a href="{{ routeHelper('vendor') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{ $pending_amount }}</h3>
-                        <p>Self Pending</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-money-bill-alt"></i>
-                    </div>
-                    <a href="{{ routeHelper('vendor') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-primary">
-                    <div class="inner">
-                        <h3>{{ $vendors }}</h3>
-                        <p>Total Vendor</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <a href="{{ routeHelper('vendor') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>{{ $customers }}</h3>
-                        <p>Total Customer</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <a href="{{ routeHelper('customer') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{{ $commission }}</h3>
-                        <p>Total Commission</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-money-bill"></i>
-                    </div>
-                    <a href="{{ route('admin.comission') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
+            <x-ui.stat-tile variant="info"
+                :value="$products"
+                label="Total Products"
+                icon="fas fa-procedures"
+                :href="routeHelper('product')" />
+
+            <x-ui.stat-tile variant="warning"
+                :value="$quantity"
+                label="Product Qty"
+                icon="fas fa-sort-numeric-down-alt"
+                :href="routeHelper('product')" />
+
+            <x-ui.stat-tile variant="success"
+                :value="$orders"
+                label="Total Orders"
+                icon="fab fa-jedi-order"
+                :href="routeHelper('order')" />
+
+            <x-ui.stat-tile variant="info"
+                :value="$pending_orders"
+                label="Pending Orders"
+                icon="fas fa-hourglass-start"
+                :href="routeHelper('order/pending')" />
+
+            <x-ui.stat-tile variant="primary"
+                :value="$processing_orders"
+                label="Processing Orders"
+                icon="fas fa-running"
+                :href="routeHelper('order/processing')" />
+
+            <x-ui.stat-tile variant="danger"
+                :value="$cancel_orders"
+                label="Cancel Orders"
+                icon="fas fa-window-close"
+                :href="routeHelper('order/cancel')" />
+
+            <x-ui.stat-tile variant="success"
+                :value="$delivered_orders"
+                label="Delivered Orders"
+                icon="fas fa-thumbs-up"
+                :href="routeHelper('order/delivered')" />
+
+            <x-ui.stat-tile variant="primary"
+                :value="$vendor_amount"
+                label="Vendor Amount"
+                icon="fas fa-money-check-alt"
+                :href="routeHelper('vendor')" />
+
+            <x-ui.stat-tile variant="primary"
+                :value="$vendor_pamount"
+                label="Vendor Pending Amount"
+                icon="fas fa-money-check-alt"
+                :href="routeHelper('vendor')" />
+
+            <x-ui.stat-tile variant="info"
+                :value="$admin_amount"
+                label="Self Amount"
+                icon="fas fa-money-bill-alt"
+                :href="routeHelper('vendor')" />
+
+            <x-ui.stat-tile variant="info"
+                :value="$pending_amount"
+                label="Self Pending"
+                icon="fas fa-money-bill-alt"
+                :href="routeHelper('vendor')" />
+
+            <x-ui.stat-tile variant="primary"
+                :value="$vendors"
+                label="Total Vendor"
+                icon="fas fa-users-cog"
+                :href="routeHelper('vendor')" />
+
+            <x-ui.stat-tile variant="warning"
+                :value="$customers"
+                label="Total Customer"
+                icon="fas fa-users"
+                :href="routeHelper('customer')" />
+
+            <x-ui.stat-tile variant="success"
+                :value="$commission"
+                label="Total Commission"
+                icon="fas fa-money-bill"
+                :href="route('admin.comission')" />
+
         </div>
-
-
     </section>
-    <!-- /.content -->
 
 @endsection
 

@@ -1,4 +1,4 @@
-@extends('layouts.admin/e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Extra Category List')
 
@@ -11,109 +11,94 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Extra Category List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Category List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">Extra Category List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a></li>
+                <li class="text-slate-400">/</li>
+                <li class="text-slate-700">Category List</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Extra Category List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ route('admin.extracategory') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Extra Category
-                        </a>
-                    </div>
+        <x-ui.card>
+            <x-slot:header>
+                <div class="flex items-center justify-between">
+                    <span>Extra Category List</span>
+                    <x-ui.button variant="success" size="sm" :href="route('admin.extracategory')">
+                        <i class="fas fa-plus-circle"></i>
+                        Add Extra Category
+                    </x-ui.button>
                 </div>
-            </div>
+            </x-slot:header>
+
             @if (!empty(Session::get('massage2')))
-                <span
-                    style="margin-bottom: 20px;display: block;color: #1cc88a;text-align: center;background: white;padding: 5px;border-radius: 5px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;">
-                    {{ Session::get('massage2') }}</span>
+                <x-ui.alert variant="success" class="mb-4 text-center">
+                    {{ Session::get('massage2') }}
+                </x-ui.alert>
             @endif
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Cover Photo</th>
+                        <th>Category Name</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($mini_categories as $key => $data)
                         <tr>
-                            <th>SL</th>
-                            <th>Cover Photo</th>
-                            <th>Category Name</th>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <td>{{ $key + 1 }}</td>
+                            <td>
+                                @if ($data->cover_photo == 'default.png')
+                                    <img src="https://via.placeholder.com/150" alt="Cover Photo" width="60px">
+                                @else
+                                    <img src="/uploads/extra-category/{{ $data->cover_photo }}" alt="Cover Photo"
+                                        width="60px">
+                                @endif
+
+                            </td>
+                            <td><?php if (! empty($data->miniCategory->name)) {
+                                echo $data->miniCategory->name;
+                            } ?></td>
+                            <td>{{ $data->name }}</td>
+                            <td>
+                                @if ($data->status)
+                                    <x-ui.badge variant="success">Active</x-ui.badge>
+                                @else
+                                    <x-ui.badge variant="danger">Disable</x-ui.badge>
+                                @endif
+                            </td>
+                            <td class="flex items-center gap-1">
+                                <x-ui.button variant="success" size="sm"
+                                    :href="route('extraCategory.product', ['slug' => $data->slug])">
+                                    <i class="fas fa-box"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="info" size="sm"
+                                    :href="route('admin.extracategory.edit', ['edit' => $data->id])">
+                                    <i class="fas fa-edit"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="danger" size="sm"
+                                    :href="route('admin.extracategory.delete', ['did' => $data->id])">
+                                    <i class="fas fa-trash-alt"></i>
+                                </x-ui.button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($mini_categories as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>
-                                    @if ($data->cover_photo == 'default.png')
-                                        <img src="https://via.placeholder.com/150" alt="Cover Photo" width="60px">
-                                    @else
-                                        <img src="/uploads/extra-category/{{ $data->cover_photo }}" alt="Cover Photo"
-                                            width="60px">
-                                    @endif
+                    @endforeach
 
-                                </td>
-                                <td><?php if (!empty($data->miniCategory->name)) {
-                                    echo $data->miniCategory->name;
-                                } ?></td>
-                                <td>{{ $data->name }}</td>
-                                <td>
-                                    @if ($data->status)
-                                        <span class="badge badge-success">Active</span>
-                                    @else
-                                        <span class="badge badge-danger">Disable</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('extraCategory.product', ['slug' => $data->slug]) }}"
-                                        class="btn btn-success btn-sm">
-                                        <i class="fas fa-box"></i>
-                                    </a>
-                                    <a href="{{ route('admin.extracategory.edit', ['edit' => $data->id]) }}"
-                                        class="btn btn-info btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{{ route('admin.extracategory.delete', ['did' => $data->id]) }}"
-                                        class="btn btn-danger btn-sm"">
-                                        <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
-
-
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
+                </tbody>
+            </x-ui.table>
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

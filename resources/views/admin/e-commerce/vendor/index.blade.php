@@ -42,192 +42,186 @@
 
 
 
-
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Vendor List</h1>
+    <section class="mb-4">
+        <div>
+            <div class="flex flex-wrap items-center justify-between mb-2">
+                <div>
+                    <h1 class="text-2xl font-semibold text-slate-800">Vendor List</h1>
                 </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Vendor List</li>
+                <div>
+                    <ol class="flex items-center gap-1 text-sm text-slate-500">
+                        <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                        <li class="before:content-['/'] before:mx-1">Vendor List</li>
                     </ol>
                 </div>
             </div>
-        </div><!-- /. -->
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section class="mb-6">
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Vendor List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ routeHelper('vendor/create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Vendor
-                        </a>
-                    </div>
+        <x-ui.card>
+            <x-slot:header>
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold text-slate-800">Vendor List</span>
+                    <x-ui.button variant="success" size="sm" :href="routeHelper('vendor/create')">
+                        <i class="fas fa-plus-circle"></i>
+                        Add Vendor
+                    </x-ui.button>
                 </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+            </x-slot:header>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>pending</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($vendors as $key => $data)
                         <tr>
-                            <th>SL</th>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                            <th>pending</th>
-                            <th>Action</th>
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $data->name }}</td>
+                            <td>{{ $data->username }}</td>
+                            <td>{{ $data->email }}</td>
+                            <td>{{ $data->phone }}</td>
+
+                            <td>
+                                @if ($data->is_approved == 1)
+                                    <x-ui.badge variant="success">Active</x-ui.badge>
+                                @else
+                                    <x-ui.badge variant="danger">Disable</x-ui.badge>
+                                @endif
+                            </td>
+                            <td>{{ $data->vendorAccount->amount ?? 0 }}</td>
+                            <td>{{ $data->vendorAccount->pending_amount ?? 0 }}</td>
+                            <td class="relative">
+                                @if ($data->is_approved == 1)
+                                    <x-ui.button variant="warning" size="sm" :href="routeHelper('user/status/' . $data->id)" title="Disable">
+                                        <i class="fas fa-lock-open"></i>
+                                    </x-ui.button>
+                                @else
+                                    <x-ui.button variant="warning" size="sm" :href="routeHelper('user/status/' . $data->id)" title="Active">
+                                        <i class="fas fa-lock"></i>
+                                    </x-ui.button>
+                                @endif
+                                <x-ui.button variant="primary" size="sm" :href="route('admin.vendor.product', ['vid' => $data->id])">
+                                    <i class="fas fa-store"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="primary" size="sm" :href="routeHelper('vendor/' . $data->id)">
+                                    <i class="fas fa-eye"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="info" size="sm" :href="routeHelper('vendor/' . $data->id . '/edit')">
+                                    <i class="fas fa-edit"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="danger" size="sm" href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData">
+                                    <i class="nav-icon fas fa-trash-alt"></i>
+                                </x-ui.button>
+                                <form id="delete-data-form-{{ $data->id }}"
+                                    action="{{ routeHelper('vendor/' . $data->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                                <x-ui.button variant="info" size="sm" class="mt-2" onclick="action_vn({{ $data->id }})">ACTION</x-ui.button>
+                                <div id="action_apply_vn_{{ $data->id }}"
+                                    style="display:none;background:var(--primary_color);padding:7px 10px;position:absolute;bottom:-30px;right:100%;width:90%;border-radius:4px;z-index:9999;">
+                                    <a style="color:var(--secondary_color);"
+                                        href="{{ route('admin.vendor.change_pass_index', ['id' => $data->id]) }}">Change
+                                        Password</a>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($vendors as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ $data->name }}</td>
-                                <td>{{ $data->username }}</td>
-                                <td>{{ $data->email }}</td>
-                                <td>{{ $data->phone }}</td>
+                    @endforeach
+                    @push('js')
+                        <script>
+                            function action_vn(data_id) {
+                                $(`#action_apply_vn_${data_id}`).toggle();
+                            }
+                        </script>
+                    @endpush
+                </tbody>
+            </x-ui.table>
 
-                                <td>
-                                    @if ($data->is_approved == 1)
-                                        <span class="badge badge-success">Active</span>
-                                    @else
-                                        <span class="badge badge-danger">Disable</span>
-                                    @endif
-                                </td>
-                                <td>{{ $data->vendorAccount->amount ?? 0 }}</td>
-                                <td>{{ $data->vendorAccount->pending_amount ?? 0 }}</td>
-                                <td style="position:relative;">
-                                    @if ($data->is_approved == 1)
-                                        <a title="Disable" href="{{ routeHelper('user/status/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
-                                            <i class="fas fa-lock-open"></i>
-                                        </a>
-                                    @else
-                                        <a title="Active" href="{{ routeHelper('user/status/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
-                                            <i class="fas fa-lock"></i>
-                                        </a>
-                                    @endif
-                                    <a href="{{ route('admin.vendor.product', ['vid' => $data->id]) }}"
-                                        class="btn btn-primary btn-sm">
-                                        <i class="fas fa-store"></i>
-                                    </a>
-                                    <a href="{{ routeHelper('vendor/' . $data->id) }}" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ routeHelper('vendor/' . $data->id . '/edit') }}"
-                                        class="btn btn-info btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
-                                        <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
-                                    <form id="delete-data-form-{{ $data->id }}"
-                                        action="{{ routeHelper('vendor/' . $data->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                    <button class="btn btn-info btn-sm mt-2"
-                                        onclick="action_vn({{ $data->id }})">ACTION</button>
-                                    <div id="action_apply_vn_{{ $data->id }}"
-                                        style="display:none;background:var(--primary_color);padding:7px 10px;position:absolute;bottom:-30px;right:100%;width:90%;border-radius:4px;z-index:9999;">
-                                        <a style="color:var(--secondary_color);"
-                                            href="{{ route('admin.vendor.change_pass_index', ['id' => $data->id]) }}">Change
-                                            Password</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        @push('js')
-                            <script>
-                                function action_vn(data_id) {
-                                    $(`#action_apply_vn_${data_id}`).toggle();
-                                }
-                            </script>
-                        @endpush
-                    </tbody>
-                </table>
-
+            <div class="mt-4 text-sm text-slate-600">
                 {{ $vendors->firstItem() }} - {{ $vendors->lastItem() }} of {{ $vendors->total() }} results
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        {{-- First Page Button --}}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $vendors->url(1) }}">First</a>
+            </div>
+            <nav aria-label="Page navigation example" class="mt-2">
+                <ul class="flex flex-wrap gap-1">
+                    {{-- First Page Button --}}
+                    <li>
+                        <a class="inline-flex items-center px-3 h-9 border border-slate-200 rounded text-sm text-slate-700 hover:bg-slate-50"
+                            href="{{ $vendors->url(1) }}">First</a>
+                    </li>
+
+                    {{-- Page Numbers --}}
+                    @php
+                        $totalPages = ceil($vendors->total() / $vendors->perPage());
+                        $currentPage = $vendors->currentPage();
+                        $middlePage = floor($totalPages / 2);
+                    @endphp
+
+                    @if ($totalPages > 3)
+                        {{-- Immediate two pages before the first page --}}
+                        @for ($i = max($currentPage - 2, 2); $i < $currentPage; $i++)
+                            <li>
+                                <a class="inline-flex items-center px-3 h-9 border border-slate-200 rounded text-sm {{ $currentPage == $i ? 'bg-primary text-white border-primary' : 'text-slate-700 hover:bg-slate-50' }}"
+                                    href="{{ $vendors->url($i) }}">{{ $i }}</a>
+                            </li>
+                        @endfor
+
+                        {{-- Current Page --}}
+                        <li>
+                            <a class="inline-flex items-center px-3 h-9 border border-primary rounded text-sm bg-primary text-white"
+                                href="#">{{ $currentPage }}</a>
                         </li>
 
-                        {{-- Page Numbers --}}
-                        @php
-                            $totalPages = ceil($vendors->total() / $vendors->perPage());
-                            $currentPage = $vendors->currentPage();
-                            $middlePage = floor($totalPages / 2);
-                        @endphp
-
-                        @if ($totalPages > 3)
-                            {{-- Immediate two pages before the first page --}}
-                            @for ($i = max($currentPage - 2, 2); $i < $currentPage; $i++)
-                                <li class="page-item {{ $currentPage == $i ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $vendors->url($i) }}">{{ $i }}</a>
-                                </li>
-                            @endfor
-
-                            {{-- Current Page --}}
-                            <li class="page-item active">
-                                <a class="page-link" href="#">{{ $currentPage }}</a>
+                        {{-- Immediate two pages after the last page --}}
+                        @for ($i = $currentPage + 1; $i <= min($currentPage + 2, $totalPages - 1); $i++)
+                            <li>
+                                <a class="inline-flex items-center px-3 h-9 border border-slate-200 rounded text-sm {{ $currentPage == $i ? 'bg-primary text-white border-primary' : 'text-slate-700 hover:bg-slate-50' }}"
+                                    href="{{ $vendors->url($i) }}">{{ $i }}</a>
                             </li>
+                        @endfor
 
-                            {{-- Immediate two pages after the last page --}}
-                            @for ($i = $currentPage + 1; $i <= min($currentPage + 2, $totalPages - 1); $i++)
-                                <li class="page-item {{ $currentPage == $i ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $vendors->url($i) }}">{{ $i }}</a>
-                                </li>
-                            @endfor
+                        {{-- Last Page Button --}}
+                        <li>
+                            <a class="inline-flex items-center px-3 h-9 border border-slate-200 rounded text-sm text-slate-700 hover:bg-slate-50"
+                                href="{{ $vendors->url($totalPages) }}">Last</a>
+                        </li>
+                    @else
+                        {{-- Page Numbers if total pages are less than or equal to 3 --}}
+                        @for ($i = 2; $i < $totalPages; $i++)
+                            <li>
+                                <a class="inline-flex items-center px-3 h-9 border border-slate-200 rounded text-sm {{ $currentPage == $i ? 'bg-primary text-white border-primary' : 'text-slate-700 hover:bg-slate-50' }}"
+                                    href="{{ $vendors->url($i) }}">{{ $i }}</a>
+                            </li>
+                        @endfor
+                    @endif
+                    @if ($vendors->nextPageUrl())
+                        <li>
+                            <a class="inline-flex items-center px-3 h-9 border border-slate-200 rounded text-sm text-slate-700 hover:bg-slate-50"
+                                href="{{ $vendors->nextPageUrl() }}" aria-label="Next">
+                                <span aria-hidden="true">Next</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
 
-                            {{-- Last Page Button --}}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $vendors->url($totalPages) }}">Last</a>
-                            </li>
-                        @else
-                            {{-- Page Numbers if total pages are less than or equal to 3 --}}
-                            @for ($i = 2; $i < $totalPages; $i++)
-                                <li class="page-item {{ $currentPage == $i ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $vendors->url($i) }}">{{ $i }}</a>
-                                </li>
-                            @endfor
-                        @endif
-                        @if ($vendors->nextPageUrl())
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $vendors->nextPageUrl() }}" aria-label="Next">
-                                    <span aria-hidden="true">Next</span>
-                                </a>
-                            </li>
-                        @endif
-                    </ul>
-                </nav>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection

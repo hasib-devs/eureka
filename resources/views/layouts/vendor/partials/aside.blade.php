@@ -1,163 +1,69 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background:#28a745">
-    
-    <!-- Brand Logo -->
-    <a href="{{routeHelper('dashboard')}}" class="brand-link">
-        <img src="/uploads/setting/{{setting('logo')}}" alt="AdminLTE Logo" class="" style="opacity: .8;float:none;min-height:40px;">
-        {{-- <span class="brand-text font-weight-light">AdminLTE 3</span> --}}
-    </a>
+@php
+    $navActive = fn ($patterns) => request()->is($patterns) ? 'bg-accent text-accent-fg' : 'text-slate-700 hover:bg-accent hover:text-accent-fg';
+@endphp
 
-    <!-- Sidebar -->
-    <div class="sidebar">
+<aside class="dash-sidebar fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col overflow-y-auto border-r border-slate-200 bg-white transition-transform lg:static lg:translate-x-0"
+       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+       x-data="{ open: { products: {{ request()->is('vendor/product*') ? 'true' : 'false' }}, profile: {{ request()->is('vendor/profile*') ? 'true' : 'false' }} } }">
 
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{Auth::user()->avatar != 'default.png' ? '/uploads/member/'.Auth::user()->avatar:'/default/user.jpg'}}" class="img-circle elevation-2" alt="User Image" style="width:50px;height:50px">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block">{{Auth::user()->name}}</a>
-            </div>
+    <div class="border-b border-slate-200 px-4 py-4">
+        <img src="/uploads/setting/{{ setting('logo') }}" alt="Logo" class="max-h-10">
+    </div>
+
+    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-3">
+        <img src="{{ Auth::user()->avatar != 'default.png' ? '/uploads/member/'.Auth::user()->avatar : '/default/user.jpg' }}"
+             class="h-10 w-10 rounded-full object-cover" alt="User">
+        <span class="text-sm font-medium text-slate-800">{{ Auth::user()->name }}</span>
+    </div>
+
+    <nav class="flex flex-1 flex-col gap-1 p-2 text-sm">
+        <a href="{{ routeHelper('dashboard') }}"
+           class="flex items-center gap-3 rounded-md px-3 py-2 {{ $navActive('vendor/dashboard') }}">
+            <i class="bx bxs-dashboard text-lg"></i> Dashboard
+        </a>
+
+        <a href="{{ route('dashboard') }}"
+           class="flex items-center gap-3 rounded-md px-3 py-2 text-slate-700 hover:bg-accent hover:text-accent-fg">
+            <i class="bx bx-user text-lg"></i> Customer Panel
+        </a>
+
+        <div>
+            <button type="button" @click="open.products = !open.products"
+                    class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-slate-700 hover:bg-accent hover:text-accent-fg">
+                <i class="bx bx-package text-lg"></i> Products
+                <i class="bx bx-chevron-down ml-auto transition-transform" :class="open.products && 'rotate-180'"></i>
+            </button>
+            <ul x-show="open.products" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-2">
+                <li><a href="{{ routeHelper('product/create') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product/create') }}"><i class="bx bx-plus-circle"></i> Add</a></li>
+                <li><a href="{{ routeHelper('product') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product') }}"><i class="bx bx-list-ul"></i> List</a></li>
+                <li><a href="{{ route('vendor.low.product') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/low/product') }}"><i class="bx bx-error"></i> Low qnty</a></li>
+                <li><a href="{{ routeHelper('product/active') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product/active') }}"><i class="bx bx-like"></i> Active</a></li>
+                <li><a href="{{ routeHelper('product/disable') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product/disable') }}"><i class="bx bx-dislike"></i> Disable</a></li>
+            </ul>
         </div>
 
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            
-                <li class="nav-item {{Request::is('admin') ? 'menu-is-opening menu-open':''}}">
-                    <a href="{{routeHelper('dashboard')}}" class="nav-link">
-                      <i class="nav-icon fas fa-tachometer-alt"></i>
-                      <p>Dashboard</p>
-                    </a>
-                </li>
-                <li class="nav-item  ">
-                    <a href="{{route('dashboard')}}" class="nav-link">
-                      <i class="nav-icon fas fa-tachometer-alt"></i>
-                      <p>Goto Customer Panel</p>
-                    </a>
-                </li>
-
-                <li class="nav-item {{Request::is('vendor/product*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="javascript:void(0)" class="nav-link">
-                        <i class="nav-icon fas fa-procedures"></i>
-                        <p>
-                            Products
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{routeHelper('product/create')}}" class="nav-link {{Request::is('vendor/product/create') ? 'active':''}}">
-                                <i class="fas fa-plus-circle nav-icon"></i>
-                                <p>Add</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{routeHelper('product')}}" class="nav-link {{Request::is('vendor/product') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>List</p>
-                            </a>
-                        </li>
-                         <li class="nav-item">
-                            <a href="{{route('vendor.low.product')}}" class="nav-link {{Request::is('vendor/product') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>Low qnty</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{routeHelper('product/active')}}" class="nav-link {{Request::is('vendor/product/active') ? 'active':''}}">
-                                <i class="fas fa-thumbs-up nav-icon"></i>
-                                <p>Active</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{routeHelper('product/disable')}}" class="nav-link {{Request::is('vendor/product/disable') ? 'active':''}}">
-                                <i class="fas fa-thumbs-down nav-icon"></i>
-                                <p>Disable</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                {{-- <li class="nav-item {{Request::is('vendor/order*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="javascript:void(0)" class="nav-link">
-                        <i class="nav-icon fab fa-jedi-order"></i>
-                        <p>
-                            Orders
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{routeHelper('order')}}" class="nav-link {{Request::is('vendor/order') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>All</p>
-                            </a>
-                            <a href="{{routeHelper('order/pending')}}" class="nav-link {{Request::is('vendor/order/pending') ? 'active':''}}">
-                                <i class="fas fa-hourglass-start nav-icon"></i>
-                                <p>New</p>
-                            </a>
-                            <a href="{{routeHelper('order/processing')}}" class="nav-link {{Request::is('vendor/order/processing') ? 'active':''}}">
-                                <i class="fas fa-running nav-icon"></i>
-                                <p>Processing</p>
-                            </a>
-                            <a href="{{routeHelper('order/cancel')}}" class="nav-link {{Request::is('vendor/order/cancel') ? 'active':''}}">
-                                <i class="fas fa-window-close nav-icon"></i>
-                                <p>Cancel</p>
-                            </a>
-                            <a href="{{routeHelper('order/delivered')}}" class="nav-link {{Request::is('vendor/order/delivered') ? 'active':''}}">
-                                <i class="fas fa-thumbs-up nav-icon"></i>
-                                <p>Delivered</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>  --}}
-
-                <li class="nav-item {{Request::is('admin/profile*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-user-circle"></i>
-                        <p>
-                            Profile
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{routeHelper('profile')}}" class="nav-link {{Request::is('admin/profile/show') ? 'active':''}}">
-                                <i class="fas fa-user nav-icon"></i>
-                                <p>My Profile</p>
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a href="{{routeHelper('profile/change-password')}}" class="nav-link {{Request::is('admin/profile/change-password') ? 'active':''}}">
-                                <i class="fas fa-key nav-icon"></i>
-                                <p>Change Password</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="{{route('vendor.withdraw')}}" class="nav-link {{Request::is('withdraw*') ? 'active':''}}">
-                        <i class="fas fa-money-bill nav-icon"></i>
-                        <p>Withdraw</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('logout') }}" class="nav-link"
-                        onclick="event.preventDefault();
-                        document.getElementById('logout-form').submit();">
-                        <i class="nav-icon fas fa-power-off"></i>
-                        <p>Logout</p>
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                </li>
-            
+        <div>
+            <button type="button" @click="open.profile = !open.profile"
+                    class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-slate-700 hover:bg-accent hover:text-accent-fg">
+                <i class="bx bx-user-circle text-lg"></i> Profile
+                <i class="bx bx-chevron-down ml-auto transition-transform" :class="open.profile && 'rotate-180'"></i>
+            </button>
+            <ul x-show="open.profile" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-2">
+                <li><a href="{{ routeHelper('profile') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/profile') }}"><i class="bx bx-user"></i> My Profile</a></li>
+                <li><a href="{{ routeHelper('profile/change-password') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/profile/change-password') }}"><i class="bx bx-key"></i> Change Password</a></li>
             </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
-    </div>
-   
-    <!-- /.sidebar -->
+        </div>
+
+        <a href="{{ route('vendor.withdraw') }}"
+           class="flex items-center gap-3 rounded-md px-3 py-2 {{ $navActive('vendor/withdraw*') }}">
+            <i class="bx bx-money text-lg"></i> Withdraw
+        </a>
+
+        <a href="{{ route('logout') }}"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+           class="mt-auto flex items-center gap-3 rounded-md px-3 py-2 text-slate-700 hover:bg-accent hover:text-accent-fg">
+            <i class="bx bx-power-off text-lg"></i> Logout
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
+    </nav>
 </aside>

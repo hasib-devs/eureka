@@ -1,4 +1,4 @@
-@extends('layouts.admin/e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Campaing List')
 
@@ -11,86 +11,68 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Campaing List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Campaing List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Campaing List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a></li>
+                <li class="before:mx-1 before:content-['/']">Campaing List</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Campaing List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ route('admin.campaing.create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Campaing
-                        </a>
-                    </div>
+        <x-ui.card>
+            <x-slot:header>
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-slate-800">Campaing List</h3>
+                    <x-ui.button variant="success" :href="route('admin.campaing.create')" size="sm">
+                        <i class="fas fa-plus-circle"></i>
+                        Add Campaing
+                    </x-ui.button>
                 </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
+            </x-slot:header>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Customer Name</th>
+                        <th>Customer Email</th>
+                        <th>Comment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($comments as $key => $data)
                         <tr>
-                            <th>SL</th>
-                            <th>Customer Name</th>
-                            <th>Customer Email</th>
-                            <th>Comment</th>
-                            <th>Action</th>
+                            <td>{{ $key + 1 }}</td>
+
+                            <td>{{ $data->user_id ? $data->users->name : 'Guest' }}</td>
+                            <td>{{ $data->user_id ? $data->users->email : 'Guest' }}</td>
+                            <td>{{ $data->comment }}</td>
+
+                            <td>
+                                <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
+                                    class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-danger text-white hover:opacity-90 h-8 px-3 text-sm">
+                                    <i class="nav-icon fas fa-trash-alt"></i>
+                                </a>
+                                <form id="delete-data-form-{{ $data->id }}"
+                                    action="{{ routeHelper('campaing/comment/delete/' . $data->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($comments as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
+                    @endforeach
 
-                                <td>{{ $data->user_id ? $data->users->name : 'Guest' }}</td>
-                                <td>{{ $data->user_id ? $data->users->email : 'Guest' }}</td>
-                                <td>{{ $data->comment }}</td>
-
-                                <td>
-
-
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
-                                        <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
-                                    <form id="delete-data-form-{{ $data->id }}"
-                                        action="{{ routeHelper('campaing/comment/delete/' . $data->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
+                </tbody>
+            </x-ui.table>
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

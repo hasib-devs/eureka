@@ -27,141 +27,125 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($blog)
-                            Edit blog
-                        @else
-                            Add blog
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($blog)
-                                Edit blog
-                            @else
-                                Add blog
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($blog)
+                    Edit blog
+                @else
+                    Add blog
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">
+                    @isset($blog)
+                        Edit blog
+                    @else
+                        Add blog
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+    {{-- Main content --}}
+    <section>
+        <x-ui.card>
+            <x-slot:header>
+                @isset($blog)
+                    Edit blog Details
+                @else
+                    Add New Campaign
+                @endisset
+            </x-slot:header>
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($blog)
-                                        Edit blog Details
-                                    @else
-                                        Add New Campaign
-                                    @endisset
-                                </h3>
-                            </div>
+            <form action="{{ isset($blog) ? route('admin.update_exit_blog') : route('admin.create_blog') }}"
+                method="POST" enctype="multipart/form-data">
 
-                        </div>
-                    </div>
-                    <form action="{{ isset($blog) ? route('admin.update_exit_blog') : route('admin.create_blog') }}"
-                        method="POST" enctype="multipart/form-data">
+                @csrf
+                @if (isset($blog))
+                    <input type="hidden" value="{{ $blog->id }}" name="power" id="">
+                @endif
 
-                        @csrf
-                        @if (isset($blog))
-                            <input type="hidden" value="{{ $blog->id }}" name="power" id="">
-                        @endif
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="name">Title:</label>
-                                <input type="text" name="title" id="title" placeholder="Write blog Title"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $blog->title ?? old('name') }}" required autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="thumbnail">Thumbnail:</label>
-                                <input type="file" name="thumbnail" id="thumbnail" accept="image/*"
-                                    class="form-control @error('thumbnail') is-invalid @enderror" data-default-file="@isset($blog) {{ asset('/') }}/uploads/blogs/{{ $blog->thumbnail }}@enderror">
-                            @error('thumbnail')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <label>Category </label>
-                            <select name="category" class="form-control">
-                                <option>Select One</option>
-                                @foreach ($categories as $category)
-                                    <option ___inline_directive_________________________________________________________________________2___ value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-
-                        </div>
-                        <div class="form-group">
-                            <label for="descripiton">Description:</label>
-                            <textarea name="descripiton" id="descripiton" rows="5" placeholder="Write product short description" class="form-control ___inline_directive___________________3___" required>{{ $blog->description ?? old('descripiton') }}</textarea>
-                            @error('descripiton')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive________________________________________________________________________4___>
-                                <label class="custom-control-label" for="status">Status</label>
-                            </div>
-                            @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                    </div>
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button class="mt-1 btn btn-primary">
-                                @isset($blog)
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                @else
-                                    <i class="fas fa-plus-circle"></i>
-                                    Submit
-                                @endisset
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- /.card -->
+                {{-- Title --}}
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Title:</label>
+                    <input type="text" name="title" id="title" placeholder="Write blog Title"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @enderror"
+                        value="{{ $blog->title ?? old('name') }}" required autocomplete="off">
+                    @error('name')
+                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-            </div>
 
+                {{-- Thumbnail --}}
+                <div class="mb-4">
+                    <label for="thumbnail" class="block text-sm font-medium text-slate-700 mb-1">Thumbnail:</label>
+                    <input type="file" name="thumbnail" id="thumbnail" accept="image/*"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm @error('thumbnail') border-danger @enderror"
+                        data-default-file="@isset($blog) {{ asset('/') }}/uploads/blogs/{{ $blog->thumbnail }}@enderror">
+                    @error('thumbnail')
+                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        </section>
-        <!-- /.content -->
+                {{-- Category --}}
+                <x-ui.select name="category" label="Category">
+                    <option>Select One</option>
+                    @foreach ($categories as $category)
+                        <option ___inline_directive_________________________________________________________________________2___ value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </x-ui.select>
+
+                {{-- Description --}}
+                <div class="mb-4">
+                    <label for="descripiton" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                    <textarea name="descripiton" id="descripiton" rows="5"
+                        placeholder="Write product short description"
+                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary ___inline_directive___________________3___"
+                        required>{{ $blog->description ?? old('descripiton') }}</textarea>
+                    @error('descripiton')
+                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Status toggle --}}
+                <div class="mb-4">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive________________________________________________________________________4___>
+                        <span class="text-sm font-medium text-slate-700">Status</span>
+                    </label>
+                    @error('status')
+                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="border-t border-slate-200 px-4 py-3 -mx-4 -mb-4 mt-4">
+                    <x-ui.button type="submit" variant="primary">
+                        @isset($blog)
+                            <i class="fas fa-arrow-circle-up"></i>
+                            Update
+                        @else
+                            <i class="fas fa-plus-circle"></i>
+                            Submit
+                        @endisset
+                    </x-ui.button>
+                </div>
+
+            </form>
+        </x-ui.card>
+    </section>
 @endsection
 
 @push('js')
     <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-            <script src="/assets/plugins/summernote/summernote-bs4.min.js"></script>
-            <script>
-                $(function() {
-                    $('#thumbnail').dropify();
-                    $('#descripiton').summernote();
-                });
-            </script>
+    <script src="/assets/plugins/summernote/summernote-bs4.min.js"></script>
+    <script>
+        $(function() {
+            $('#thumbnail').dropify();
+            $('#descripiton').summernote();
+        });
+    </script>
 @endpush

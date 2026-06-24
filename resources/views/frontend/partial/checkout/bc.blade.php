@@ -26,7 +26,7 @@
                     <div class="card">
                     <div class="row">
                         <div class="form-group col-md-12">
-                            <label for="first_name">Full Name <sup style="color: red;"></sup>*</label>
+                            <label for="first_name">Full Name <sup class="text-[red]"></sup>*</label>
                             <input required value="{{auth()->user()->name??''}}" name="first_name" id="first_name" class="form-control @error('first_name') is-invalid @enderror" type="text"  />
                             @error('first_name')
                                 <small class="form-text text-danger">{{$message}}</small>
@@ -46,7 +46,7 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="city">Division <sup style="color: red;">*</sup></label>
+                            <label for="city">Division <sup class="text-[red]">*</sup></label>
                             <select name="city" id="divisions"  class="form-control @error('city') is-invalid @enderror"  onchange="divisionsList();">
                                 <option>Select Division</option>
                                 <option @isset($order->town)@if($order->town=='Barishal')selected @endif @endisset value="Barishal">Barishal</option>
@@ -64,7 +64,7 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="district">District <sup style="color: red;">*</sup></label>
+                            <label for="district">District <sup class="text-[red]">*</sup></label>
                             <select name="district"  class="form-control @error('district') is-invalid @enderror"  id="distr" onchange="thanaList();">
                                 <option disabled >Select District</option>
                                 @isset($order->district)
@@ -76,7 +76,7 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="district">Thana <sup style="color: red;">*</sup></label>
+                            <label for="district">Thana <sup class="text-[red]">*</sup></label>
                             <select name="thana"  class="form-control @error('district') is-invalid @enderror"  id="polic_sta">
                                 <option disabled >Select Thana</option>
                                  @isset($order->thana)
@@ -85,7 +85,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="address">Address <sup style="color: red;">*</sup></label>
+                            <label for="address">Address <sup class="text-[red]">*</sup></label>
                             <input required name="address" placeholder="For Example: House# 123, Street# 123, ABC Road" id="address" class="form-control @error('address') is-invalid @enderror" type="text"  value="{{$order->address??''}}" />
                             @error('address')
                                 <small class="form-text text-danger">{{$message}}</small>
@@ -93,7 +93,7 @@
                         </div>
                         @if($product->sheba==1)
                         <div class="form-group col-md-6">
-                                <label style="font-size:15px">Service Recipte Date</label>
+                                <label class="text-[15px]">Service Recipte Date</label>
                               
                                 <input type="date" name="meet" id="meet" class="form-control" placeholder="Service Recipte Date">
                                 <small class="form-text text-danger phone"></small>
@@ -111,14 +111,14 @@
                         <input type="hidden" name="pr" value="{{$request->pr}}">
                         @endif
                         <div class="form-group col-md-6">
-                            <label for="phone">Phone <sup style="color: red;">*</sup></label>
+                            <label for="phone">Phone <sup class="text-[red]">*</sup></label>
                             <input value="" required name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" type="number"  />
                             @error('phone')
                                 <small class="form-text text-danger">{{$message}}</small>
                             @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="email">Email Address <sup style="color: red;">*</sup></label>
+                            <label for="email">Email Address <sup class="text-[red]">*</sup></label>
                             <input value="{{auth()->user()->email}}" required name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="text"  />
                             @error('email')
                                 <small class="form-text text-danger">{{$message}}</small>
@@ -306,7 +306,7 @@ z-index: -9;
                                             <small class="form-text text-danger">{{$message}}</small>
                                         @enderror
                                     </div>
-                                     <p class="mt-2" id="appended" style="background: #dcdcdc80;padding: 10px;border-radius: 5px;margin-bottom: 10px;"></p>
+                                     <p class="mt-2 bg-[#dcdcdc80] p-[10px] rounded-[5px] mb-[10px]" id="appended"></p>
                                     <div id="payment-details">
 
                                     </div>
@@ -317,39 +317,40 @@ z-index: -9;
 
                     <h4 class="form-title"><span>4</span>Order Summary </h4>
                     <div class="card">
-                           <?php 
-                                
-                                    if($request->qty>=6 && $product->whole_price > 0){
-                                         $sub_total = $product->whole_price * $request->qty;
-                                    }else{
-                                         $sub_total = $request->dynamic_price * $request->qty;
+                           <?php
+
+                                    if ($request->qty >= 6 && $product->whole_price > 0) {
+                                        $sub_total = $product->whole_price * $request->qty;
+                                    } else {
+                                        $sub_total = $request->dynamic_price * $request->qty;
                                     }
-                                ?>
-                        <div style="margin-bottom: 10px;display: flex;" class="product">
-                            <img style="width:50px" src="{{asset('uploads/product/'.$product->image)}}" alt="">
-                            <a style="margin-left:10px" href="{{route('product.details', $product->slug)}}">{{$product->title}}</a>
-                            <span style="flex: 1 auto;text-align: right;"> {{$sub_total}}</span>
+                           ?>
+                        <div class="product mb-[10px] flex">
+                            <img class="w-[50px]" src="{{asset('uploads/product/'.$product->image)}}" alt="">
+                            <a class="ml-[10px]" href="{{route('product.details', $product->slug)}}">{{$product->title}}</a>
+                            <span class="flex-auto text-right"> {{$sub_total}}</span>
                             <input type="hidden" name="id" value="{{$request->id}}">
                             <input type="hidden" name="qty" value="{{$request->qty}}">
-                            <?php 
-                            $attr=[];
-                                   $attributes = DB::table('attributes')->get();
-                                    foreach ($attributes as $attribute){
-                                    $attribute_prouct = DB::table('attribute_product')
-                                                          ->select('*')
-                                                          ->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')
-                                                          ->addselect('attribute_values.name as vName' )
-                                                          ->addselect('attribute_product.id as vid' )
-                                                          ->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')
-                                                          ->where('attribute_product.product_id', $product->id)
-                                                            ->where('attributes.id', $attribute->id)
-                                                          ->get();
-                                    if($attribute_prouct->count() > 0){
-                                        $slug=$attribute->slug;
+                            <?php
+                            $attr = [];
+                           $attributes = DB::table('attributes')->get();
+                           foreach ($attributes as $attribute) {
+                               $attribute_prouct = DB::table('attribute_product')
+                                   ->select('*')
+                                   ->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')
+                                   ->addselect('attribute_values.name as vName')
+                                   ->addselect('attribute_product.id as vid')
+                                   ->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')
+                                   ->where('attribute_product.product_id', $product->id)
+                                   ->where('attributes.id', $attribute->id)
+                                   ->get();
+                               if ($attribute_prouct->count() > 0) {
+                                   $slug = $attribute->slug;
 
-                                       $attr[$slug]=($request->$slug);
-                                    }}
-                            ?>
+                                   $attr[$slug] = ($request->$slug);
+                               }
+                           }
+                           ?>
                             <input type="hidden" name="size" value="{{$attr!=''?json_encode($attr): 'blank'}}">
                             <input type="hidden" name="color" value="{{$request->color}}">
                         </div>

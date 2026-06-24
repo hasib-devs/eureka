@@ -20,169 +20,158 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($category)
-                            Edit Category
-                        @else
-                            Add Category
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($category)
-                                Edit Category
-                            @else
-                                Add Category
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    {{-- Page header --}}
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($category)
+                    Edit Category
+                @else
+                    Add Category
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="before:mr-1 before:content-['/']">
+                    @isset($category)
+                        Edit Category
+                    @else
+                        Add Category
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
-
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    Edit Category Details
-
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                @isset($category)
-                                    <a href="{{ routeHelper('category/' . $category->id) }}" class="btn btn-info">
-                                        <i class="fas fa-eye"></i>
-                                        Show
-                                    </a>
-                                @endisset
-
-                                <a href="{{ routeHelper('category') }}" class="btn btn-danger">
-
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List
-                                </a>
-                            </div>
-                        </div>
+    {{-- Main content --}}
+    <section>
+        <div class="mx-auto max-w-3xl">
+            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                {{-- Card header --}}
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-3">
+                    <h3 class="font-medium text-slate-900">Edit Category Details</h3>
+                    <div class="flex items-center gap-2">
+                        @isset($category)
+                            <x-ui.button variant="info" :href="routeHelper('category/' . $category->id)">
+                                <i class="fas fa-eye"></i>
+                                Show
+                            </x-ui.button>
+                        @endisset
+                        <x-ui.button variant="danger" :href="routeHelper('category')">
+                            <i class="fas fa-long-arrow-alt-left"></i>
+                            Back to List
+                        </x-ui.button>
                     </div>
-                    @if (!empty(Session::get('massage2')))
-                        <span
-                            style="margin-bottom: 20px;display: block;color: #1cc88a;text-align: center;background: white;padding: 5px;border-radius: 5px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;">
-                            {{ Session::get('massage2') }}</span>
-                    @endif
+                </div>
 
-                    <form action="{{ route('admin.edit.extra') }}" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" value="{{ $extra->id }}" name="ddddd">
+                @if (!empty(Session::get('massage2')))
+                    <div class="mx-4 mt-4 rounded-md border border-success/30 bg-success/10 px-4 py-2 text-center text-sm text-success">
+                        {{ Session::get('massage2') }}
+                    </div>
+                @endif
 
-                        @csrf
-                        <div class="card-body">
+                <form action="{{ route('admin.edit.extra') }}" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" value="{{ $extra->id }}" name="ddddd">
+                    @csrf
 
-                            <div class="form-group">
-                                <label for="">Category name:</label>
-                                <select name="main" id="mainCategory" class="category form-control" required>
-                                    <option value="">Select Category</option>
-                                    @foreach ($categories as $category)
-                                        <option {{ $hascategories->id == $category->id ? 'selected' : '' }}
-                                            value="{{ $category->id }}">
-                                            {{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="nsubc">Select Sub Category:</label>
-                                <select name="nsubc" id="nsubc" class="sub_category form-control">
-                                    <option value="{{ $hsasub->id }}">{{ $hsasub->name }}</option>
-                                </select>
-                            </div>
+                    {{-- Card body --}}
+                    <div class="p-4 space-y-4">
 
-                            <div class="form-group">
-                                <label for="mini">Select mini Category:</label>
-                                <select name="mini" id="mini" class="sub_category form-control">
-                                    <option value="{{ $hsaMini->id }}">{{ $hsaMini->name }}</option>
-                                </select>
-                            </div>
+                        <div class="mb-4">
+                            <label for="mainCategory" class="block text-sm font-medium text-slate-700 mb-1">Category name:</label>
+                            <select name="main" id="mainCategory" class="category block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" required>
+                                <option value="">Select Category</option>
+                                @foreach ($categories as $category)
+                                    <option {{ $hascategories->id == $category->id ? 'selected' : '' }}
+                                        value="{{ $category->id }}">
+                                        {{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                            <div class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" name="name" id="name" placeholder="Write category name"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $extra->name ?? old('name') }}" required autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="cover_photo">Cover Photo:</label>
-                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                    class="form-control @error('cover_photo') is-invalid @enderror" data-default-file="@isset($extra) /uploads/extra-category/{{ $extra->cover_photo }}@enderror">
+                        <div class="mb-4">
+                            <label for="nsubc" class="block text-sm font-medium text-slate-700 mb-1">Select Sub Category:</label>
+                            <select name="nsubc" id="nsubc" class="sub_category block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
+                                <option value="{{ $hsasub->id }}">{{ $hsasub->name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mini" class="block text-sm font-medium text-slate-700 mb-1">Select mini Category:</label>
+                            <select name="mini" id="mini" class="sub_category block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
+                                <option value="{{ $hsaMini->id }}">{{ $hsaMini->name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <x-ui.input
+                                name="name"
+                                label="Name:"
+                                type="text"
+                                :value="$extra->name ?? old('name')"
+                                placeholder="Write category name"
+                                required
+                                autocomplete="off"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                            <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
+                                class="block w-full text-sm text-slate-700 @error('cover_photo') border border-danger rounded-md @enderror"
+                                data-default-file="@isset($extra)/uploads/extra-category/{{ $extra->cover_photo }}@endisset">
                             @error('cover_photo')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive_________________________________________________________________________2___>
-                                <label class="custom-control-label" for="status">Status</label>
-                            </div>
+
+                        <div class="mb-4">
+                            <label class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="status" id="status" {{ $extra->status ? 'checked' : '' }}>
+                                <span class="text-sm font-medium text-slate-700">Status</span>
+                            </label>
                             @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="is_feature" id="is_feature"
-                                    ___inline_directive_____________________________________________________________________________3___>
-                                <label class="custom-control-label" for="is_feature">is_features</label>
-                            </div>
+
+                        <div class="mb-4">
+                            <label class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="is_feature" id="is_feature"
+                                    {{ $extra->is_feature ? 'checked' : '' }}>
+                                <span class="text-sm font-medium text-slate-700">is_features</span>
+                            </label>
                             @error('is_feature')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
+
                     </div>
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button class="mt-1 btn btn-primary">
-                                @isset($category)
+
+                    {{-- Card footer --}}
+                    <div class="border-t border-slate-200 px-4 py-3">
+                        <x-ui.button type="submit" variant="primary">
+                            @isset($category)
                                 <i class="fas fa-arrow-circle-up"></i>
                                 Update
-                                @else
+                            @else
                                 <i class="fas fa-plus-circle"></i>
                                 Submit
-                                @endisset
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                            @endisset
+                        </x-ui.button>
                     </div>
-                    <!-- /.card -->
-                </div>
+                </form>
             </div>
-
-
-        </section>
-        <!-- /.content -->
+        </div>
+    </section>
 @endsection
+
 @push('js')
     <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-        <script src="/assets/dist/extra.js"></script>
-        <script>
-            $(function() {
-                $('#cover_photo').dropify();
-            });
-        </script>
+    <script src="/assets/dist/extra.js"></script>
+    <script>
+        $(function() {
+            $('#cover_photo').dropify();
+        });
+    </script>
 @endpush

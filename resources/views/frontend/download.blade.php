@@ -16,7 +16,7 @@
                 @include('layouts.frontend.partials.userside')
             </div>
             <div class="col-md-9">
-                <table style="margin-top: 20px;background: white;" class="timetable_sub">
+                <table class="timetable_sub mt-5 bg-white">
                     <thead>
                         <tr>
                             <th>Order NO.</th>

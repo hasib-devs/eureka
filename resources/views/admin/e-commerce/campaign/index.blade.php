@@ -1,4 +1,4 @@
-@extends('layouts.admin/e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Campaing List')
 
@@ -11,42 +11,31 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Campaing List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Campaing List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">Campaing List</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li><span class="mx-1">/</span></li>
+                <li class="text-slate-700">Campaing List</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Campaing List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ route('admin.campaing.create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Campaing
-                        </a>
-                    </div>
-                </div>
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+                <h3 class="font-medium text-slate-900">Campaing List</h3>
+                <x-ui.button variant="success" :href="route('admin.campaing.create')">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Campaing
+                </x-ui.button>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+
+            <div class="p-4">
+                <x-ui.table id="example1">
                     <thead>
                         <tr>
                             <th>SL</th>
@@ -68,59 +57,51 @@
                                         <img src="/uploads/campaign/{{ $data->cover_photo }}" alt="Cover Photo"
                                             width="60px">
                                     @endif
-
                                 </td>
                                 <td>{{ $data->name }}</td>
                                 <td>{{ $data->products->count() }}</td>
                                 <td>
                                     @if ($data->status)
-                                        <span class="badge badge-success">Active</span>
+                                        <x-ui.badge variant="success">Active</x-ui.badge>
                                     @else
-                                        <span class="badge badge-danger">Disable</span>
+                                        <x-ui.badge variant="danger">Disable</x-ui.badge>
                                     @endif
                                 </td>
-                                <td>
-                                    <a href="{{ routeHelper('campaing/edit/' . $data->id) }}" class="btn btn-info btn-sm">
+                                <td class="flex flex-wrap gap-1">
+                                    <x-ui.button variant="info" size="sm" :href="routeHelper('campaing/edit/' . $data->id)">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{{ routeHelper('campaing/comment/' . $data->id) }}" class="btn btn-info btn-sm">
+                                    </x-ui.button>
+                                    <x-ui.button variant="info" size="sm" :href="routeHelper('campaing/comment/' . $data->id)">
                                         <i class="fas fa-comments"></i>
-                                    </a>
+                                    </x-ui.button>
                                     @if ($data->status)
-                                        <a href="{{ routeHelper('campaing/status/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <x-ui.button variant="warning" size="sm" :href="routeHelper('campaing/status/' . $data->id)">
                                             <i class="fas fa-thumbs-up"></i>
-                                        </a>
+                                        </x-ui.button>
                                     @else
-                                        <a href="{{ routeHelper('campaing/status/' . $data->id) }}"
-                                            class="btn btn-warning btn-sm">
+                                        <x-ui.button variant="warning" size="sm" :href="routeHelper('campaing/status/' . $data->id)">
                                             <i class="fas fa-thumbs-down"></i>
-                                        </a>
+                                        </x-ui.button>
                                     @endif
 
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
+                                    <x-ui.button variant="danger" size="sm" href="javascript:void(0)"
+                                        data-id="{{ $data->id }}" id="deleteData">
                                         <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
+                                    </x-ui.button>
                                     <form id="delete-data-form-{{ $data->id }}"
                                         action="{{ routeHelper('campaing/delete/' . $data->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                     </form>
-
                                 </td>
                             </tr>
                         @endforeach
-
                     </tbody>
-                </table>
+                </x-ui.table>
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

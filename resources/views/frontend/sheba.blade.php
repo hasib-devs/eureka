@@ -14,9 +14,9 @@ background: white
 </style>
 <?php
 Session::forget('link');
- Session::put(['link' => url()->previous()]);
+Session::put(['link' => url()->previous()]);
 ?>
-<div class="wrapper" style="background:white;padding:20px">
+<div class="wrapper bg-white p-5">
   @php
     $category=\App\Models\Category::where('status',1)->where('slug','service')->first();
   @endphp
@@ -25,13 +25,13 @@ Session::forget('link');
         @if ($category->sub_categories->count() > 0)
          @foreach ($category->sub_categories as $sub_category)
             <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-                 <a href="{{route('subCategory.product', $sub_category->slug)}}"> <h2 style="font-size:22px"><b>{{$sub_category->name}}</b></h2> </a>
+                 <a href="{{route('subCategory.product', $sub_category->slug)}}"> <h2 class="text-[22px]"><b>{{$sub_category->name}}</b></h2></a>
                   @if ($sub_category->miniCategory->count() > 0)
                   @foreach ($sub_category->miniCategory as $miniCategory)
-                    <a href="{{route('miniCategory.product', $miniCategory->slug)}}"> <h4 style="font-size:20px;margin-left:4px">{{$miniCategory->name}}</h4> </a>
+                    <a href="{{route('miniCategory.product', $miniCategory->slug)}}"> <h4 class="text-[20px] ml-1">{{$miniCategory->name}}</h4></a>
                      @if ($miniCategory->extraCategory->count() > 0)
                       @foreach ($miniCategory->extraCategory as $extraCategory)
-                      <a href="{{route('extraCategory.product', $extraCategory->slug)}}"><p style="font-size:15px;margin-left:8px">{{$extraCategory->name}}</p> </a>
+                      <a href="{{route('extraCategory.product', $extraCategory->slug)}}"><p class="text-[15px] ml-2">{{$extraCategory->name}}</p></a>
                        @endforeach
                      @endif
                   @endforeach

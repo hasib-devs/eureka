@@ -988,14 +988,14 @@
         <div class="container">
 
             {{-- CATEGORY TITLE --}}
-            <h3 class="lux-section-title" style="text-align:center margin:15px;">
+            <h3 class="lux-section-title text-center">
                 All Categories
             </h3>
 
             <div class="lux-category-wrap">
 
                 @foreach ($categories as $category)
-                    <a href="{{ route('category', $category->slug) }}" class="lux-cat-item">
+                    <a href="{{ route('category.product', $category->slug) }}" class="lux-cat-item">
 
                         <div class="lux-cat-img">
                             <img src="{{ asset('uploads/category/' . $category->cover_photo) }}"
@@ -1069,9 +1069,9 @@
                                     </div>
 
                                     <div class="lux-color-variants">
-                                        <span class="lux-color" style="background:#000;"></span>
-                                        <span class="lux-color" style="background:#fff;"></span>
-                                        <span class="lux-color" style="background:#FFCC00;"></span>
+                                        <span class="lux-color bg-[#000]"></span>
+                                        <span class="lux-color bg-[#fff]"></span>
+                                        <span class="lux-color bg-[#FFCC00]"></span>
                                     </div>
                                 </div>
 
@@ -1162,7 +1162,7 @@
         <div class="lux-footer-cta">
             <h3>Ready to transform your space?</h3>
             <p>Join thousands who are upgrading their home lighting experience.</p>
-            <a href="#" class="lux-footer-btn">Shop Now</a>
+            <a href="{{ route('product') }}" class="lux-footer-btn">Shop Now</a>
         </div>
 
         <div class="lux-footer-main">
@@ -1181,27 +1181,27 @@
                 <div>
                     <h5>Product</h5>
                     <ul>
-                        <li><a href="#">Shop</a></li>
-                        <li><a href="#">Categories</a></li>
-                        <li><a href="#">New Arrivals</a></li>
+                        <li><a href="{{ route('product') }}">Shop</a></li>
+                        <li><a href="{{ route('product') }}">Categories</a></li>
+                        <li><a href="{{ route('product') }}">New Arrivals</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h5>Resources</h5>
                     <ul>
-                        <li><a href="#">Blogs</a></li>
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">Guides</a></li>
+                        <li><a href="{{ route('blogs') }}">Blogs</a></li>
+                        <li><a href="{{ route('contact') }}">Support</a></li>
+                        <li><a href="{{ route('blogs') }}">Guides</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h5>Company</h5>
                     <ul>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Policy</a></li>
+                        <li><a href="{{ route('page', ['slug' => 'about']) }}">About</a></li>
+                        <li><a href="{{ route('contact') }}">Contact</a></li>
+                        <li><a href="{{ route('page', ['slug' => 'refund-policy']) }}">Policy</a></li>
                     </ul>
                 </div>
             </div>
@@ -1210,8 +1210,8 @@
         <div class="lux-footer-bottom">
             <span>© {{ date('Y') }} AnasLuxyWorld. All rights reserved.</span>
             <div>
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
+                <a href="{{ route('page', ['slug' => 'privacy-policy']) }}">Privacy</a>
+                <a href="{{ route('page', ['slug' => 'terms-and-conditions']) }}">Terms</a>
             </div>
         </div>
     </section>

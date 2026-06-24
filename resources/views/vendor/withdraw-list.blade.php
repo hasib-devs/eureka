@@ -11,87 +11,68 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Order List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Order List</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Order List</h3>
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>SL</th>
-                            <th>Method</th>
-                            <th>Anount</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($withdraws as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>
-                                    @php
-                                        if ($data->payment_method == 1) {
-                                            echo 'Bkash';
-                                        } elseif ($data->payment_method == 2) {
-                                            echo 'Nagad';
-                                        } elseif ($data->payment_method == 3) {
-                                            echo 'Rocket';
-                                        } else {
-                                            echo 'Bank';
-                                        }
-                                    @endphp
-                                </td>
-                                <td>{{ $data->amount }}</td>
-                                <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
-                                <td>
-                                    @if ($data->status == 0)
-                                        <span class="badge badge-warning">Pending</span>
-                                    @elseif ($data->status == 1)
-                                        <span class="badge badge-primary">Complete</span>
-                                    @elseif ($data->status == 2)
-                                        <span class="badge badge-danger">Canceled</span>
-                                    @endif
-                                </td>
-
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Order List</h1>
+            <nav class="text-sm text-slate-500">
+                <a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a>
+                <span class="mx-1">/</span>
+                <span>Order List</span>
+            </nav>
         </div>
-        <!-- /.card -->
+    </section>
+
+    <section>
+
+        <x-ui.card>
+            <x-slot:header>Order List</x-slot:header>
+
+            <x-ui.table id="example1">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Method</th>
+                        <th>Anount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($withdraws as $key => $data)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td>
+                                @php
+                                    if ($data->payment_method == 1) {
+                                        echo 'Bkash';
+                                    } elseif ($data->payment_method == 2) {
+                                        echo 'Nagad';
+                                    } elseif ($data->payment_method == 3) {
+                                        echo 'Rocket';
+                                    } else {
+                                        echo 'Bank';
+                                    }
+                                @endphp
+                            </td>
+                            <td>{{ $data->amount }}</td>
+                            <td>{{ date('d M Y', strtotime($data->created_at)) }}</td>
+                            <td>
+                                @if ($data->status == 0)
+                                    <x-ui.badge variant="warning">Pending</x-ui.badge>
+                                @elseif ($data->status == 1)
+                                    <x-ui.badge variant="primary">Complete</x-ui.badge>
+                                @elseif ($data->status == 2)
+                                    <x-ui.badge variant="danger">Canceled</x-ui.badge>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-ui.table>
+
+        </x-ui.card>
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

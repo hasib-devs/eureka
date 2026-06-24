@@ -14,22 +14,20 @@
 </style>
 <?php
 Session::forget('link');
- if(route('home').'/register'==url()->previous()){
-      Session::put(['link' => route('home')]);
- }elseif(route('home').'/join'==url()->previous()){
-      Session::put(['link' => route('home')]);
- }elseif(route('home').'/login'==url()->previous()){
-      Session::put(['link' => route('home')]);
- }elseif(route('home').'/seller'==url()->previous()){
-      Session::put(['link' => route('home')]);
- }
- elseif(route('home').'/password/reset'==url()->previous()){
-      Session::put(['link' => route('home')]);
- }
- else{
-      Session::put(['link' => url()->previous()]);
- }
- 
+if (route('home').'/register' == url()->previous()) {
+    Session::put(['link' => route('home')]);
+} elseif (route('home').'/join' == url()->previous()) {
+    Session::put(['link' => route('home')]);
+} elseif (route('home').'/login' == url()->previous()) {
+    Session::put(['link' => route('home')]);
+} elseif (route('home').'/seller' == url()->previous()) {
+    Session::put(['link' => route('home')]);
+} elseif (route('home').'/password/reset' == url()->previous()) {
+    Session::put(['link' => route('home')]);
+} else {
+    Session::put(['link' => url()->previous()]);
+}
+
 ?>
 <div class="wrapper">
     <!--  <p style="text-align: center;">
@@ -40,9 +38,9 @@ Session::forget('link');
     <form class="col-md-4 offset-md-4" action="{{route('login.get')}}" method="get">
 
         <div class="form form2">
-            <h4 style="color:#002f5f;text-align: left;padding:10px 0px;"><b>Sign in </b></h4>
+            <h4 class="text-[#002f5f] text-left px-0 py-[10px]"><b>Sign in </b></h4>
             <div class="form-group">
-                <label>Username / Email / Phone<sup style="color: red;">*</sup></label>
+                <label>Username / Email / Phone<sup class="text-[red]">*</sup></label>
                 <input type="text" name="username" id="username"
                     class="form-control @error('username') is-in-valid @enderror" required />
                 @error('username')
@@ -50,22 +48,22 @@ Session::forget('link');
                 @enderror
             </div>
             <div class="form-group">
-                <label>Password <sup style="color: red;">*</sup>&nbsp;&nbsp;<i id="show_pass" class="fal fa-eye"></i></label>
+                <label>Password <sup class="text-[red]">*</sup>&nbsp;&nbsp;<i id="show_pass" class="fal fa-eye"></i></label>
                 <input type="password" name="password" id="password"
                     class="form-control @error('password') is-in-valid @enderror" required />
                 @error('password')
                 <span class="invalid-feedback" role="alert">{{ $message }}</span>
                 @enderror
             </div>
-            <input class="form-control" type="submit" value="Login" style="background:var(--primary_color)">
+            <input class="form-control bg-[var(--primary_color)]" type="submit" value="Login">
 
 
             @if (setting('recovrAC') == "email")
-                <span style="display: block;text-align: center;"><a href="{{route('password.request')}}">Forgot Password?</a></span>
+                <span class="block text-center"><a href="{{route('password.request')}}">Forgot Password?</a></span>
             @elseif (setting('recovrAC') == "sms")
-                <span style="display: block;text-align: center;"><a href="{{route('password.recover.mobile')}}">Forgot Password?</a></span>
+                <span class="block text-center"><a href="{{route('password.recover.mobile')}}">Forgot Password?</a></span>
             @else
-                <span style="display: block;text-align: center;"><a href="{{route('password.request')}}">Forgot Password?</a></span>
+                <span class="block text-center"><a href="{{route('password.request')}}">Forgot Password?</a></span>
             @endif
 
 
@@ -73,8 +71,8 @@ Session::forget('link');
         </div>
     </form>
     <br>
-    <span style="display: block;text-align: center;">Create a new Account <a href="{{route('register')}}"
-            style="color:blue">Sign Up</a></span>
+    <span class="block text-center">Create a new Account <a href="{{route('register')}}"
+            class="text-[blue]">Sign Up</a></span>
 </div>
 
 @push('js')

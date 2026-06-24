@@ -1,4 +1,4 @@
-@extends('layouts.admin/e-commerce.app')
+@extends('layouts.admin.app')
 
 @section('title', 'Category List')
 
@@ -11,42 +11,33 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Category List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Category List</li>
-                    </ol>
-                </div>
+    <section class="mb-4">
+        <div>
+            <div class="flex items-center justify-between mb-2">
+                <h1 class="text-2xl font-semibold text-slate-800">Category List</h1>
+                <ol class="flex items-center gap-1 text-sm text-slate-500">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                    <li class="before:content-['/'] before:mx-1">Category List</li>
+                </ol>
             </div>
-        </div><!-- /. -->
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Category List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ routeHelper('category/create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Category
-                        </a>
-                    </div>
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-medium text-slate-900">Category List</h3>
+                    <x-ui.button variant="success" size="sm" :href="routeHelper('category/create')">
+                        <i class="fas fa-plus-circle"></i>
+                        Add Category
+                    </x-ui.button>
                 </div>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table text-center table-bordered table-striped">
+            <div class="p-4">
+                <x-ui.table id="example1" class="text-center">
                     <thead>
                         <tr>
                             <th>SL</th>
@@ -75,30 +66,27 @@
                                 </td>
                                 <td>
                                     @if ($data->status)
-                                        <span class="badge badge-success">Active</span>
+                                        <x-ui.badge variant="success">Active</x-ui.badge>
                                     @else
-                                        <span class="badge badge-danger">Disable</span>
+                                        <x-ui.badge variant="danger">Disable</x-ui.badge>
                                     @endif
                                 </td>
                                 <td>
-                                    <span
-                                        class="badge badge-{{ $data->is_shown_on_homepage ? 'success' : 'danger' }}">{{ $data->is_shown_on_homepage ? 'Yes' : 'No' }}</span>
+                                    <x-ui.badge variant="{{ $data->is_shown_on_homepage ? 'success' : 'danger' }}">{{ $data->is_shown_on_homepage ? 'Yes' : 'No' }}</x-ui.badge>
                                 </td>
                                 <td>
-                                    <a href="{{ route('category.product', ['slug' => $data->slug]) }}"
-                                        class="btn btn-success btn-sm">
+                                    <x-ui.button variant="success" size="sm" :href="route('category.product', ['slug' => $data->slug])">
                                         <i class="fas fa-box"></i>
-                                    </a>
-                                    <a href="{{ routeHelper('category/' . $data->id) }}" class="btn btn-success btn-sm">
+                                    </x-ui.button>
+                                    <x-ui.button variant="success" size="sm" :href="routeHelper('category/' . $data->id)">
                                         <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ routeHelper('category/' . $data->id . '/edit') }}" class="btn btn-info btn-sm">
+                                    </x-ui.button>
+                                    <x-ui.button variant="info" size="sm" :href="routeHelper('category/' . $data->id . '/edit')">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
-                                        class="btn btn-danger btn-sm"">
+                                    </x-ui.button>
+                                    <x-ui.button variant="danger" size="sm" href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData">
                                         <i class="nav-icon fas fa-trash-alt"></i>
-                                    </a>
+                                    </x-ui.button>
                                     <form id="delete-data-form-{{ $data->id }}"
                                         action="{{ routeHelper('category/' . $data->id) }}" method="POST">
                                         @csrf
@@ -120,14 +108,11 @@
                             <th>Action</th>
                         </tr>
                     </tfoot>
-                </table>
+                </x-ui.table>
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
 
     </section>
-    <!-- /.content -->
 
 @endsection
 

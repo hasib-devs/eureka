@@ -21,170 +21,186 @@
 
 @section('content')
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        @isset($category)
-                            Edit Category
-                        @else
-                            Add Category
-                        @endisset
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">
-                            @isset($category)
-                                Edit Category
-                            @else
-                                Add Category
-                            @endisset
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">
+                @isset($category)
+                    Edit Category
+                @else
+                    Add Category
+                @endisset
+            </h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li class="text-slate-400">/</li>
+                <li class="text-slate-700">
+                    @isset($category)
+                        Edit Category
+                    @else
+                        Add Category
+                    @endisset
+                </li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+    <section>
+        <div class="w-full md:w-2/3 md:mx-auto">
+            <!-- Card -->
+            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                <!-- Card Header -->
+                <div class="border-b border-slate-200 px-4 py-3">
+                    <p class="mb-2 text-sm text-slate-500">
                         Already Taken Position:
                         @foreach (APP\Models\Category::all() as $pos)
                             {{ $pos->pos }},
                         @endforeach
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">
-                                    @isset($category)
-                                        Edit Category Details
-                                    @else
-                                        Add New Category
-                                    @endisset
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                @isset($category)
-                                    <a href="{{ routeHelper('category/' . $category->id) }}" class="btn btn-info">
-                                        <i class="fas fa-eye"></i>
-                                        Show
-                                    </a>
-                                @endisset
+                    </p>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="font-medium text-slate-900">
+                            @isset($category)
+                                Edit Category Details
+                            @else
+                                Add New Category
+                            @endisset
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            @isset($category)
+                                <x-ui.button variant="info" :href="routeHelper('category/' . $category->id)">
+                                    <i class="fas fa-eye"></i>
+                                    Show
+                                </x-ui.button>
+                            @endisset
 
-                                <a href="{{ routeHelper('category') }}" class="btn btn-danger">
-
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List
-                                </a>
-                            </div>
+                            <x-ui.button variant="danger" :href="routeHelper('category')">
+                                <i class="fas fa-long-arrow-alt-left"></i>
+                                Back to List
+                            </x-ui.button>
                         </div>
                     </div>
-                    <form
-                        action="{{ isset($category) ? routeHelper('category/' . $category->id) : routeHelper('category') }}"
-                        method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @isset($category)
-                            @method('PUT')
-                        @endisset
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" name="name" id="name" placeholder="Write category name"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $category->name ?? old('name') }}" required autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="name">Position:</label>
-                                <input type="text" name="pos" id="pos" placeholder="Position"
-                                    class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ $category->pos ?? old('pos') }}" autocomplete="off">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="description">Description:</label>
-                                <textarea name="description" id="description" cols="5" placeholder="Write category description"
-                                    class="form-control @error('description') is-invalid @enderror">{{ $category->description ?? old('description') }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="cover_photo">Cover Photo:</label>
-                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                    class="form-control @error('cover_photo') is-invalid @enderror" data-default-file="@isset($category) /uploads/category/{{ $category->cover_photo }}@enderror">
-                            @error('cover_photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                </div>
+
+                <form
+                    action="{{ isset($category) ? routeHelper('category/' . $category->id) : routeHelper('category') }}"
+                    method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @isset($category)
+                        @method('PUT')
+                    @endisset
+
+                    <!-- Card Body -->
+                    <div class="p-4 space-y-4">
+                        <!-- Name -->
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name:</label>
+                            <input type="text" name="name" id="name" placeholder="Write category name"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
+                                value="{{ $category->name ?? old('name') }}" required autocomplete="off">
+                            @error('name')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive____________________________________________________________________________4___>
-                                <label class="custom-control-label" for="status">Status</label>
+
+                        <!-- Position -->
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Position:</label>
+                            <input type="text" name="pos" id="pos" placeholder="Position"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
+                                value="{{ $category->pos ?? old('pos') }}" autocomplete="off">
+                            @error('name')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                            <textarea name="description" id="description" cols="5" placeholder="Write category description"
+                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('description') border-danger @else border-slate-300 @enderror">{{ $category->description ?? old('description') }}</textarea>
+                            @error('description')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Cover Photo (Dropify — keep raw input, JS hooks preserved) -->
+                        <div class="mb-4">
+                            <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                            <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
+                                class="block w-full @error('cover_photo') border border-danger rounded-md @enderror"
+                                data-default-file="@isset($category) /uploads/category/{{ $category->cover_photo }}@endisset">
+                            @error('cover_photo')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Status toggle -->
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="peer sr-only" name="status" id="status" ___inline_directive____________________________________________________________________________4___>
+                                <label for="status"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
+                                <span class="text-sm text-slate-700">Status</span>
                             </div>
                             @error('status')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="is_feature" id="is_feature" ___inline_directive________________________________________________________________________________5___>
-                                <label class="custom-control-label" for="is_feature">is_features</label>
+
+                        <!-- Is Feature toggle -->
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="peer sr-only" name="is_feature" id="is_feature" ___inline_directive________________________________________________________________________________5___>
+                                <label for="is_feature"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
+                                <span class="text-sm text-slate-700">is_features</span>
                             </div>
                             @error('is_feature')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" name="is_shown_on_homepage" id="is_shown_on_homepage" ___inline_directive__________________________________________________________________________________________6___>
-                                <label class="custom-control-label" for="is_shown_on_homepage">Show on homepage</label>
+
+                        <!-- Show on homepage toggle -->
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="peer sr-only" name="is_shown_on_homepage" id="is_shown_on_homepage" ___inline_directive__________________________________________________________________________________________6___>
+                                <label for="is_shown_on_homepage"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
+                                <span class="text-sm text-slate-700">Show on homepage</span>
                             </div>
                             @error('is_shown_on_homepage')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button class="mt-1 btn btn-primary">
-                                @isset($category)
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                @else
-                                    <i class="fas fa-plus-circle"></i>
-                                    Submit
-                                @endisset
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+
+                    <!-- Card Footer -->
+                    <div class="border-t border-slate-200 px-4 py-3">
+                        <x-ui.button type="submit" variant="primary">
+                            @isset($category)
+                                <i class="fas fa-arrow-circle-up"></i>
+                                Update
+                            @else
+                                <i class="fas fa-plus-circle"></i>
+                                Submit
+                            @endisset
+                        </x-ui.button>
                     </div>
-                    <!-- /.card -->
-                </div>
+                </form>
             </div>
-
-
-        </section>
-        <!-- /.content -->
+            <!-- /.card -->
+        </div>
+    </section>
 @endsection
 
 @push('js')
     <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-            <script>
-                $(function() {
-                    $('#cover_photo').dropify();
-                });
-            </script>
+    <script>
+        $(function() {
+            $('#cover_photo').dropify();
+        });
+    </script>
 @endpush

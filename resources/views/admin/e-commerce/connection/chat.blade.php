@@ -1,4 +1,4 @@
-@extends('layouts.admin/e-commerce.app')
+@extends('layouts.admin.app')
 
 
 @section('title', 'Live Chat')
@@ -229,24 +229,18 @@
 @section('content')
 
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="">Live Chat</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Live Chat</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h1 class="text-2xl font-semibold text-slate-800">Live Chat</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ route('admin.dashboard') }}" class="hover:text-slate-700">Home</a></li>
+                <li class="before:content-['/'] before:mx-1">Live Chat</li>
+            </ol>
+        </div>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section class="pb-4">
         <div class="messaging">
             <div class="inbox_msg">
                 <div class="inbox_people">
@@ -268,10 +262,10 @@
                         <form method="post">
                             @csrf
                             <div class="input_msg_write">
-                                <input type="text" name="message" class="write_msg form-control"
+                                <input type="text" name="message" class="write_msg"
                                     placeholder="Type a message" />
                                 <input type="hidden" id="user_id" name="user_id">
-                                <button type="submit" class="msg_send_btn btn" id="submit_form"><i
+                                <button type="submit" class="msg_send_btn" id="submit_form"><i
                                         class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
                             </div>
                         </form>

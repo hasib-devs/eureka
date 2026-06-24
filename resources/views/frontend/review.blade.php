@@ -141,10 +141,10 @@
                                     @enderror
                                 </div>
                                 <div class="form-group text-left">
-                                    <label style="display:block">Upload Image</label>
+                                    <label class="block">Upload Image</label>
                                     <input type="file" name="report">
                                 </div>
-                                 <h6 style="border: 1px solid gainsboro;padding: 5px;border-radius: 5px;"> <button style="width: 100%;text-align:left;" type="button" data-toggle="collapse" data-target="#BookOpen" aria-expanded="false" aria-controls="BookOpen">Upload More Img:<i style="float: right;top: 8px;position: relative;" class="fas fa-arrow-down"></i> </button></h6>
+                                 <h6 class="border border-[gainsboro] p-[5px] rounded-[5px]"> <button class="w-full text-left" type="button" data-toggle="collapse" data-target="#BookOpen" aria-expanded="false" aria-controls="BookOpen">Upload More Img:<i class="fas fa-arrow-down float-right top-[8px] relative"></i> </button></h6>
                                  <style type="text/css">
                                      #BookOpen .form-group {
                                         width: 100%;
@@ -153,21 +153,21 @@ padding: 10px;
 border-radius: 5px;
                                      }
                                  </style>
-                                 <div class="form-row col-md-12 spec collapse" id="BookOpen" style="background: #dcdcdc3d;border-radius: 5px;padding: 10p;">
+                                 <div class="form-row col-md-12 spec collapse bg-[#dcdcdc3d] rounded-[5px]" id="BookOpen">
                                 <div class="form-group text-left">
-                                    <label style="display:block">Upload Image</label>
+                                    <label class="block">Upload Image</label>
                                     <input type="file" name="report2">
                                 </div>
                                 <div class="form-group text-left">
-                                    <label style="display:block">Upload Image</label>
+                                    <label class="block">Upload Image</label>
                                     <input type="file" name="report3">
                                 </div>
                                  <div class="form-group text-left">
-                                    <label style="display:block">Upload Image</label>
+                                    <label class="block">Upload Image</label>
                                     <input type="file" name="report4">
                                 </div>
                                 <div class="form-group text-left">
-                                    <label style="display:block">Upload Image</label>
+                                    <label class="block">Upload Image</label>
                                     <input type="file" name="report5">
                                 </div>
                                 </div>

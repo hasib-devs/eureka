@@ -57,7 +57,7 @@ class WithdrawController extends Controller
         return view('vendor.withdraw-list',compact('withdraws'));
    }
    public function allwithlist(){
-        return $withdraws=Withdraw::get();
+        $withdraws=Withdraw::get();
         return view('admin.e-commerce.vendor.withdraw',compact('withdraws'));
    }
     public function aprove($id){

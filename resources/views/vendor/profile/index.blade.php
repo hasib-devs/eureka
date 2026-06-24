@@ -2,174 +2,111 @@
 
 @section('title', 'Your Information')
 
-@push('css')
-    <style>
-        .contact-title {
-            display: inline-block;
-            padding-bottom: 9px;
-            width: 170px;
-            font-size: 14px;
-            color: #868e96;
-        }
-    </style>
-@endpush
-
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>My Profile</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">My Profile</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">My Profile</h1>
+        <nav class="text-sm text-slate-500">
+            <a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a>
+            <span class="mx-1">/</span>
+            <span>My Profile</span>
+        </nav>
+    </div>
 
-    <!-- Main content -->
-    <section class="content">
+    <x-ui.card header="My Profile">
 
-        <!-- Default box -->
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">My Profile</h3>
-                    </div>
-                </div>
-            </div>
+        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-4 py-3 font-medium text-slate-900">Your Information</div>
 
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12">
+            <div class="p-4">
+                <div class="user-profile">
 
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <h3 class="card-title">Your Information</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="user-profile">
-                                    <div class="row">
+                    <h4 class="mb-3 text-base font-semibold text-slate-800">Image information</h4>
 
-                                        <div class="col-lg-12">
-
-                                            <h4 class="card-title">Image information</h4>
-                                            <br>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="user-photo m-b-30">
-                                                        <img src="{{ Auth::user()->avatar != 'default.png' ? '/uploads/member/' . Auth::user()->avatar : '/default/user.jpg' }}"
-                                                            class="img-fluid" width="250px" alt="User Image">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="user-photo m-b-30">
-                                                        <img src="{{ '/uploads/shop/profile/' . Auth::user()->shop_info->profile }}"
-                                                            class="img-fluid" alt="User Image" class="img-fluid"
-                                                            width="250px">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="user-photo m-b-30">
-                                                        <img src="{{ '/uploads/shop/cover/' . Auth::user()->shop_info->cover_photo }}"
-                                                            class="img-fluid" alt="User Image" class="img-fluid"
-                                                            width="250px">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            <h4 class="card-title">Basic information</h4>
-                                            <br>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Username:</span>
-                                                <span>{{ Auth::user()->username }}</span>
-                                            </div>
-                                            <div class="">
-                                                <span class="contact-title">Name:</span>
-                                                <span>{{ Auth::user()->name }}</span>
-                                            </div>
-                                            <div class="">
-                                                <span class="contact-title">Phone:</span>
-                                                <span>{{ Auth::user()->phone }}</span>
-                                            </div>
-                                            <div class="">
-                                                <span class="contact-title">Email:</span>
-                                                <span>{{ Auth::user()->email }}</span>
-                                            </div>
-                                            <div class="">
-                                                <span class="contact-title">Status:</span>
-                                                @if (Auth::user()->is_approved == 1)
-                                                    <span class="badge badge-success">Active</span>
-                                                @else
-                                                    <span class="badge badge-danger">Pending</span>
-                                                @endif
-                                            </div>
-
-                                            <h4 class="card-title">Shop information</h4>
-                                            <br>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Shop Name:</span>
-                                                <span>{{ Auth::user()->shop_info->name }}</span>
-                                            </div>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Shop URL:</span>
-                                                <span>{{ Auth::user()->shop_info->url }}</span>
-                                            </div>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Bank Account:</span>
-                                                <span>{{ Auth::user()->shop_info->bank_account }}</span>
-                                            </div>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Bank Name:</span>
-                                                <span>{{ Auth::user()->shop_info->bank_name }}</span>
-                                            </div>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Holder Name:</span>
-                                                <span>{{ Auth::user()->shop_info->holder_name }}</span>
-                                            </div>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Branch Name:</span>
-                                                <span>{{ Auth::user()->shop_info->branch_name }}</span>
-                                            </div>
-                                            <div class="mb-1">
-                                                <span class="contact-title">Routing:</span>
-                                                <span>{{ Auth::user()->shop_info->routing }}</span>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="form-group">
-                                    <a href="{{ routeHelper('profile/update') }}" class="mt-1 btn btn-primary">
-
-                                        <i class="fas fa-arrow-circle-up"></i>
-                                        Update
-                                    </a>
-                                </div>
-                            </div>
+                    <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div>
+                            <img src="{{ Auth::user()->avatar != 'default.png' ? '/uploads/member/' . Auth::user()->avatar : '/default/user.jpg' }}"
+                                class="max-w-full" width="250" alt="User Image">
+                        </div>
+                        <div>
+                            <img src="{{ '/uploads/shop/profile/' . Auth::user()->shop_info->profile }}"
+                                class="max-w-full" width="250" alt="User Image">
+                        </div>
+                        <div>
+                            <img src="{{ '/uploads/shop/cover/' . Auth::user()->shop_info->cover_photo }}"
+                                class="max-w-full" width="250" alt="User Image">
                         </div>
                     </div>
-                </div>
 
+                    <h4 class="mb-3 text-base font-semibold text-slate-800">Basic information</h4>
+
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Username:</span>
+                        <span>{{ Auth::user()->username }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Name:</span>
+                        <span>{{ Auth::user()->name }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Phone:</span>
+                        <span>{{ Auth::user()->phone }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Email:</span>
+                        <span>{{ Auth::user()->email }}</span>
+                    </div>
+                    <div class="mb-4">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Status:</span>
+                        @if (Auth::user()->is_approved == 1)
+                            <x-ui.badge variant="success">Active</x-ui.badge>
+                        @else
+                            <x-ui.badge variant="danger">Pending</x-ui.badge>
+                        @endif
+                    </div>
+
+                    <h4 class="mb-3 text-base font-semibold text-slate-800">Shop information</h4>
+
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Shop Name:</span>
+                        <span>{{ Auth::user()->shop_info->name }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Shop URL:</span>
+                        <span>{{ Auth::user()->shop_info->url }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Bank Account:</span>
+                        <span>{{ Auth::user()->shop_info->bank_account }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Bank Name:</span>
+                        <span>{{ Auth::user()->shop_info->bank_name }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Holder Name:</span>
+                        <span>{{ Auth::user()->shop_info->holder_name }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Branch Name:</span>
+                        <span>{{ Auth::user()->shop_info->branch_name }}</span>
+                    </div>
+                    <div class="mb-1">
+                        <span class="inline-block w-44 pb-2 text-sm text-slate-500">Routing:</span>
+                        <span>{{ Auth::user()->shop_info->routing }}</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 px-4 py-3">
+                <x-ui.button href="{{ routeHelper('profile/update') }}">
+                    <i class="fas fa-arrow-circle-up"></i>
+                    Update
+                </x-ui.button>
             </div>
         </div>
-        <!-- /.card -->
 
-    </section>
-    <!-- /.content -->
+    </x-ui.card>
 
 @endsection

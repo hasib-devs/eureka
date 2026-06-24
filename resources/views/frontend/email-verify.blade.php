@@ -12,7 +12,7 @@
                   @include('layouts.frontend.partials.userside')
             </div>
             <div class="col-md-9">
-                <div class="card" style="padding: 20px;margin-top: 20px;">
+                <div class="card p-[20px] mt-[20px]">
                     @php
                                     if(isset($email)){
                                         $email=$email;
@@ -31,7 +31,7 @@
                                  
                                  @if($email=='')
                                 <div class="form-group col-12">
-                                    <label>Email <sup style="color: red;">*</sup></label>
+                                    <label>Email <sup class="text-[red]">*</sup></label>
                                     <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" autocomplete="off" required value="{{auth()->user()->email}}"/>
                                     @error('email')
                                         <small class="form-text text-danger">{{$message}}</small>
@@ -39,7 +39,7 @@
                                 </div>
                                 @else
                                        <div class="form-group col-md-8">
-                                    <label>Please check your Email for the Verification Code.<sup style="color: red;">*</sup></label>
+                                    <label>Please check your Email for the Verification Code.<sup class="text-[red]">*</sup></label>
                                     <input type="otp" name="otp" id="otp" class="form-control @error('otp') is-invalid @enderror" autocomplete="off" required />
                                     @error('otp')
                                         <small class="form-text text-danger">{{$message}}</small>

@@ -15,155 +15,162 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Shop Details</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Shop Details</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
+    <section class="mb-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-800">Shop Details</h1>
+            <ol class="flex items-center gap-1 text-sm text-slate-500">
+                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
+                <li><span class="mx-1">/</span></li>
+                <li class="text-slate-700">Shop Details</li>
+            </ol>
+        </div>
     </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Shop Details</h3>
-            </div>
+    <section>
+        <x-ui.card>
+            <x-slot:header>Shop Details</x-slot:header>
 
             <form action="{{ routeHelper('shop/update') }}" method="POST" enctype="multipart/form-data">
-                <div class="card-body">
-                    @csrf
-                    @method('PUT')
-                    <div class="card-body">
+                @csrf
+                @method('PUT')
 
-                        <a class="btn btn-primary" href="{{ route('admin.setting.site_info') }}">Update Shop Information <i
-                                class="fas fa-caret-right"></i></a><br><br>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="shop_name">Shop Name:</label>
-                                <input type="text" name="shop_name" id="shop_name" placeholder="write shop name"
-                                    class="form-control @error('shop_name') is-invalid @enderror"
-                                    value="{{ $shop_info->name ?? old('shop_name') }}" required>
-                                @error('shop_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="url">Shop Url:</label>
-                                <input type="text" name="url" id="url" placeholder="write shop url"
-                                    class="form-control @error('url') is-invalid @enderror"
-                                    value="{{ $shop_info->url ?? old('url') }}" required>
-                                @error('url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="bank_account">Bank Account:</label>
-                                <input type="text" name="bank_account" id="bank_account" placeholder="write bank account"
-                                    class="form-control @error('bank_account') is-invalid @enderror"
-                                    value="{{ $shop_info->bank_account ?? old('bank_account') }}" required>
-                                @error('bank_account')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="bank_name">Bank Name:</label>
-                                <input type="text" name="bank_name" id="bank_name" placeholder="write bank name"
-                                    class="form-control @error('bank_name') is-invalid @enderror"
-                                    value="{{ $shop_info->bank_name ?? old('bank_name') }}" required>
-                                @error('bank_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="holder_name">Holder Name:</label>
-                                <input type="text" name="holder_name" id="holder_name" placeholder="write holder name"
-                                    class="form-control @error('holder_name') is-invalid @enderror"
-                                    value="{{ $shop_info->holder_name ?? old('holder_name') }}" required>
-                                @error('holder_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="branch_name">Branch Name:</label>
-                                <input type="text" name="branch_name" id="branch_name"
-                                    placeholder="write bank branch name"
-                                    class="form-control @error('branch_name') is-invalid @enderror"
-                                    value="{{ $shop_info->branch_name ?? old('branch_name') }}" required>
-                                @error('branch_name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="routing">Routing:</label>
-                                <input type="text" name="routing" id="routing" placeholder="write routing"
-                                    class="form-control @error('routing') is-invalid @enderror"
-                                    value="{{ $shop_info->routing ?? old('routing') }}" required>
-                                @error('routing')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="address">Address:</label>
-                                <input type="text" name="address" id="address" placeholder="write shop address"
-                                    class="form-control @error('address') is-invalid @enderror"
-                                    value="{{ $shop_info->address ?? old('address') }}" required>
-                                @error('address')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="description">Description:</label>
-                                <textarea name="description" id="description" rows="4" placeholder="write shop description"
-                                    class="form-control @error('description') is-invalid @enderror">{{ $shop_info->description ?? old('description') }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="profile">Profile:</label>
-                                <input type="file" name="profile" id="profile" accept="image/*"
-                                    class="form-control dropify @error('profile') is-invalid @enderror"
-                                    data-default-file="/uploads/shop/profile/{{ $shop_info->profile }}">
-                                @error('profile')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="cover_photo">Cover Photo:</label>
-                                <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                    class="form-control dropify @error('cover_photo') is-invalid @enderror"
-                                    data-default-file="/uploads/shop/cover/{{ $shop_info->cover_photo }}">
-                                @error('cover_photo')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                    <div class="md:col-span-2 mb-2">
+                        <x-ui.button variant="primary" :href="route('admin.setting.site_info')">
+                            Update Shop Information <i class="fas fa-caret-right"></i>
+                        </x-ui.button>
                     </div>
-                    <!-- /.card-body -->
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="shop_name"
+                            label="Shop Name:"
+                            type="text"
+                            :value="$shop_info->name ?? old('shop_name')"
+                            placeholder="write shop name"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="url"
+                            label="Shop Url:"
+                            type="text"
+                            :value="$shop_info->url ?? old('url')"
+                            placeholder="write shop url"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="bank_account"
+                            label="Bank Account:"
+                            type="text"
+                            :value="$shop_info->bank_account ?? old('bank_account')"
+                            placeholder="write bank account"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="bank_name"
+                            label="Bank Name:"
+                            type="text"
+                            :value="$shop_info->bank_name ?? old('bank_name')"
+                            placeholder="write bank name"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="holder_name"
+                            label="Holder Name:"
+                            type="text"
+                            :value="$shop_info->holder_name ?? old('holder_name')"
+                            placeholder="write holder name"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="branch_name"
+                            label="Branch Name:"
+                            type="text"
+                            :value="$shop_info->branch_name ?? old('branch_name')"
+                            placeholder="write bank branch name"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="routing"
+                            label="Routing:"
+                            type="text"
+                            :value="$shop_info->routing ?? old('routing')"
+                            placeholder="write routing"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-ui.input
+                            name="address"
+                            label="Address:"
+                            type="text"
+                            :value="$shop_info->address ?? old('address')"
+                            placeholder="write shop address"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4 md:col-span-2">
+                        <x-ui.textarea
+                            name="description"
+                            label="Description:"
+                            rows="4"
+                            placeholder="write shop description"
+                        >{{ $shop_info->description ?? old('description') }}</x-ui.textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="profile" class="block text-sm font-medium text-slate-700 mb-1">Profile:</label>
+                        <input type="file" name="profile" id="profile" accept="image/*"
+                            class="dropify @error('profile') is-invalid @enderror"
+                            data-default-file="/uploads/shop/profile/{{ $shop_info->profile }}">
+                        @error('profile')
+                            <div class="mt-1 text-sm text-danger block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                        <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
+                            class="dropify @error('cover_photo') is-invalid @enderror"
+                            data-default-file="/uploads/shop/cover/{{ $shop_info->cover_photo }}">
+                        @error('cover_photo')
+                            <div class="mt-1 text-sm text-danger block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-success">
+
+                <x-slot:footer>
+                    <x-ui.button type="submit" variant="success">
                         <i class="fas fa-arrow-circle-up"></i>
                         Update
-                    </button>
-                </div>
-                <!-- /.card-footer -->
+                    </x-ui.button>
+                </x-slot:footer>
             </form>
-        </div>
 
+        </x-ui.card>
     </section>
-    <!-- /.content -->
 
 @endsection
 
