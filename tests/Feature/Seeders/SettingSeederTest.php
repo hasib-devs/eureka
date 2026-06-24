@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Role;
 use App\Models\Setting;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\SettingSeeder;
@@ -23,5 +24,5 @@ it('RoleSeeder is idempotent', function () {
     $this->seed(RoleSeeder::class);
     $this->seed(RoleSeeder::class);
 
-    expect(\App\Models\Role::count())->toBe(3);
+    expect(Role::count())->toBe(3);
 });

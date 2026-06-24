@@ -9,7 +9,7 @@ trait SeedsAssets
     /** Filenames present in public/uploads/$dir (no path). */
     protected function imagePool(string $dir): array
     {
-        $path = public_path('uploads/' . $dir);
+        $path = public_path('uploads/'.$dir);
 
         if (! File::isDirectory($path)) {
             return [];
