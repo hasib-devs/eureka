@@ -48,7 +48,7 @@
                             $order_dt = DB::table('multi_order')
                                 ->where('order_id', $data->id)
                                 ->where('vendor_id', auth()->id())
-                                ->first();
+                                ->first() ?? (object) ['total' => 0, 'discount' => 0];
                         @endphp
                         <tr>
                             <td>{{ $key + 1 }}</td>
