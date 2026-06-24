@@ -6,6 +6,8 @@
     <title>Document</title>
     
     @notifyCss
+    {{-- Tailwind loaded BEFORE legacy bundles → legacy wins during the layer-on-top phase. --}}
+    @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="/assets/frontend/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/frontend/css/style.css">
     <link rel="stylesheet" href="/assets/frontend/css/slick.css">
