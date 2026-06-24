@@ -65,3 +65,8 @@
 
 /* Hide Alpine x-cloak elements until Alpine initialises (prevents submenu flash). */
 [x-cloak] { display: none !important; }
+
+
+/* Keep laravel-notify toasts above the dashboard sidebar/overlay (preserves the old layout's inline z-index). */
+.notify,
+div.fixed.inset-0.flex.items-end.justify-center { z-index: 999999; }

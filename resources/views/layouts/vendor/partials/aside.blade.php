@@ -36,7 +36,7 @@
             <ul x-show="open.products" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-2">
                 <li><a href="{{ routeHelper('product/create') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product/create') }}"><i class="bx bx-plus-circle"></i> Add</a></li>
                 <li><a href="{{ routeHelper('product') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product') }}"><i class="bx bx-list-ul"></i> List</a></li>
-                <li><a href="{{ route('vendor.low.product') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-700 hover:bg-accent hover:text-accent-fg"><i class="bx bx-error"></i> Low qnty</a></li>
+                <li><a href="{{ route('vendor.low.product') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/low/product') }}"><i class="bx bx-error"></i> Low qnty</a></li>
                 <li><a href="{{ routeHelper('product/active') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product/active') }}"><i class="bx bx-like"></i> Active</a></li>
                 <li><a href="{{ routeHelper('product/disable') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/product/disable') }}"><i class="bx bx-dislike"></i> Disable</a></li>
             </ul>
@@ -49,13 +49,13 @@
                 <i class="bx bx-chevron-down ml-auto transition-transform" :class="open.profile && 'rotate-180'"></i>
             </button>
             <ul x-show="open.profile" x-cloak class="ml-4 mt-1 flex flex-col gap-1 border-l border-slate-200 pl-2">
-                <li><a href="{{ routeHelper('profile') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-700 hover:bg-accent hover:text-accent-fg"><i class="bx bx-user"></i> My Profile</a></li>
-                <li><a href="{{ routeHelper('profile/change-password') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-700 hover:bg-accent hover:text-accent-fg"><i class="bx bx-key"></i> Change Password</a></li>
+                <li><a href="{{ routeHelper('profile') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/profile') }}"><i class="bx bx-user"></i> My Profile</a></li>
+                <li><a href="{{ routeHelper('profile/change-password') }}" class="flex items-center gap-2 rounded-md px-3 py-1.5 {{ $navActive('vendor/profile/change-password') }}"><i class="bx bx-key"></i> Change Password</a></li>
             </ul>
         </div>
 
         <a href="{{ route('vendor.withdraw') }}"
-           class="flex items-center gap-3 rounded-md px-3 py-2 {{ $navActive('withdraw*') }}">
+           class="flex items-center gap-3 rounded-md px-3 py-2 {{ $navActive('vendor/withdraw*') }}">
             <i class="bx bx-money text-lg"></i> Withdraw
         </a>
 
