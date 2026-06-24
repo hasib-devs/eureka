@@ -52,3 +52,16 @@
     --color-tile-primary: #007bff;
     --color-tile-danger:  #dc3545;
 }
+
+/* Scoped reset for the rebuilt Tailwind dashboard shell (global Preflight stays off). */
+@layer base {
+    .dash-shell *, .dash-shell *::before, .dash-shell *::after { box-sizing: border-box; }
+    .dash-shell { margin: 0; -webkit-text-size-adjust: 100%; line-height: 1.5; }
+    .dash-shell h1, .dash-shell h2, .dash-shell h3, .dash-shell p { margin: 0; }
+    .dash-shell img { display: block; max-width: 100%; height: auto; }
+    .dash-shell ul { margin: 0; padding: 0; list-style: none; }
+    .dash-shell button { background: none; border: 0; cursor: pointer; font: inherit; color: inherit; }
+}
+
+/* Hide Alpine x-cloak elements until Alpine initialises (prevents submenu flash). */
+[x-cloak] { display: none !important; }

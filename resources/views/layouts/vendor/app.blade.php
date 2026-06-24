@@ -1,91 +1,68 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- CSRF Token -->
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        
-        <link rel="shortcut icon" type="image/jpg" href="/uploads/setting/{{setting('favicon')}}"/>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" type="image/jpg" href="/uploads/setting/{{ setting('favicon') }}"/>
+    <title>@yield('title')</title>
 
-        <title>@yield('title')</title>
-        @include('layouts.global')
+    @include('layouts.global')
 
-        {{-- Tailwind loaded BEFORE adminlte → AdminLTE wins during the layer-on-top phase. --}}
-        @vite(['resources/css/app.css'])
+    <!-- Source Sans Pro (dashboard font) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- boxicons (sidebar icons) -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Font Awesome (stat-tile + content icons) -->
+    <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
 
-        <!-- Google Font: Source Sans Pro -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
-        
-        @notifyCss
+    @notifyCss
+    @stack('css')
 
-        @stack('css')
+    <!-- AdminLTE still loaded: the other vendor views remain AdminLTE-styled until their plans. -->
+    <link rel="stylesheet" href="/assets/dist/css/adminlte.min.css">
 
-        <!-- Theme style -->
-        <link rel="stylesheet" href="/assets/dist/css/adminlte.min.css">
-        <style>
-            div.fixed.inset-0.flex.items-end.justify-center {z-index: 999999;}
-        </style>
-    </head>
-    <body class="hold-transition sidebar-mini">
-        <!-- Site wrapper -->
-        <div class="wrapper">
+    <!-- Tailwind LAST so it wins on the rebuilt pieces. -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="dash-shell min-h-screen bg-slate-100 font-dash text-slate-700"
+      x-data="{ sidebarOpen: false }">
 
-            <!-- Navbar -->
+    <div class="flex min-h-screen">
+        @include('layouts.vendor.partials.aside')
+
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak
+             class="fixed inset-0 z-30 bg-black/40 lg:hidden"></div>
+
+        <div class="flex min-w-0 flex-1 flex-col">
             @include('layouts.vendor.partials.navbar')
-            <!-- /.navbar -->
-
-            <!-- Main Sidebar Container -->
-            @include('layouts.vendor.partials.aside')
-            <!-- /.main sidebar container -->
-
-            <!-- Content Wrapper. Contains page content -->
-            <div class="content-wrapper">
-
+            <main class="flex-1 p-4">
                 @yield('content')
-                
-            </div>
-            <!-- /.content-wrapper -->
-
-            <!-- Control Sidebar -->
-            <aside class="control-sidebar control-sidebar-dark">
-                <!-- Control sidebar content goes here -->
-            </aside>
-            <!-- /.control-sidebar -->
+            </main>
+            <footer class="border-t border-slate-200 bg-white py-2 text-center text-xs text-slate-500">
+                Laravel Ecommerce system by: Finva Soft Limited
+            </footer>
         </div>
-        <!-- ./wrapper -->
-        <p style="text-align:center;margin: 0;padding: 5px 0px;">Laravel Ecommerce system by: Finva Soft Limited</p>
+    </div>
 
-        <!-- jQuery -->
-        <script src="/assets/plugins/jquery/jquery.min.js"></script>
-        <!-- Bootstrap 4 -->
-        <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <!-- AdminLTE App -->
-        <script src="/assets/dist/js/adminlte.min.js"></script>
-        
+    <!-- jQuery -->
+    <script src="/assets/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap bundle (still used by un-migrated views' JS widgets) -->
+    <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-         <x-notify::notify />
-        @notifyJs
+    <x-notify::notify />
+    @notifyJs
+    @stack('js')
 
-        @stack('js')
-        <script>
-        
-          setInterval(function () {
-                   $('.notify').hide();
-                }, 2000);
-            $(document).on('click', '#deleteData', function(e) {
-                let id = $(this).data('id');
-                e.preventDefault();
-                let conf = confirm('Are you sure delete this data!!');
-                if (conf) {
-                    
-                    document.getElementById('delete-data-form-'+id).submit();
-                }
-                
-            })
-        </script>
-        <script src="/assets/dist/js/demo.js"></script>
-    </body>
+    <script>
+        setInterval(function () { $('.notify').hide(); }, 2000);
+        $(document).on('click', '#deleteData', function (e) {
+            let id = $(this).data('id');
+            e.preventDefault();
+            if (confirm('Are you sure delete this data!!')) {
+                document.getElementById('delete-data-form-' + id).submit();
+            }
+        });
+    </script>
+</body>
 </html>
