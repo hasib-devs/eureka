@@ -105,6 +105,10 @@
         gap: 16px;
     }
 
+    .hdr-right {
+        flex-shrink: 0;
+    }
+
     /* Enhanced Logo */
     .logo-link {
         position: relative;
@@ -434,9 +438,9 @@
     }
 
     @media (min-width: 769px) {
-        .hdr-left { min-width: 180px; }
-        .hdr-center { flex: 1; justify-content: center; }
-        .hdr-right { min-width: 260px; justify-content: flex-end; }
+        .hdr-left { min-width: 180px; flex-shrink: 0; }
+        .hdr-center { flex: 1; min-width: 0; justify-content: center; }
+        .hdr-right { min-width: 0; flex-shrink: 0; justify-content: flex-end; gap: 20px; }
     }
 
     /* Cart Count Animation */
