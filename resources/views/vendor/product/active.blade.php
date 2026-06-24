@@ -11,143 +11,128 @@
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Active Product List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Active Product List</li>
-                    </ol>
-                </div>
+    {{-- Page header --}}
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">Active Product List</h1>
+        <nav class="text-sm text-slate-500">
+            <a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a>
+            <span class="mx-1">/</span>
+            <span>Active Product List</span>
+        </nav>
+    </div>
+
+    {{-- Main content --}}
+    <x-ui.card>
+        <x-slot:header>
+            <div class="flex items-center justify-between">
+                <h3 class="font-medium text-slate-900">Active Product List</h3>
+                <x-ui.button variant="primary" :href="routeHelper('product/create')">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Product
+                </x-ui.button>
             </div>
-        </div><!-- /. -->
-    </section>
+        </x-slot:header>
 
-    <!-- Main content -->
-    <section class="content">
-
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="card-title">Active Product List</h3>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ routeHelper('product/create') }}" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Product
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>SL</th>
-                            <th>Image</th>
-                            <th>Title</th>
-                            <th>RP</th>
-                            <th>DP</th>
-                            <th>Stock</th>
-                            <th>Brand</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($products as $key => $data)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>
-                                    <img src="{{ asset('uploads/product/' . $data->image) }}" alt="Product Image"
-                                        width="60px">
-                                </td>
-                                <td>{{ $data->title }}</td>
-                                <td>{{ $data->regular_price }}</td>
-                                <td>{{ $data->discount_price }}</td>
-                                <td>
-                                    @if ($data->quantity > 0)
-                                        <span class="badge badge-success">Available</span>
-                                    @else
-                                        <span class="badge badge-danger">Unavailable</span>
-                                    @endif
-                                </td>
-                                <td>{{ $data->brand->name ?? '' }}</td>
-                                <td>
-                                    @if ($data->status)
-                                        <span class="badge badge-success">Active</span>
-                                    @else
-                                        <span class="badge badge-danger">Disable</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('vendor.product.order', $data->id) }}" title="Order Product"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="fab fa-jedi-order"></i>
-                                        </a>
-                                        @if ($data->status)
-                                            <a title="Disable" href="{{ routeHelper('product/status/' . $data->id) }}"
-                                                class="btn btn-success btn-sm">
-                                                <i class="fas fa-thumbs-up"></i>
-                                            </a>
-                                        @else
-                                            <a title="Active" href="{{ routeHelper('product/status/' . $data->id) }}"
-                                                class="btn btn-warning btn-sm">
-                                                <i class="fas fa-thumbs-down"></i>
-                                            </a>
-                                        @endif
-                                        <a href="{{ routeHelper('product/' . $data->id) }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ routeHelper('product/' . $data->id . '/edit') }}"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="javascript:void(0)" id="deleteData" class="btn btn-danger btn-sm"">
-                                            <i class="nav-icon fas fa-trash-alt"></i>
-                                        </a>
-                                        <form id="delete-data-form" action="{{ routeHelper('product/' . $data->id) }}"
-                                            method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                    </div>
-
-
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>SL</th>
-                            <th>Image</th>
-                            <th>Title</th>
-                            <th>RP</th>
-                            <th>DP</th>
-                            <th>Stock</th>
-                            <th>Brand</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-
-    </section>
-    <!-- /.content -->
+        <x-ui.table id="example1">
+            <thead>
+                <tr>
+                    <th>SL</th>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>RP</th>
+                    <th>DP</th>
+                    <th>Stock</th>
+                    <th>Brand</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($products as $key => $data)
+                    <tr>
+                        <td>{{ $key + 1 }}</td>
+                        <td>
+                            <img src="{{ asset('uploads/product/' . $data->image) }}" alt="Product Image"
+                                width="60px">
+                        </td>
+                        <td>{{ $data->title }}</td>
+                        <td>{{ $data->regular_price }}</td>
+                        <td>{{ $data->discount_price }}</td>
+                        <td>
+                            @if ($data->quantity > 0)
+                                <x-ui.badge variant="success">Available</x-ui.badge>
+                            @else
+                                <x-ui.badge variant="danger">Unavailable</x-ui.badge>
+                            @endif
+                        </td>
+                        <td>{{ $data->brand->name ?? '' }}</td>
+                        <td>
+                            @if ($data->status)
+                                <x-ui.badge variant="success">Active</x-ui.badge>
+                            @else
+                                <x-ui.badge variant="danger">Disable</x-ui.badge>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="flex flex-wrap gap-1">
+                                <x-ui.button variant="primary" size="sm"
+                                    :href="route('vendor.product.order', $data->id)"
+                                    title="Order Product">
+                                    <i class="fab fa-jedi-order"></i>
+                                </x-ui.button>
+                                @if ($data->status)
+                                    <x-ui.button variant="primary" size="sm"
+                                        :href="routeHelper('product/status/' . $data->id)"
+                                        title="Disable"
+                                        class="bg-success hover:bg-success/90">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </x-ui.button>
+                                @else
+                                    <x-ui.button variant="secondary" size="sm"
+                                        :href="routeHelper('product/status/' . $data->id)"
+                                        title="Active"
+                                        class="bg-warning hover:bg-warning/90 text-slate-900">
+                                        <i class="fas fa-thumbs-down"></i>
+                                    </x-ui.button>
+                                @endif
+                                <x-ui.button variant="primary" size="sm"
+                                    :href="routeHelper('product/' . $data->id)">
+                                    <i class="fas fa-eye"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="secondary" size="sm"
+                                    :href="routeHelper('product/' . $data->id . '/edit')"
+                                    class="bg-info hover:bg-info/90">
+                                    <i class="fas fa-edit"></i>
+                                </x-ui.button>
+                                <x-ui.button variant="danger" size="sm"
+                                    href="javascript:void(0)" id="deleteData">
+                                    <i class="nav-icon fas fa-trash-alt"></i>
+                                </x-ui.button>
+                                <form id="delete-data-form" action="{{ routeHelper('product/' . $data->id) }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>SL</th>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>RP</th>
+                    <th>DP</th>
+                    <th>Stock</th>
+                    <th>Brand</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </tfoot>
+        </x-ui.table>
+    </x-ui.card>
 
 @endsection
 

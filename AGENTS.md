@@ -1,7 +1,13 @@
 # AGENTS.md
 
-Single source of truth for every AI coding agent in this repo. `CLAUDE.md`, `GEMINI.md`,
-Copilot, and Cursor all point here — edit rules in this file only.
+Single source of truth for every AI coding agent in this repo. Edit rules **here only** —
+never copy them into a tool-specific file.
+
+Most agents read this file **natively** (Codex, Cursor, Windsurf, Cline, and Copilot in
+VS Code / the coding agent / the CLI). The rest load it through a thin pointer that imports
+or references it: `CLAUDE.md` (`@AGENTS.md`), `GEMINI.md` (`@./AGENTS.md`), `.aider.conf.yml`
+(`read:`), and `.github/copilot-instructions.md` (legacy JetBrains/Visual Studio/Eclipse/Xcode).
+Coverage matrix and the token-cost rationale: [docs/ai-agents/](docs/ai-agents/README.md).
 
 ## Output rules (token discipline — top priority)
 
@@ -17,7 +23,40 @@ Agents waste tokens narrating instead of acting. Keep messages minimal:
   into the message when you can edit the file.
 - **No completion summaries** — no "what I changed" tables or next-step lists unless requested.
 - **Reference, don't reproduce.** Cite `path/file.php:42`; don't quote the code back.
+- **Read narrowly.** Open only the lines you need; don't slurp whole files or dump long command
+  output into context. Use a subagent for broad searches so only the answer returns, not the noise.
 - **Questions:** only blocking ones, one line, batched.
+
+## Professional rules
+
+**Security & secrets**
+- Never commit secrets, `.env`, keys, or credentials. Read config via `config()`/`env()` — never
+  hardcode. Don't log PII, tokens, or passwords.
+- Validate and authorize every request (Form Requests + policies); never trust user input.
+- Let Eloquent/the query builder parameterize SQL — never string-concatenate queries. Escape
+  output in Blade (`{{ }}`, not `{!! !!}`, unless the value is trusted).
+
+**Git hygiene**
+- Branch off `main`; never commit straight to `main`. One logical change per commit.
+- Don't force-push shared branches or rewrite already-pushed history.
+- Clear, imperative commit messages that reference the issue/PR. Don't commit commented-out code,
+  debug leftovers (`dd()`, `dump()`, `console.log`, `ray()`), or unrelated reformatting.
+- Open focused PRs with a short why/what; keep CI green.
+
+**Before you commit**
+- Run `composer test` (Pest) and `vendor/bin/pint`. Don't commit failing or unformatted code.
+- Add or extend tests for behavior changes; never delete a test just to make the suite pass.
+- **Verify before claiming done:** run the command and confirm the output before you say it works.
+
+**Changes & scope**
+- Do only what was asked. Flag out-of-scope issues separately instead of fixing them inline.
+- Confirm before destructive or outward-facing actions: deleting files/data, dropping tables,
+  mass find-replace, force-pushing, or anything touching production.
+- Migrations: create with `php artisan make:migration`, keep them reversible (`down()`), and
+  never edit a migration that has already shipped — add a new one.
+- Dependencies: don't add one without a clear need; prefer what's already installed; don't bump
+  unrelated packages; respect the lockfile.
+- Handle errors explicitly — validate inputs, don't swallow exceptions, fail loudly in dev.
 
 ## Project
 

@@ -7,305 +7,230 @@
 @endpush
 
 @section('content')
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Order Now</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ routeHelper('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Order Now</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /. -->
-    </section>
+    {{-- Page header --}}
+    <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold text-slate-800">Order Now</h1>
+        <nav class="text-sm text-slate-500">
+            <a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a>
+            <span class="mx-1">/</span>
+            <span>Order Now</span>
+        </nav>
+    </div>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Default box -->
-                <div class="card">
-                    <div class="card-header">
+    {{-- Outer card (plain div: form straddles body+footer so x-ui.card slot model cannot be used) --}}
+    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        {{-- Card header --}}
+        <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+            <h3 class="font-medium text-slate-900">Order Now</h3>
+            <x-ui.button variant="danger" :href="routeHelper('product')">
+                <i class="fas fa-long-arrow-alt-left"></i>
+                Back to List
+            </x-ui.button>
+        </div>
 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="card-title">Order Now</h3>
+        <form action="{{ route('vendor.product.order.store') }}" method="POST">
+            @csrf
+
+            {{-- Card body --}}
+            <div class="p-4 space-y-4">
+
+                {{-- Billing Info card --}}
+                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                    <div class="rounded-t-lg bg-success px-4 py-3">
+                        <h2 class="font-medium text-white">Billing Info</h2>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div class="mb-4">
+                                <x-ui.input name="first_name" label="First Name *" type="text" required />
                             </div>
-                            <div class="col-sm-6 text-right">
-                                <a href="{{ routeHelper('product') }}" class="btn btn-danger">
-                                    <i class="fas fa-long-arrow-alt-left"></i>
-                                    Back to List
-                                </a>
+                            <div class="mb-4">
+                                <x-ui.input name="last_name" label="Last Name *" type="text" required />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="company" label="Company (optional)" type="text" />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="country" label="Country/Region *" type="text" />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="address" label="Street address *" type="text" required />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="city" label="Town/City *" type="text" required />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="district" label="District *" type="text" required />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="postcode" label="Postcode / ZIP (optional)" type="text" />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="phone" label="Phone *" type="text" required />
+                            </div>
+                            <div class="mb-4">
+                                <x-ui.input name="email" label="Email Address *" type="text" required />
                             </div>
                         </div>
                     </div>
-                    <form action="{{ route('vendor.product.order.store') }}" method="POST">
-                        @csrf
-                        <div class="card-body">
-
-                            <div class="card">
-                                <div class="card-header bg-success">
-                                    <h2 class="card-title">Billing Info</h2>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label for="first_name">First Name <sup style="color: red;"></sup>*</label>
-                                            <input required name="first_name" id="first_name"
-                                                class="form-control @error('first_name') is-invalid @enderror"
-                                                type="text" />
-                                            @error('email')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="last_name">Last Name <sup style="color: red;"></sup>*</label>
-                                            <input required name="last_name" id="last_name"
-                                                class="form-control @error('last_name') is-invalid @enderror"
-                                                type="text" />
-                                            @error('last_name')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="company">Company (optional)</label>
-                                            <input required name="company" id="company"
-                                                class="form-control @error('company') is-invalid @enderror"
-                                                type="text" />
-                                            @error('email')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="country">Country/Region <sup style="color: red;">*</sup></label>
-                                            <input name="country" id="country"
-                                                class="form-control @error('country') is-invalid @enderror"
-                                                type="text" />
-                                            @error('country')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="address">Street address <sup style="color: red;">*</sup></label>
-                                            <input required name="address" id="address"
-                                                class="form-control @error('address') is-invalid @enderror"
-                                                type="text" />
-                                            @error('address')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="city">Town/City <sup style="color: red;">*</sup></label>
-                                            <input required name="city" id="city"
-                                                class="form-control @error('city') is-invalid @enderror" type="text" />
-                                            @error('city')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="district">District <sup style="color: red;">*</sup></label>
-                                            <input required name="district" id="district"
-                                                class="form-control @error('district') is-invalid @enderror"
-                                                type="text" />
-                                            @error('email')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="postcode">Postcode / ZIP(optional)</label>
-                                            <input required name="postcode" id="postcode"
-                                                class="form-control @error('postcode') is-invalid @enderror"
-                                                type="text" />
-                                            @error('email')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group col-md-6">
-                                            <label for="phone">Phone <sup style="color: red;">*</sup></label>
-                                            <input required name="phone" id="phone"
-                                                class="form-control @error('phone') is-invalid @enderror" type="text" />
-                                            @error('phone')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="email">Email Address <sup style="color: red;">*</sup></label>
-                                            <input required name="email" id="email"
-                                                class="form-control @error('email') is-invalid @enderror"
-                                                type="text" />
-                                            @error('email')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header bg-success">
-                                    <h2 class="card-title">Shipping Method</h2>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label>Shipping Method</label> <br>
-                                            <input name="shipping_method" value="Free" type="radio"> Free
-                                            <input name="shipping_method" value="Prime" type="radio"> Prime
-                                        </div>
-                                        @error('shipping_method')
-                                            <small class="form-text text-danger">{{ $message }}</small>
-                                        @enderror
-
-                                        <div class="form-group col-md-6">
-                                            <label for="payment_method">Payment Method</label>
-                                            <select required name="payment_method" id="payment_method"
-                                                class="form-control @error('payment_method') is-invalid @enderror">
-                                                <option value="">Select Payment Method</option>
-                                                <option value="Bkash">Bkash</option>
-                                                <option value="Nagad">Nagad</option>
-                                                <option value="Rocket">Rocket</option>
-                                                <option value="Bank">Bank</option>
-                                                <option value="Cash on Delivery">Cash on Delivery</option>
-                                            </select>
-                                            @error('payment_method')
-                                                <small class="form-text text-danger">{{ $message }}</small>
-                                            @enderror
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-row" id="payment-details"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header bg-success">
-                                    <h2 class="card-title">Order Summary</h2>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-row">
-
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered table-hover">
-                                                <thead>
-                                                    <th>SL</th>
-                                                    <th>Image</th>
-                                                    <th>Title</th>
-                                                    <th>Price</th>
-                                                    <th>Color</th>
-                                                    <th>Size</th>
-                                                    <th>Qty</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td></td>
-                                                        <td>
-                                                            <img src="{{ asset('uploads/product/' . $product->image) }}"
-                                                                alt="Product Image" width="60px">
-                                                        </td>
-                                                        <td>
-                                                            <a
-                                                                href="{{ route('admin.product.show', $product->id) }}">{{ $product->title }}</a>
-                                                        </td>
-                                                        <td>{{ $product->discount_price }}</td>
-                                                        <td>
-                                                            @foreach ($product->colors as $color)
-                                                                <input type="radio" name="color" id="color"
-                                                                    value="{{ $color->name }}"> {{ $color->name }}
-                                                            @endforeach
-                                                        </td>
-                                                        <td>
-                                                            @foreach ($product->sizes as $size)
-                                                                <input type="radio" name="size" id="size"
-                                                                    value="{{ $size->name }}"> {{ $size->name }}
-                                                            @endforeach
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" class="form-control" name="qty"
-                                                                id="qty" value="1" style="width:80px">
-                                                            <input type="hidden" name="id" id="id"
-                                                                value="{{ $product->id }}">
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="coupon">Apply Coupon:</label>
-                                                        <input type="text" class="form-control" id="coupon"
-                                                            placeholder="Enter coupon here">
-                                                        <small class="form-text text-danger"></small>
-                                                    </div>
-                                                    <button type="button" id="apply-coupon" class="btn btn-primary">
-                                                        <i class="fas fa-plus-circle"></i>
-                                                        Apply
-                                                    </button>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <table class="table table-bordered table-hover">
-                                                        <tbody>
-                                                            <tr>
-                                                                <th width="40%">Subtotal</th>
-                                                                <td id="subtotal">{{ $product->discount_price }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Quantity</th>
-                                                                <td id="quantity">1</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Shipping Charge</th>
-                                                                <td id="shipping_charge">0</td>
-                                                            </tr>
-
-                                                            <tr>
-                                                                <th>Coupon (<span
-                                                                        id="coupon_name">{{ Session::has('coupon') ? Session::get('coupon')['name'] : '' }}</span>)
-                                                                </th>
-                                                                <td id="coupon_charge">
-                                                                    {{ Session::has('coupon') ? Session::get('coupon')['discount'] : '0' }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Total</th>
-                                                                <td id="total">0</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="card-footer">
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-plus-circle"></i>
-                                    Submit
-                                </button>
-                            </div>
-                        </div>
-                    </form>
                 </div>
-                <!-- /.card -->
+
+                {{-- Shipping Method card --}}
+                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                    <div class="rounded-t-lg bg-success px-4 py-3">
+                        <h2 class="font-medium text-white">Shipping Method</h2>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Shipping Method</label>
+                                <div class="flex items-center gap-4 mt-1">
+                                    <label class="inline-flex items-center gap-1 text-sm text-slate-700">
+                                        <input name="shipping_method" value="Free" type="radio"> Free
+                                    </label>
+                                    <label class="inline-flex items-center gap-1 text-sm text-slate-700">
+                                        <input name="shipping_method" value="Prime" type="radio"> Prime
+                                    </label>
+                                </div>
+                                @error('shipping_method')
+                                    <small class="text-sm text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <x-ui.select name="payment_method" label="Payment Method" required>
+                                    <option value="">Select Payment Method</option>
+                                    <option value="Bkash">Bkash</option>
+                                    <option value="Nagad">Nagad</option>
+                                    <option value="Rocket">Rocket</option>
+                                    <option value="Bank">Bank</option>
+                                    <option value="Cash on Delivery">Cash on Delivery</option>
+                                </x-ui.select>
+                                @error('payment_method')
+                                    <small class="text-sm text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="col-span-full">
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2" id="payment-details"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Order Summary card --}}
+                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+                    <div class="rounded-t-lg bg-success px-4 py-3">
+                        <h2 class="font-medium text-white">Order Summary</h2>
+                    </div>
+                    <div class="p-4">
+
+                        <div class="overflow-x-auto mb-4">
+                            <x-ui.table>
+                                <thead>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Image</th>
+                                        <th>Title</th>
+                                        <th>Price</th>
+                                        <th>Color</th>
+                                        <th>Size</th>
+                                        <th>Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <img src="{{ asset('uploads/product/' . $product->image) }}"
+                                                alt="Product Image" width="60px">
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.product.show', $product->id) }}">{{ $product->title }}</a>
+                                        </td>
+                                        <td>{{ $product->discount_price }}</td>
+                                        <td>
+                                            @foreach ($product->colors as $color)
+                                                <input type="radio" name="color" id="color"
+                                                    value="{{ $color->name }}"> {{ $color->name }}
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @foreach ($product->sizes as $size)
+                                                <input type="radio" name="size" id="size"
+                                                    value="{{ $size->name }}"> {{ $size->name }}
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            <input type="number" class="w-20 rounded-md border border-slate-300 px-2 py-1 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" name="qty"
+                                                id="qty" value="1">
+                                            <input type="hidden" name="id" id="id"
+                                                value="{{ $product->id }}">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </x-ui.table>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div class="mb-4">
+                                <label for="coupon" class="block text-sm font-medium text-slate-700 mb-1">Apply Coupon:</label>
+                                <input type="text" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" id="coupon"
+                                    placeholder="Enter coupon here">
+                                <small class="text-sm text-danger"></small>
+                                <div class="mt-2">
+                                    <x-ui.button type="button" id="apply-coupon" variant="primary">
+                                        <i class="fas fa-plus-circle"></i>
+                                        Apply
+                                    </x-ui.button>
+                                </div>
+                            </div>
+                            <div>
+                                <x-ui.table>
+                                    <tbody>
+                                        <tr>
+                                            <th width="40%">Subtotal</th>
+                                            <td id="subtotal">{{ $product->discount_price }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Quantity</th>
+                                            <td id="quantity">1</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Shipping Charge</th>
+                                            <td id="shipping_charge">0</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Coupon (<span
+                                                    id="coupon_name">{{ Session::has('coupon') ? Session::get('coupon')['name'] : '' }}</span>)
+                                            </th>
+                                            <td id="coupon_charge">
+                                                {{ Session::has('coupon') ? Session::get('coupon')['discount'] : '0' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total</th>
+                                            <td id="total">0</td>
+                                        </tr>
+                                    </tbody>
+                                </x-ui.table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-        </div>
 
-
-    </section>
-    <!-- /.content -->
+            {{-- Card footer (inside the form) --}}
+            <div class="border-t border-slate-200 px-4 py-3">
+                <x-ui.button type="submit" variant="primary">
+                    <i class="fas fa-plus-circle"></i>
+                    Submit
+                </x-ui.button>
+            </div>
+        </form>
+    </div>
 
 @endsection
 
@@ -345,7 +270,7 @@
         $(document).on('click', '#apply-coupon', function(e) {
             e.preventDefault();
 
-            $('#coupon').removeClass('is-invalid');
+            $('#coupon').removeClass('border-danger').addClass('border-slate-300');
 
             let code = $('input#coupon').val();
             let id = "{!! $product->id !!}";
@@ -388,7 +313,7 @@
                     }
                 });
             } else {
-                $('#coupon').addClass('is-invalid');
+                $('#coupon').removeClass('border-slate-300').addClass('border-danger');
             }
 
         });
@@ -397,41 +322,41 @@
             let method = $(this).val();
             let html = '';
             if (method == 'Bkash' || method == 'Nagad' || method == 'Rocket') {
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="mobile_number">Mobile Number</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="mobile_number" class="block text-sm font-medium text-slate-700 mb-1">Mobile Number</label>'
                 html +=
-                    '<input required type="text" name="mobile_number" id="mobile_number" class="form-control" placeholder="Enter your mobile number"/>'
+                    '<input required type="text" name="mobile_number" id="mobile_number" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter your mobile number"/>'
                 html += '</div>'
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="transaction_id">Transaction ID</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="transaction_id" class="block text-sm font-medium text-slate-700 mb-1">Transaction ID</label>'
                 html +=
-                    '<input required type="text" name="transaction_id" id="transaction_id" class="form-control" placeholder="Enter transaction id"/>'
+                    '<input required type="text" name="transaction_id" id="transaction_id" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter transaction id"/>'
                 html += '</div>'
             } else if (method == 'Bank') {
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="bank_name">Bank Name</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="bank_name" class="block text-sm font-medium text-slate-700 mb-1">Bank Name</label>'
                 html +=
-                    '<input required type="text" name="bank_name" id="bank_name" class="form-control" placeholder="Enter bank name"/>'
+                    '<input required type="text" name="bank_name" id="bank_name" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter bank name"/>'
                 html += '</div>'
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="account_number">Account Number</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="account_number" class="block text-sm font-medium text-slate-700 mb-1">Account Number</label>'
                 html +=
-                    '<input required type="text" name="account_number" id="account_number" class="form-control" placeholder="Enter account number"/>'
+                    '<input required type="text" name="account_number" id="account_number" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter account number"/>'
                 html += '</div>'
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="holder_name">Holder Name</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="holder_name" class="block text-sm font-medium text-slate-700 mb-1">Holder Name</label>'
                 html +=
-                    '<input required type="text" name="holder_name" id="holder_name" class="form-control" placeholder="Enter holder name"/>'
+                    '<input required type="text" name="holder_name" id="holder_name" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter holder name"/>'
                 html += '</div>'
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="branch">Branch Name</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="branch" class="block text-sm font-medium text-slate-700 mb-1">Branch Name</label>'
                 html +=
-                    '<input required type="text" name="branch" id="branch" class="form-control" placeholder="Enter branch name"/>'
+                    '<input required type="text" name="branch" id="branch" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter branch name"/>'
                 html += '</div>'
-                html += '<div class="form-group col-md-6">'
-                html += '<label for="routing">Routing Number</label>'
+                html += '<div class="mb-4">'
+                html += '<label for="routing" class="block text-sm font-medium text-slate-700 mb-1">Routing Number</label>'
                 html +=
-                    '<input required type="text" name="routing" id="routing" class="form-control" placeholder="Enter routing number"/>'
+                    '<input required type="text" name="routing" id="routing" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Enter routing number"/>'
                 html += '</div>'
             }
 

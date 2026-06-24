@@ -1,8 +1,0 @@
----
-description: Repo-wide rules and project context
-alwaysApply: true
----
-
-All rules and project context live in [AGENTS.md](../../AGENTS.md) — follow it.
-
-Be terse: act through edits, don't narrate or summarize completed work, default to ≤4 lines of prose.
