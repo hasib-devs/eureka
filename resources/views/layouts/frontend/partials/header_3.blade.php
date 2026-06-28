@@ -202,15 +202,11 @@ echo $top_nav_col_1; @endphp">
     <div class="top-header header_area" style="background:var(--primary_color);color:var(--primary_bg_color_text)">
         <div class=" containe">
 
-            {{-- Mobile menu --}}
-            <div class="mobile-menu-openar">
-                <div class="bars">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+            <div class="mobile-cart-openar">
+                <a href="{{ route('cart') }}" class="mobile-cart-button" aria-label="Cart">
+                    <i class="fal fa-shopping-cart"></i>
+                </a>
             </div>
-            {{-- / Mobile menu --}}
 
             <div class="logo-area">
                 <a href="{{ route('home') }}">
@@ -236,59 +232,9 @@ echo $top_nav_col_1; @endphp">
                             </form>
                         </li>
                     @endguest
-
-                    ba
                 </ul>
             </div>
             <div class="custom-header">
-                <div class="header-category-wrap">
-                    <div id="top_categories_wrapper" class="header-category-nav"
-                        style="position:relative;padding: 0 10px 0 0 !important">
-                        <button id="top_categories_btn" style="outline:none;">
-                            <i class="icofont icofont-navigation-menu"></i>&nbsp;Categories
-                        </button>
-                        <section id="top_categories" class="hero-area" {{-- style="display:none;" --}}>
-                            <div class="container">
-                                <div class="row" id="superCatStyle3">
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-                <style>
-                    @media (max-width: 767px) {
-
-                        /* double sub cat hide last cat */
-                        header.not-home .main-menu .nav-bar .header-category-menu:nth-child(2) {
-                            display: none !important;
-                        }
-                    }
-
-                    #top_categories_btn {
-                        outline: none;
-                        display: flex;
-                        align-items: center;
-                        color: var(--secondary_color);
-                    }
-
-                    #top_categories {
-                        display: none;
-                        position: absolute;
-                        top: 40px;
-                        z-index: 99;
-                    }
-                </style>
-                @push('js')
-                    <script>
-                        $(document).ready(function() {
-                            $("#top_categories_btn").click(function() {
-                                $("#top_categories").slideToggle();
-                            });
-                        });
-                    </script>
-                @endpush
-
-
                 <div id="search-box-open" class="search-bar">
                     {{-- <input type="text" class="search-input" placeholder="Search..."> --}}
                     <input readonly placeholder="Search entires store here...." class="sear search-input"
@@ -403,16 +349,6 @@ echo $top_nav_col_1; @endphp">
         width: 100%;
     }
 
-    .category-button {
-        background-color: #ffffff;
-        /* White background */
-        border: none;
-        border-radius: 10px 0 0 10px;
-        /* Round only the left side */
-        padding: 8px;
-        cursor: pointer;
-    }
-
     .search-input {
         border: none;
         border-radius: 0 10px 10px 0;
@@ -450,7 +386,6 @@ echo $top_nav_col_1; @endphp">
             display: none;
         }
 
-        .header-category-wrap,
         #search-box-open input,
         #LOGO_NAME {
             display: none;
@@ -458,6 +393,28 @@ echo $top_nav_col_1; @endphp">
 
         .custom-header {
             flex-basis: unset;
+            margin-left: 55px;
+        }
+
+        .mobile-cart-openar {
+            display: block;
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .mobile-cart-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary_bg_color_text);
+            text-decoration: none;
         }
     }
 </style>
@@ -472,61 +429,6 @@ echo $top_nav_col_1; @endphp">
     <script>
         $(window).on('load', function() {
             $('#myModal').modal('show');
-
         });
-        var site_url = "{{ url('/') }}";
-        $.ajax({
-            url: site_url + "/render/superCat",
-            type: "get",
-            datatype: "html",
-            beforeSend: function() {
-                $('.ajax-loading').show();
-            },
-            success: function(response) {
-                var result = $.parseJSON(response);
-                $('.ajax-loading').hide();
-                $("#superCat").append(result);
-                subCat();
-            },
-
-        })
-
-        function subCat() {
-            var site_url = "{{ url('/') }}";
-            $.ajax({
-                url: site_url + "/render/subCat",
-                type: "get",
-                datatype: "html",
-                beforeSend: function() {
-                    $('.ajax-loading').show();
-                },
-                success: function(response) {
-                    var result = $.parseJSON(response);
-                    $('.ajax-loading').hide();
-                    $("#subCat").append(result);
-
-                },
-
-            })
-        }
-
-
-
-
-        $.ajax({
-            url: site_url + "/render/superCat",
-            type: "get",
-            datatype: "html",
-            beforeSend: function() {
-                $('.ajax-loading').show();
-            },
-            success: function(response) {
-                var result = $.parseJSON(response);
-                $('.ajax-loading').hide();
-                $("#superCatStyle3").append(result);
-                subCat();
-            },
-
-        })
     </script>
 @endpush

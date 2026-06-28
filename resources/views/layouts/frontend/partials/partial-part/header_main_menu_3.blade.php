@@ -5,31 +5,24 @@
         </div>
         <div class="collpase-menu-open" style="display: none;">
             <a id="menu" class="active" href="#">MENU</a>
-            <a id="cat" href="#">CATEGORIES</a>
         </div>
-        
+
         <div class="nav-bar">
-            <div class="header-category-wrap">
-                <div class="header-category-nav">
-                    <span><i class="icofont icofont-navigation-menu"></i></span>
-                    Categories
-                    <span class="arrow"></span>
-                    <section class="hero-area" style="display: {{Request::is('/') ? 'block':''}}">
-                        <div class="container">
-                            <div class="row" id="superCat">
-                            </div>
-                        </div>
-                    </section>
-                </div>
-                <div id="subCat"></div>
-            </div>
             <div class="nav-menus">
                 <ul>
-                    <li><a href="{{route('home')}}" class="{{Request::is('/') ? 'active':''}}">Home</a></li>
-                    <li><a href="{{route('product')}}" class="{{Request::is('product*') ? 'active':''}}">Shop</a></li>
-                    <li><a href="{{route('contact')}}" class="{{Request::is('contact') ? 'active':''}}">About Us</a></li>
-                    <li><a href="{{route('contact')}}" class="{{Request::is('contact') ? 'active':''}}">Contact Us</a></li>
-                    <li><a href="tel:{{setting('SITE_INFO_PHONE')}}">Hotline: {{setting('SITE_INFO_PHONE')}}</a></li>
+                    <li><a href="{{ route('home') }}" class="{{ Request::is('/') ? 'active' : '' }}">Home</a></li>
+                    <li><a href="{{ route('product') }}" class="{{ Request::is('product*') ? 'active' : '' }}">Shop</a>
+                    </li>
+                    <li><a href="{{ route('categories_all') }}"
+                            class="{{ Request::is('categories_all*') || Request::is('category/*') || Request::is('sub-category/*') || Request::is('mini-category/*') || Request::is('extra-category/*') ? 'active' : '' }}">Categories</a>
+                    </li>
+                    <li><a href="{{ route('blogs') }}"
+                            class="{{ Request::is('blogs*') || Request::is('blog/*') ? 'active' : '' }}">Blog</a>
+                    </li>
+                    <li><a href="{{ route('track') }}" class="{{ Request::is('track*') ? 'active' : '' }}">Track</a>
+                    </li>
+                    <li><a href="{{ route('contact') }}"
+                            class="{{ Request::is('contact') ? 'active' : '' }}">Contact</a></li>
                     {{-- <li class="submenu" style="position:relative !important"><a href="{{route('blogs')}}">Updates</a></li> --}}
                     {{-- <li><a href="{{route('track')}}" class="{{Request::is('track*') ? 'active':''}}">Order Track</a></li> --}}
                     {{-- <li><a href="{{route('category')}}" class="{{Request::is('category*') ? 'active':''}}">All Category</a></li> --}}
@@ -44,9 +37,10 @@
 <style>
     header {
         border-bottom: none !important;
-        
+
     }
-  .main-menu {
-    background: #0f6ed3 !important;
-}
+
+    .main-menu {
+        background: #0f6ed3 !important;
+    }
 </style>

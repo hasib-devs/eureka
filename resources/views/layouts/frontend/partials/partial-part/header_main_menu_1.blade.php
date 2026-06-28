@@ -3,7 +3,7 @@
     <div class="container" style="padding: 0 20px;">
         <div class="nav-bar">
             <style>
-                :root{
+                :root {
                     --menu-bg: #22385a;
                     --menu-accent: #f85606;
                     --menu-text: #ffffff;
@@ -14,7 +14,9 @@
 
                 /* Desktop-only: hide this whole component on small screens */
                 @media (max-width: 991px) {
-                    .main-menu-desktop { display: none !important; }
+                    .main-menu-desktop {
+                        display: none !important;
+                    }
                 }
 
                 header .main-menu-desktop {
@@ -24,19 +26,21 @@
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     position: relative;
                     z-index: 1000;
-                    margin-top:16px;
+                    margin-top: 16px;
                 }
 
-                .main-menu-desktop .container { 
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center; 
-                    max-width: 1200px; 
-                    margin: 0 auto; 
+                .main-menu-desktop .container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    max-width: 1200px;
+                    margin: 0 auto;
                 }
 
                 /* Desktop nav wrapper */
-                .nav-menus { width: 100%; }
+                .nav-menus {
+                    width: 100%;
+                }
 
                 /* Categories list */
                 .nav-categories {
@@ -50,15 +54,15 @@
                     justify-content: center;
                 }
 
-                .nav-categories > li {
+                .nav-categories>li {
                     display: inline-flex;
                     align-items: center;
                     position: relative;
                     border-radius: 6px;
                 }
 
-                .nav-categories > li > a,
-                .nav-categories > li > button.link-like {
+                .nav-categories>li>a,
+                .nav-categories>li>button.link-like {
                     display: inline-flex;
                     align-items: center;
                     gap: 4px;
@@ -74,24 +78,24 @@
                     cursor: pointer;
                 }
 
-                .nav-categories > li > a:hover,
-                .nav-categories > li > button.link-like:hover {
+                .nav-categories>li>a:hover,
+                .nav-categories>li>button.link-like:hover {
                     background: rgba(255, 255, 255, 0.1);
                     border-radius: 6px;
                 }
 
-                .nav-categories > li > a.active {
+                .nav-categories>li>a.active {
                     color: #f85606;
                     background: rgba(129, 140, 248, 0.1);
                 }
 
                 /* special for auth avatar */
-                .authpro img { 
-                    width: 32px; 
-                    height: 32px; 
-                    border-radius: 50%; 
-                    margin-right: 8px; 
-                    object-fit: cover; 
+                .authpro img {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    margin-right: 8px;
+                    object-fit: cover;
                     border: 2px solid rgba(255, 255, 255, 0.2);
                 }
 
@@ -148,7 +152,7 @@
 
                 /* Show submenu on desktop hover - FIXED */
                 @media (min-width: 992px) {
-                    .category-item:hover > .sub-menu {
+                    .category-item:hover>.sub-menu {
                         opacity: 1;
                         visibility: visible;
                         transform: translateY(0);
@@ -157,7 +161,7 @@
                 }
 
                 /* For click toggle functionality */
-                .category-item.desktop-open > .sub-menu {
+                .category-item.desktop-open>.sub-menu {
                     opacity: 1 !important;
                     visibility: visible !important;
                     transform: translateY(0) !important;
@@ -165,14 +169,14 @@
                 }
 
                 /* small UX touches */
-                .nav-categories > li:focus-within { 
+                .nav-categories>li:focus-within {
                     outline: 2px solid var(--menu-accent);
                     outline-offset: 2px;
                     border-radius: 6px;
                 }
 
                 /* Add subtle separator */
-                .nav-categories > li:nth-last-child(3)::before {
+                .nav-categories>li:nth-last-child(3)::before {
                     content: '';
                     position: absolute;
                     left: -1px;
@@ -183,107 +187,77 @@
                     background: rgba(255, 255, 255, 0.2);
                 }
 
-                @media(max-width: 1100px){
-                    .main-menu-desktop .container{
+                @media(max-width: 1100px) {
+                    .main-menu-desktop .container {
                         padding: 0 16px;
                     }
-                    
-                    .nav-categories > li > a,
-                    .nav-categories > li > button.link-like {
+
+                    .nav-categories>li>a,
+                    .nav-categories>li>button.link-like {
                         padding: 10px 14px;
                         font-size: 13.5px;
                     }
                 }
-            
-/* ===== WHITE HEADER — DARK NAV TEXT ===== */
 
-/* Override the dark navy background and white text */
-:root {
-    --menu-bg: transparent;
-    --menu-text: #1C1917;
-}
+                /* ===== WHITE HEADER — DARK NAV TEXT ===== */
 
-header .main-menu-desktop {
-    background: transparent;
-    padding: 0;
-    margin-top: 0;
-}
+                /* Override the dark navy background and white text */
+                :root {
+                    --menu-bg: transparent;
+                    --menu-text: #1C1917;
+                }
 
-.nav-categories > li > a,
-.nav-categories > li > button.link-like {
-    color: #1C1917 !important;
-}
+                header .main-menu-desktop {
+                    background: transparent;
+                    padding: 0;
+                    margin-top: 0;
+                }
 
-.nav-categories > li > a:hover,
-.nav-categories > li > button.link-like:hover {
-    color: #C87D2A !important;
-    background: rgba(200, 125, 42, 0.08) !important;
-}
+                .nav-categories>li>a,
+                .nav-categories>li>button.link-like {
+                    color: #1C1917 !important;
+                }
 
-.nav-categories > li > a.active {
-    color: #C87D2A !important;
-    background: rgba(200, 125, 42, 0.08) !important;
-}
+                .nav-categories>li>a:hover,
+                .nav-categories>li>button.link-like:hover {
+                    color: #C87D2A !important;
+                    background: rgba(200, 125, 42, 0.08) !important;
+                }
 
-.nav-categories > li:nth-last-child(3)::before {
-    background: rgba(28,25,23,0.15);
-}
+                .nav-categories>li>a.active {
+                    color: #C87D2A !important;
+                    background: rgba(200, 125, 42, 0.08) !important;
+                }
 
-.authpro img {
-    border-color: rgba(28,25,23,0.15) !important;
-}
+                .nav-categories>li:nth-last-child(3)::before {
+                    background: rgba(28, 25, 23, 0.15);
+                }
 
-</style>
+                .authpro img {
+                    border-color: rgba(28, 25, 23, 0.15) !important;
+                }
+            </style>
 
             <div class="nav-menus">
                 <ul class="nav-categories" id="navCategoriesDesktop">
-                    @php
-                        use App\Models\Category;
-                        $categories = Category::with('subcategories')->get();
-                    @endphp
-
-                    @if (auth()->check() && auth()->user()->role_id != 1)
-                        <li class="authpro" style="display:none;">
-                            <img src="{{ asset('/') }}uploads/member/{{ auth()->user()->avatar == 'default.png' ? 'on_53876-5907.avif' : auth()->user()->avatar }}">
-                            <a href="#">{{ auth()->user()->name }}</a>
-                        </li>
-                    @endif
-
                     <li><a href="{{ route('home') }}" class="{{ Request::is('/') ? 'active' : '' }}">Home</a></li>
-
-                    @foreach ($categories as $category)
-                        <li class="category-item">
-                            @if ($category->subcategories->count())
-                                <button class="link-like" aria-expanded="false" type="button">
-                                    <span class="label">
-                                        @if ($category->status == 1) {{ $category->name }} @endif
-                                    </span>
-                                    <span class="chev"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
-                                </button>
-
-                                <ul class="sub-menu" aria-hidden="true">
-                                    @foreach ($category->subcategories as $sub)
-                                        <li>
-                                            <a href="{{ url('sub-category/' . $sub->slug) }}">{{ $sub->name }}</a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <a href="{{ url('category/' . $category->slug) }}">
-                                    @if ($category->status == 1) {{ $category->name }} @endif
-                                </a>
-                            @endif
-                        </li>
-                    @endforeach
-
-                    <li><a href="{{ route('product') }}" class="{{ Request::is('product*') ? 'active' : '' }}">Products</a></li>
-                    <li><a href="{{ route('track') }}" class="{{ Request::is('track*') ? 'active' : '' }}">Track</a></li>
-                    <li><a href="{{ route('contact') }}" class="{{ Request::is('contact') ? 'active' : '' }}">Contact</a></li>
+                    <li><a href="{{ route('product') }}" class="{{ Request::is('product*') ? 'active' : '' }}">Shop</a>
+                    </li>
+                    <li><a href="{{ route('categories_all') }}"
+                            class="{{ Request::is('categories_all*') || Request::is('category/*') || Request::is('sub-category/*') || Request::is('mini-category/*') || Request::is('extra-category/*') ? 'active' : '' }}">Categories</a>
+                    </li>
+                    <li><a href="{{ route('blogs') }}"
+                            class="{{ Request::is('blogs*') || Request::is('blog/*') ? 'active' : '' }}">Blog</a></li>
+                    <li><a href="{{ route('track') }}" class="{{ Request::is('track*') ? 'active' : '' }}">Track</a>
+                    </li>
+                    <li><a href="{{ route('contact') }}"
+                            class="{{ Request::is('contact') ? 'active' : '' }}">Contact</a></li>
 
                     @if (auth()->check() && auth()->user()->role_id != 1)
                         <li><a href="{{ route('order') }}">Orders</a></li>
                         <li><a href="{{ route('wishlist') }}">Wishlist</a></li>
-                        <li><a href="{{ route('dashboard') }}" class="{{ Request::is('dashboard') ? 'active' : '' }}">Account</a></li>
+                        <li><a href="{{ route('dashboard') }}"
+                                class="{{ Request::is('dashboard') ? 'active' : '' }}">Account</a></li>
                     @endif
 
                     @if (auth()->check() && auth()->user()->role_id == 1)
@@ -300,7 +274,7 @@ header .main-menu-desktop {
 </div>
 
 <script>
-    (function(){
+    (function() {
         // Desktop-only script: scoped to this component's IDs => no conflict with mobile
         const root = document.getElementById('navCategoriesDesktop');
         if (!root) return;
@@ -314,7 +288,7 @@ header .main-menu-desktop {
             btn.setAttribute('aria-expanded', 'false');
             if (submenu) submenu.setAttribute('aria-hidden', 'true');
 
-            btn.addEventListener('click', function(e){
+            btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 const isOpen = parent.classList.contains('desktop-open');
 
@@ -324,44 +298,44 @@ header .main-menu-desktop {
                         other.classList.remove('desktop-open');
                         const b = other.querySelector('button.link-like');
                         const s = other.querySelector('.sub-menu');
-                        if (b) b.setAttribute('aria-expanded','false');
-                        if (s) s.setAttribute('aria-hidden','true');
+                        if (b) b.setAttribute('aria-expanded', 'false');
+                        if (s) s.setAttribute('aria-hidden', 'true');
                     }
                 });
 
                 if (isOpen) {
                     parent.classList.remove('desktop-open');
-                    btn.setAttribute('aria-expanded','false');
-                    if (submenu) submenu.setAttribute('aria-hidden','true');
+                    btn.setAttribute('aria-expanded', 'false');
+                    if (submenu) submenu.setAttribute('aria-hidden', 'true');
                 } else {
                     parent.classList.add('desktop-open');
-                    btn.setAttribute('aria-expanded','true');
-                    if (submenu) submenu.setAttribute('aria-hidden','false');
+                    btn.setAttribute('aria-expanded', 'true');
+                    if (submenu) submenu.setAttribute('aria-hidden', 'false');
                 }
             });
         });
 
         // close on outside click or Escape
-        document.addEventListener('click', function(e){
+        document.addEventListener('click', function(e) {
             if (!root.contains(e.target)) {
                 root.querySelectorAll('.category-item.desktop-open').forEach(o => {
                     o.classList.remove('desktop-open');
                     const b = o.querySelector('button.link-like');
                     const s = o.querySelector('.sub-menu');
-                    if (b) b.setAttribute('aria-expanded','false');
-                    if (s) s.setAttribute('aria-hidden','true');
+                    if (b) b.setAttribute('aria-expanded', 'false');
+                    if (s) s.setAttribute('aria-hidden', 'true');
                 });
             }
         });
 
-        document.addEventListener('keydown', function(e){
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 root.querySelectorAll('.category-item.desktop-open').forEach(o => {
                     o.classList.remove('desktop-open');
                     const b = o.querySelector('button.link-like');
                     const s = o.querySelector('.sub-menu');
-                    if (b) b.setAttribute('aria-expanded','false');
-                    if (s) s.setAttribute('aria-hidden','true');
+                    if (b) b.setAttribute('aria-expanded', 'false');
+                    if (s) s.setAttribute('aria-hidden', 'true');
                 });
             }
         });
