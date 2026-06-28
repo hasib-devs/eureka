@@ -26,18 +26,20 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      - name: Setup SSH key
+           - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Pull latest code on server
+      - name: Update code on server
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "cd ${{ secrets.DEPLOY_PATH }} && git -c core.sshCommand='ssh -i ~/.ssh/github_hasib' pull origin main"
+            "cd ${{ secrets.DEPLOY_PATH }} && \
+            git -c core.sshCommand='ssh -i ~/.ssh/github_hasib' fetch origin && \
+            git reset --hard origin/main"
 
       - name: Upload built assets
         run: |
