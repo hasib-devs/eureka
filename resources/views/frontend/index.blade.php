@@ -368,20 +368,43 @@
                    Video Section
                 ========================= */
         .lux-video-section {
-            padding: 0 !important;
+            padding: 80px 0 !important;
             margin: 0 !important;
-            background: transparent !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%) !important;
         }
 
         .lux-video-wrap {
             width: 100% !important;
             max-width: 100% !important;
             margin: 0 !important;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding: 0 40px;
+        }
+
+        .lux-video-box-container {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lux-video-box {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s ease;
+        }
+
+        .lux-video-box:hover {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            transform: translateY(-8px);
         }
 
         .lux-video-card {
             padding: 0 !important;
-            text-align: center;
+            flex: 1;
+            text-align: left;
             border: 0 !important;
             border-radius: 0 !important;
             background: transparent !important;
@@ -389,24 +412,116 @@
         }
 
         .lux-video-card h2 {
-            margin: 0 0 10px;
-            font-size: 32px;
-            font-weight: 800;
+            margin: 0 0 20px;
+            font-size: 42px;
+            font-weight: 700;
             color: #111;
+            font-family: 'Cinzel Decorative', Georgia, serif;
+            letter-spacing: 1px;
+            line-height: 1.2;
         }
 
         .lux-video-card p {
-            max-width: 650px;
-            margin: 0 auto 24px;
+            max-width: none;
+            margin: 0 0 32px;
             color: #666;
+            font-size: 16px;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
         }
 
-        .lux-video-box video {
-            width: 100% !important;
-            max-height: none !important;
-            border-radius: 0 !important;
-            object-fit: cover;
-            display: block;
+        .lux-video-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .lux-video-btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .lux-video-btn-primary {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        .lux-video-btn-primary:hover {
+            background: #333;
+            border-color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .lux-video-btn-secondary {
+            background: transparent;
+            color: #000;
+            border-color: #000;
+        }
+
+        .lux-video-btn-secondary:hover {
+            background: #000;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            height: 500px;
+        }
+
+        @media (max-width: 1024px) {
+            .lux-video-wrap {
+                flex-direction: column;
+                gap: 40px;
+                padding: 0 20px;
+            }
+
+            .lux-video-card h2 {
+                font-size: 32px;
+            }
+
+            .lux-video-box video {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .lux-video-section {
+                padding: 40px 0 !important;
+            }
+
+            .lux-video-wrap {
+                padding: 0 16px;
+                gap: 24px;
+            }
+
+            .lux-video-card h2 {
+                font-size: 24px;
+            }
+
+            .lux-video-card p {
+                font-size: 14px;
+            }
+
+            .lux-video-buttons {
+                flex-direction: column;
+            }
+
+            .lux-video-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .lux-video-box video {
+                height: 300px;
+            }
         }
 
         /* =========================
@@ -987,6 +1102,14 @@
     @if (!empty($video))
         <section class="lux-video-section">
             <div class="lux-video-wrap">
+                <div class="lux-video-box-container">
+                    <div class="lux-video-box">
+                        <video controls poster="{{ $video->thumbnail ? asset('storage/' . $video->thumbnail) : '' }}">
+                            <source src="{{ asset('storage/' . $video->video) }}">
+                        </video>
+                    </div>
+                </div>
+
                 <div class="lux-video-card">
                     <h2>{{ $video->title }}</h2>
 
@@ -994,10 +1117,9 @@
                         <p>{{ $video->description }}</p>
                     @endif
 
-                    <div class="lux-video-box">
-                        <video controls poster="{{ $video->thumbnail ? asset('storage/' . $video->thumbnail) : '' }}">
-                            <source src="{{ asset('storage/' . $video->video) }}">
-                        </video>
+                    <div class="lux-video-buttons">
+                        <button class="lux-video-btn lux-video-btn-primary">Watch Now</button>
+                        <button class="lux-video-btn lux-video-btn-secondary">Learn More</button>
                     </div>
                 </div>
             </div>
