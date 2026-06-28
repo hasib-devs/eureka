@@ -469,11 +469,11 @@
         }
 
         .lux-video-btn-secondary:hover {
-            background: #000;
-            color: #fff;
+            background: #f0f0f0;
+            color: #000;
+            border-color: #000;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            height: 500px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 1024px) {
