@@ -33,8 +33,8 @@
         }
 
         /* =========================
-       Global Luxury Home Spacing
-    ========================= */
+                   Global Luxury Home Spacing
+                ========================= */
         .lux-section-title {
             text-align: center;
             font-size: 24px;
@@ -44,11 +44,12 @@
         }
 
         /* =========================
-       Category Section
-    ========================= */
+                   Category Section
+                ========================= */
         .lux-category {
-            padding: 28px 0 18px;
-            background: #fff;
+            padding: 52px 0 28px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            border-bottom: 1px solid #eee;
         }
 
         .lux-category .container {
@@ -68,18 +69,29 @@
         }
 
         .lux-cat-item {
-            min-width: 145px;
+            min-width: 220px;
             text-align: center;
             text-decoration: none;
             color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .lux-cat-item:hover {
+            transform: translateY(-5px);
         }
 
         .lux-cat-img {
-            width: 145px;
-            height: 145px;
+            width: 220px;
+            height: 220px;
             overflow: hidden;
-            border-radius: 7px;
+            border-radius: 12px;
             background: #f5f5f5;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .lux-cat-item:hover .lux-cat-img {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .lux-cat-img img {
@@ -95,14 +107,17 @@
 
         .lux-cat-item span {
             display: block;
-            margin-top: 9px;
-            font-size: 13px;
+            margin-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
             color: #111;
+            letter-spacing: 0.5px;
+            text-transform: capitalize;
         }
 
         /* =========================
-       Shop Header
-    ========================= */
+                   Shop Header
+                ========================= */
         .lux-shop-header {
             padding: 72px 20px 52px;
             text-align: center;
@@ -129,8 +144,8 @@
         }
 
         /* =========================
-       Premium Product Section
-    ========================= */
+                   Premium Product Section
+                ========================= */
         .lux-products {
             width: 100%;
             padding: 0 0 66px;
@@ -180,7 +195,7 @@
 
         .lux-product-thumb {
             position: relative;
-            height: 390px;
+            height: 540px;
             overflow: hidden;
             border-radius: 7px;
             background: #f5f5f5;
@@ -288,9 +303,46 @@
             font-weight: 500;
         }
 
+        @keyframes rainbow-border {
+            0% {
+                border-color: #ff0000;
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+
+            16.67% {
+                border-color: #ff7f00;
+                box-shadow: 0 0 10px rgba(255, 127, 0, 0.5);
+            }
+
+            33.33% {
+                border-color: #ffff00;
+                box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+            }
+
+            50% {
+                border-color: #00ff00;
+                box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            }
+
+            66.67% {
+                border-color: #0000ff;
+                box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+            }
+
+            83.33% {
+                border-color: #4b0082;
+                box-shadow: 0 0 10px rgba(75, 0, 130, 0.5);
+            }
+
+            100% {
+                border-color: #9400d3;
+                box-shadow: 0 0 10px rgba(148, 0, 211, 0.5);
+            }
+        }
+
         .lux-add-to-cart {
             padding: 9px 18px;
-            border: 0;
+            border: 1px solid #000;
             border-radius: 7px;
             background: #000;
             color: #fff;
@@ -298,6 +350,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: 0.3s ease;
+            animation: rainbow-border 3s infinite;
         }
 
         .lux-add-to-cart:hover {
@@ -305,15 +358,15 @@
         }
 
         /* =========================
-       Old Homepage Category Product Slider Support
-    ========================= */
+                   Old Homepage Category Product Slider Support
+                ========================= */
         .slick-slides .slick-slide {
             padding: 0 12px;
         }
 
         /* =========================
-       Video Section
-    ========================= */
+                   Video Section
+                ========================= */
         .lux-video-section {
             padding: 0 !important;
             margin: 0 !important;
@@ -357,8 +410,8 @@
         }
 
         /* =========================
-       Dynamic Banner Showcase
-    ========================= */
+                   Dynamic Banner Showcase
+                ========================= */
         .lux-banner-showcase {
             padding: 0 !important;
             margin: 0 !important;
@@ -449,8 +502,8 @@
         }
 
         /* =========================
-       Premium Footer
-    ========================= */
+                   Premium Footer
+                ========================= */
         .lux-footer {
             padding: 42px 20px 30px;
             background: #f6f6f6;
@@ -568,8 +621,8 @@
         }
 
         /* =========================
-       Responsive
-    ========================= */
+                   Responsive
+                ========================= */
         @media (max-width: 992px) {
             .lux-product-thumb {
                 height: 360px;
@@ -879,8 +932,7 @@
                     <a href="{{ route('category.product', $category->slug) }}" class="lux-cat-item">
 
                         <div class="lux-cat-img">
-                            <img src="{{ asset('uploads/category/' . $category->cover_photo) }}"
-                                alt="{{ $category->name }}">
+                            <img src="{{ asset('uploads/category/' . $category->cover_photo) }}" alt="{{ $category->name }}">
                         </div>
 
                         <span>{{ $category->name }}</span>
