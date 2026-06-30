@@ -148,8 +148,8 @@
                             </td>
                             <td>
                                 <div class="inline-flex gap-1">
-                                    <x-ui.button variant="primary" size="sm" :href="route('admin.product.order', $product->id)" title="Order Product">
-                                        <i class="fab fa-jedi-order"></i>
+                                    <x-ui.button variant="primary" size="sm" :href="route('admin.product.order', $product->id)" title="Create Order for this Product">
+                                        <i class="fas fa-cart-plus"></i>
                                     </x-ui.button>
                                     @if ($product->status)
                                         <x-ui.button variant="success" size="sm" :href="routeHelper('product/status/' . $product->id)" title="Disable">

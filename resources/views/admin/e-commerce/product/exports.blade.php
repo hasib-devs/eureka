@@ -94,7 +94,7 @@
 			<td>
 				@php
 				
-				$ecats=DB::table('extra_mini_category_product')->where('product_id',$product->id)->get();
+				$ecats=DB::table('extra_mini_category_products')->where('product_id',$product->id)->get();
 				$ecid=[];
 				foreach($ecats as $ecat){
 					$ecid[]= $ecat->extra_mini_category_id;

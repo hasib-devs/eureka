@@ -640,7 +640,7 @@ class ProductController extends Controller
 
         if (! empty($request->extra_category)) {
             $sub_category = ExtraMiniCategory::where('slug', $request->extra_category)->pluck('id');
-            $sub_category_product_ids = DB::table('extra_mini_category_product')->where('extra_mini_category_id', $sub_category)->get()->pluck('product_id');
+            $sub_category_product_ids = DB::table('extra_mini_category_products')->where('extra_mini_category_id', $sub_category)->get()->pluck('product_id');
             $products = $products->whereIn('id', $sub_category_product_ids);
         } elseif (! empty($request->mini_category)) {
             $sub_category = miniCategory::where('slug', $request->mini_category)->pluck('id');

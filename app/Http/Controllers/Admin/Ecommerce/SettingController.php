@@ -380,7 +380,9 @@ class SettingController extends Controller
 
     public function showShop()
     {
-        $shop_info = ShopInfo::where('user_id', 1)->first();
+        // firstOrNew so a not-yet-created shop still renders the (empty) form
+        // instead of 500-ing on `$shop_info->profile` etc. in the view.
+        $shop_info = ShopInfo::firstOrNew(['user_id' => 1]);
         return view('admin.e-commerce.shop', compact('shop_info'));
     }
 

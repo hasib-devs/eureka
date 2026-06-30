@@ -106,7 +106,10 @@ class Product extends Model
 
     public function extra_categories()
     {
-        return $this->belongsToMany(ExtraMiniCategory::class);
+        // Pivot table was shipped as the (non-conventional) plural name
+        // `extra_mini_category_products`; pin it so Eloquent doesn't guess the
+        // singular default and 500 on a missing table.
+        return $this->belongsToMany(ExtraMiniCategory::class, 'extra_mini_category_products');
     }
 
     public function campaigns()

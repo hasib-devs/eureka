@@ -186,10 +186,10 @@ class ProductController extends Controller
         if(!empty( $request->get('extra_categories'))){
            foreach($request->extra_categories as $catid){
                 if($catid!=null){
-                DB::table('extra_mini_category_product')->insert(
+                DB::table('extra_mini_category_products')->insert(
                     array(
-                            'extra_mini_category_id'     =>   $catid, 
-                             'product_id'     =>   $product->id, 
+                            'extra_mini_category_id'     =>   $catid,
+                             'product_id'     =>   $product->id,
                     )
                 );}
             }

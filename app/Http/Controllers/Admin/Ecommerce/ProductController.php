@@ -58,7 +58,7 @@ class ProductController extends Controller
             case 'unapproved':
                 $query->where('is_aproved', false);
                 break;
-            case 'aproved':
+            case 'approved':
                 $query->where('is_aproved', true);
                 break;
         }
@@ -155,7 +155,9 @@ class ProductController extends Controller
     public function lowProduct(){
         $products=\App\Models\Product::where('quantity','<','6')->where('user_id',auth()->id())->paginate(10);
         $categories = Category::all();
-        return view('admin.e-commerce.product.index', compact('products', 'categories'));
+        $brands = Brand::all();
+        $statuses = ['1' => 'Active', '0' => 'Inactive'];
+        return view('admin.e-commerce.product.index', compact('products', 'categories', 'brands', 'statuses'));
     }
 
     public function commetn_delte($id){
@@ -287,8 +289,11 @@ class ProductController extends Controller
      */
     public function inhouseProduct()
     {
-        $products = Product::where('type','1')->with('brand')->latest('id')->get();
-        return view('admin.e-commerce.product.index', compact('products'));
+        $products = Product::where('type','1')->with('brand')->latest('id')->paginate(10);
+        $categories = Category::all();
+        $brands = Brand::all();
+        $statuses = ['1' => 'Active', '0' => 'Inactive'];
+        return view('admin.e-commerce.product.index', compact('products', 'categories', 'brands', 'statuses'));
     }
 
     public function type()
@@ -536,10 +541,10 @@ class ProductController extends Controller
         if(!empty( $request->get('extra_categories'))){
            foreach($request->extra_categories as $catid){
                 if($catid!=null){
-                DB::table('extra_mini_category_product')->insert(
+                DB::table('extra_mini_category_products')->insert(
                     array(
-                            'extra_mini_category_id'     =>   $catid, 
-                             'product_id'     =>   $product->id, 
+                            'extra_mini_category_id'     =>   $catid,
+                             'product_id'     =>   $product->id,
                     )
                 );}
             }

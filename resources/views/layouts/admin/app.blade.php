@@ -21,6 +21,9 @@
 
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
+    <!-- Font Awesome (self-hosted) — admin tables/buttons use `fas`/`fab` icon classes -->
+    <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
+
 
     @notifyCss
 

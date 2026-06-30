@@ -16,16 +16,20 @@ it('renders the danger variant color', function () {
     expect($html)->toContain('bg-tile-danger');
 });
 
-it('renders a More info footer link when href is given', function () {
+it('makes the whole tile a drill-down link with a View details affordance when href is given', function () {
     $html = Blade::render('<x-ui.stat-tile variant="success" :value="30" label="Orders" icon="fas fa-cart" href="/vendor/order" />');
 
-    expect($html)->toContain('More info')->toContain('href="/vendor/order"');
+    // The entire tile is now the clickable link (replaces the old redundant "More info" footer).
+    expect($html)->toContain('href="/vendor/order"')
+        ->toContain('View details')
+        ->toContain('<a');
 });
 
-it('omits the footer link when no href is given', function () {
+it('renders a plain non-link tile when no href is given', function () {
     $html = Blade::render('<x-ui.stat-tile variant="info" :value="0" label="Amount" icon="fas fa-money" />');
 
-    expect($html)->not->toContain('More info');
+    expect($html)->not->toContain('View details')
+        ->not->toContain('href=');
 });
 
 it('renders the icon class', function () {

@@ -61,7 +61,7 @@ use App\Models\Product;
             <x-ui.stat-tile variant="success"
                 :value="$orders"
                 label="Total Orders"
-                icon="fab fa-jedi-order"
+                icon="fas fa-shopping-cart"
                 :href="routeHelper('order')" />
 
             <x-ui.stat-tile variant="info"
