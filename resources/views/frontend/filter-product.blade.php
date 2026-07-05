@@ -1,208 +1,431 @@
 @extends('layouts.frontend.app')
 
+@php
+    // Derive a human title + the active category-context for the sidebar from the
+    // current filter request. Falls back to a generic label when only brand/price/
+    // sort filters are active.
+    $filterName = null;
+    $filterValue = null;
+    $title = 'Products';
+
+    if (! empty($request->extra_category)) {
+        $filterName = 'extra_category';
+        $filterValue = $request->extra_category;
+        $title = optional(\App\Models\ExtraMiniCategory::where('slug', $filterValue)->first())->name ?? 'Products';
+    } elseif (! empty($request->mini_category)) {
+        $filterName = 'mini_category';
+        $filterValue = $request->mini_category;
+        $title = optional(\App\Models\miniCategory::where('slug', $filterValue)->first())->name ?? 'Products';
+    } elseif (! empty($request->sub_category)) {
+        $filterName = 'sub_category';
+        $filterValue = $request->sub_category;
+        $title = optional(\App\Models\SubCategory::where('slug', $filterValue)->first())->name ?? 'Products';
+    } elseif (! empty($request->category)) {
+        $filterName = 'category';
+        $filterValue = $request->category;
+        $title = optional(\App\Models\Category::where('slug', $filterValue)->first())->name ?? 'Products';
+    }
+
+    $brandList = \App\Models\Brand::orderBy('name')->get();
+@endphp
+
 @push('meta')
-    <meta name='description' content="Filtered Products" />
-    <meta name='keywords' content="@foreach ($products as $product){{ $product->title . ', ' }} @endforeach" />
+<meta name='description' content="{{ $title }} Products"/>
+<meta name='keywords' content="@foreach($products as $product){{$product->title.', '}}@endforeach" />
 @endpush
 
-@section('title', 'Filtered Products')
+@section('title', $title)
 
 @push('css')
-    <link rel="stylesheet" href="{{ asset('/') }}assets/frontend/css/jquery-ui1.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200&display=swap');
-
-        .rating {
-            display: inline-flex;
-            margin-top: -10px;
-            flex-direction: row-reverse
-        }
-
-        .rating>input {
-            display: none
-        }
-
-        .rating>label {
-            position: relative;
-            width: 28px;
-            font-size: 35px;
-            color: #ff0000;
-            cursor: pointer
-        }
-
-        .rating>label::before {
-            content: "\2605";
-            position: absolute;
-            opacity: 0
-        }
-
-        .rating>label:hover:before,
-        .rating>label:hover~label:before {
-            opacity: 1 !important
-        }
-
-        .rating>input:checked~label:before {
-            opacity: 1
-        }
-
-        .rating:hover>input:checked~label:before {
-            opacity: 0.4
-        }
-
-        .product-page .products .product {
-            margin: 0 !important;
-            box-shadow: none;
-            border: none;
-            margin-bottom: 10px !important
-        }
-    </style>
+    <link rel="stylesheet" href="{{asset('/')}}assets/frontend/css/jquery-ui1.css">
 @endpush
 
 @section('content')
-    <!--================product  Area start=================-->
-    <div class="container product-page">
-        <h3 class="title text-center py-[30px] px-0">Filtered Products</h3>
-        <div class="row">
-            <!-- tittle heading -->
-            <div class="menu-overly2"></div>
 
-            <div class="side-bar col-md-3">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap');
 
-                <x-filter-search-component :request="$request" />
+    /* ── HERO ── */
+    .sp-hero {
+        padding: 56px 24px 42px;
+        text-align: center;
+        background: #fff;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .sp-hero-eyebrow {
+        margin: 0 0 12px;
+        font-size: 11px;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 500;
+    }
+    .sp-hero-title {
+        margin: 0;
+        font-family: 'Cinzel Decorative', Georgia, serif;
+        font-size: 44px;
+        font-weight: 700;
+        color: #111;
+        line-height: 1;
+        text-transform: uppercase;
+    }
 
+    /* ── FULL-WIDTH LAYOUT ── */
+    .sp-layout {
+        display: flex;
+        width: 100%;
+        align-items: flex-start;
+        background: #fff;
+    }
+
+    /* ── SIDEBAR ── */
+    .sp-sidebar {
+        width: 210px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #f9f9f9;
+        border-right: 1px solid #ebebeb;
+        scrollbar-width: thin;
+        scrollbar-color: #ddd #f9f9f9;
+        transition: transform .3s ease;
+    }
+    .sp-sidebar::-webkit-scrollbar { width: 4px; }
+    .sp-sidebar::-webkit-scrollbar-track { background: #f9f9f9; }
+    .sp-sidebar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+    .sp-sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 998;
+    }
+    .sp-sidebar-overlay.open { display: block; }
+    .sp-sidebar-inner { padding: 18px 14px 32px; }
+    .sp-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e8e8e8;
+    }
+    .sp-sidebar-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #111;
+    }
+    .sp-sidebar-close {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #888;
+        font-size: 16px;
+        line-height: 1;
+        padding: 2px;
+    }
+
+    /* Sidebar filter styles — compact */
+    .sp-sidebar-inner .range { margin-bottom: 14px; }
+    .sp-sidebar-inner .dropdown-menu6 { list-style: none; padding: 0; margin: 0; }
+    .sp-sidebar-inner .left-side { margin-bottom: 12px; }
+    .sp-sidebar-inner .left-side > p,
+    .sp-sidebar-inner .left-side > p:first-child {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.5px !important;
+        text-transform: uppercase !important;
+        color: #666 !important;
+        border-top: 1px solid #ebebeb !important;
+        padding-top: 12px !important;
+        margin-bottom: 8px !important;
+    }
+    .sp-sidebar-inner ul { list-style: none; padding: 0; margin: 0; }
+    .sp-sidebar-inner ul li { padding: 2px 0; }
+    .sp-sidebar-inner ul li label,
+    .sp-sidebar-inner .span { font-size: 12px; color: #444; }
+    .sp-sidebar-inner .cc label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #444; padding: 3px 0; cursor: pointer; }
+    .sp-sidebar-inner .cc label input { accent-color: #111; }
+    .sp-sidebar-inner hr { border: none; border-top: 1px solid #ebebeb; margin: 12px 0; }
+    .sp-sidebar-inner #slider-range { margin: 6px 2px; }
+    .sp-sidebar-inner #amount {
+        width: 100%; background: transparent; border: none;
+        color: #666; font-size: 11.5px; padding: 4px 0;
+    }
+
+    /* ── MAIN AREA ── */
+    .sp-main {
+        flex: 1;
+        min-width: 0;
+        padding: 36px 44px 72px 36px;
+        background: #fff;
+    }
+
+    /* Mobile topbar */
+    .sp-topbar {
+        display: none;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .sp-filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 9px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .sp-filter-btn:hover { background: #f5f5f5; }
+
+    /* ── PRODUCT SECTION ── */
+    .sp-cat-section { margin-bottom: 60px; }
+    .sp-cat-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .sp-cat-name {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #111;
+        letter-spacing: -0.2px;
+    }
+    .sp-cat-count { font-size: 12px; color: #999; font-weight: 500; }
+
+    /* ── PRODUCT GRID ── */
+    .sp-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+    }
+
+    /* ── LIST VIEW (hidden) ── */
+    #list-view { padding: 0; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) {
+        .sp-grid { grid-template-columns: repeat(3, 1fr); }
+        .sp-main { padding: 28px 28px 56px 24px; }
+    }
+    @media (max-width: 900px) {
+        .sp-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 999;
+            transform: translateX(-100%);
+            border-right: none;
+            box-shadow: 4px 0 28px rgba(0,0,0,.14);
+        }
+        .sp-sidebar.open { transform: translateX(0); }
+        .sp-sidebar-close { display: block; }
+        .sp-layout { flex-direction: column; }
+        .sp-main { padding: 20px 20px 56px; width: 100%; }
+        .sp-topbar { display: flex; }
+        .sp-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+        .sp-hero-title { font-size: 30px; }
+        .sp-hero { padding: 40px 20px 32px; }
+        .sp-cat-name { font-size: 17px; }
+    }
+    @media (max-width: 420px) {
+        .sp-grid { gap: 14px; }
+    }
+</style>
+
+{{-- ====== HERO ====== --}}
+<div class="sp-hero">
+    <p class="sp-hero-eyebrow">Customer Favorites</p>
+    <h1 class="sp-hero-title">{{ $title }}</h1>
+</div>
+
+{{-- ====== LAYOUT ====== --}}
+<div class="sp-layout">
+
+    {{-- SIDEBAR --}}
+    <aside class="sp-sidebar" id="spSidebar">
+        <div class="sp-sidebar-inner">
+            <div class="sp-sidebar-header">
+                <span class="sp-sidebar-title">Filters</span>
+                <button class="sp-sidebar-close" id="spSidebarClose" aria-label="Close">✕</button>
             </div>
-
-            <div class="products col-md-9 m-0">
-                <div class="container">
-                    <div class="row mb-[10px]">
-                        <x-filter-component :sort="$request->sort" />
-                    </div>
-                    <div class="row " id="grid-view">
-                        @forelse ($products as $product)
-                            <x-product-grid-view :product="$product" />
-                        @empty
-                            <x-product-empty-component />
-                        @endforelse
-                    </div>
-                    <div class="row " id="list-view" style="display: none;">
-                        @forelse ($products as $product)
-                            <x-product-list-view :product="$product" />
-                        @empty
-                            <x-product-empty-component />
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-            <!--================product  Area End=================-->
-
-            <!-- //product right -->
+            <x-filter-search-component :request="$request" :name="$filterName" :value="$filterValue" :brands="$brandList" />
         </div>
-    </div>
-    <!-- //top products -->
+    </aside>
+    <div class="sp-sidebar-overlay" id="spOverlay"></div>
 
-    <x-add-cart-modal />
-    @include('components.cart-modal-attri')
+    {{-- MAIN --}}
+    <div class="sp-main">
+
+        {{-- Mobile filter toggle --}}
+        <div class="sp-topbar">
+            <button class="sp-filter-btn" id="spFilterBtn">
+                <svg width="15" height="11" viewBox="0 0 15 11" fill="none">
+                    <path d="M0 1h15M3 5.5h9M6 10h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Filters
+            </button>
+        </div>
+
+        {{-- GRID SECTION --}}
+        <div id="grid-view">
+            <div class="sp-cat-section">
+                <div class="sp-cat-header">
+                    <h2 class="sp-cat-name">{{ $title }}</h2>
+                    <span class="sp-cat-count">{{ $products->count() }} {{ $products->count() == 1 ? 'item' : 'items' }}</span>
+                </div>
+                @if ($products->count() > 0)
+                <div class="sp-grid">
+                    @foreach ($products as $product)
+                        <x-lux-product-card :product="$product" :category="$title" />
+                    @endforeach
+                </div>
+                @else
+                    <x-product-empty-component />
+                @endif
+            </div>
+        </div>
+
+        {{-- LIST VIEW (hidden, toggle available) --}}
+        <div id="list-view" style="display:none;">
+            @forelse ($products as $product)
+                <x-product-list-view :product="$product" />
+            @empty
+                <x-product-empty-component />
+            @endforelse
+        </div>
+
+    </div>
+</div>
+
+<x-add-cart-modal />
+@include('components.cart-modal-attri')
+
 @endsection
 
 @push('js')
-    <script src="{{ asset('/') }}assets/frontend/js/jquery-ui.js"></script>
-
+    <script src="{{asset('/')}}assets/frontend/js/jquery-ui.js"></script>
     <script>
-        $(document).ready(function() {
+    $(document).ready(function () {
 
-
-
-            $('.value-plus').on('click', function() {
-                var divUpd = $(this).parent().find('.value'),
-                    newVal = parseInt(divUpd.val(), 10) + 1;
-                divUpd.val(newVal);
-                $('input#qty').val(newVal);
-            });
-
-            $('.value-minus').on('click', function() {
-                var divUpd = $(this).parent().find('.value'),
-                    newVal = parseInt(divUpd.val(), 10) - 1;
-                if (newVal >= 1) {
-                    divUpd.val(newVal);
-                    $('input#qty').val(newVal);
-                }
-
-            });
-
-            $(document).on('submit', '#addToCart', function(e) {
-                e.preventDefault();
-
-                let url = $(this).attr('action');
-                let type = $(this).attr('method');
-                let btn = $(this);
-                let formData = $(this).serialize();
-
-                $.ajax({
-                    type: type,
-                    url: url,
-                    data: formData,
-                    dataType: 'JSON',
-                    beforeSend: function() {
-                        $(btn).attr('disabled', true);
-                    },
-                    success: function(response) {
-                        if (response.alert != 'Congratulations') {
-
-                            $.toast({
-                                heading: 'Warning',
-                                text: response.message,
-                                icon: 'warning',
-                                position: 'top-right',
-                                stack: false
-                            });
-                        } else {
-                            $('span#total-cart-amount').text(response.subtotal);
-
-                            $.toast({
-                                heading: 'Congratulations',
-                                text: response.message,
-                                icon: 'success',
-                                position: 'top-right',
-                                stack: false
-                            });
-
-                            $('#cart-modal').modal('hide');
-                        }
-
-                    },
-                    complete: function() {
-                        $(btn).attr('disabled', false);
-                    },
-                    error: function(xhr) {
-                        $.toast({
-                            heading: xhr.status,
-                            text: xhr.responseJSON.message,
-                            icon: 'error',
-                            position: 'top-right',
-                            stack: false
-                        });
-                    }
-                });
-            })
-
-            $(document).on('change', 'select#sort', function() {
-                let value = $(this).val();
-
-                $('input[name="sort"]').val(value);
-
-                $('form#form').submit();
-            });
-
-            $("#slider-range").slider({
-                range: true,
-                min: 0,
-                max: "{!! $max !!}",
-                values: ["{!! $min !!}", "{!! $max !!}"],
-                slide: function(event, ui) {
-                    $("#amount").val("{!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + ui.values[0] + " - {!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + ui.values[1]);
-                }
-            });
-            $("#amount").val("{!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + $("#slider-range").slider("values", 0) + " - {!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + $("#slider-range").slider("values", 1));
+        // ── Price range slider ──
+        $("#slider-range").slider({
+            range:  true,
+            min:    0,
+            max:    50000,
+            values: [0, 50000],
+            slide:  function (event, ui) {
+                $("#amount").val("{!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + ui.values[0] + " - {!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + ui.values[1]);
+            }
         });
+        $("#amount").val(
+            "{!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + $("#slider-range").slider("values", 0) +
+            " - {!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + $("#slider-range").slider("values", 1)
+        );
+
+        // ── Qty buttons ──
+        $('.value-plus').on('click', function () {
+            var d = $(this).parent().find('.value'), v = parseInt(d.val(), 10) + 1;
+            d.val(v); $('input#qty').val(v);
+        });
+        $('.value-minus').on('click', function () {
+            var d = $(this).parent().find('.value'), v = parseInt(d.val(), 10) - 1;
+            if (v >= 1) { d.val(v); $('input#qty').val(v); }
+        });
+
+        // ── Cart modal form ──
+        $(document).on('submit', '#addToCart', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('action'), type = $(this).attr('method'),
+                btn = $(this), formData = $(this).serialize();
+            $.ajax({
+                type: type, url: url, data: formData, dataType: 'JSON',
+                beforeSend: function () { $(btn).attr('disabled', true); },
+                success: function (response) {
+                    if (response.alert != 'Congratulations') {
+                        $.toast({ heading: 'Warning', text: response.message, icon: 'warning', position: 'top-right', stack: false });
+                    } else {
+                        loadCartOnCanvas();
+                        $('span#total-cart-amount').text(response.subtotal);
+                        $.toast({ heading: 'Congratulations', text: response.message, icon: 'success', position: 'top-right', stack: false });
+                        $('#cart-modal').modal('hide');
+                    }
+                },
+                complete: function () { $(btn).attr('disabled', false); },
+                error: function (xhr) {
+                    $.toast({ heading: xhr.status, text: xhr.responseJSON?.message, icon: 'error', position: 'top-right', stack: false });
+                }
+            });
+        });
+
+        // ── Sort select ──
+        $(document).on('change', 'select#sort', function () {
+            $('input[name="sort"]').val($(this).val());
+            $('form#form').submit();
+        });
+
+        // ── Mobile sidebar ──
+        $('#spFilterBtn').on('click', function () {
+            $('#spSidebar').addClass('open');
+            $('#spOverlay').addClass('open');
+        });
+        $('#spSidebarClose, #spOverlay').on('click', function () {
+            $('#spSidebar').removeClass('open');
+            $('#spOverlay').removeClass('open');
+        });
+    });
+
+    // ── Lux add-to-cart AJAX ──
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.ajax-lux-cart-btn').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var form = document.getElementById(btn.getAttribute('data-form-id'));
+                if (!form) return;
+                btn.disabled    = true;
+                btn.textContent = 'Adding…';
+                fetch(form.action, {
+                    method:  'POST',
+                    headers: {
+                        'X-CSRF-TOKEN':     document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new FormData(form)
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    btn.disabled    = false;
+                    btn.textContent = 'Add to Cart';
+                    if (typeof loadCartOnCanvas === 'function') loadCartOnCanvas();
+                    $.toast({
+                        heading:  data.alert === 'Congratulations' ? 'Congratulations' : 'Notice',
+                        text:     data.message,
+                        icon:     data.alert === 'Congratulations' ? 'success' : 'warning',
+                        position: 'top-right',
+                        stack:    false
+                    });
+                })
+                .catch(function () { btn.disabled = false; btn.textContent = 'Add to Cart'; });
+            });
+        });
+    });
     </script>
 @endpush
