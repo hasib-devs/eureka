@@ -21,8 +21,10 @@ gaps · **P3** = cruft removal & polish.
   refund ledger (`wallate` vs `vendor_accounts.amount`).
 - [ ] **Vendor product edit corrupts data.** `Vendor/ProductController::update` swaps attribute
   `qnty`↔`price` vs `store` (`:503-511`). Align the field mapping.
-- [ ] **Classified-ads public listing always empty.** `adsController::all()` filters impossible
-  `status='12'` (`:127`); ads are created `status='0'`. Fix the filter or the create/approve flow.
+- [x] **Classified-ads public listing always empty.** `adsController::all()` filtered impossible
+  `status='12'`; changed to `status=1` to match the approved-ad convention (`HomeController:71`). ✅
+  *(Note: the admin approve flow that promotes ads 0→1 is still missing — `ClassicController` is
+  referenced by `routes/admin.php:162-164` but the file doesn't exist. Tracked under P2.)*
 - [ ] **Dead routes 500 on hit.** Add the missing methods or remove the routes: `login/vendor`
   (`HomeController::vendorLogin`), vendor `deleteImage` / `pre` / `partials` / `partialStatus` /
   `delete` (`routes/vendor.php:17,50,54,55,59`).
@@ -33,9 +35,11 @@ gaps · **P3** = cruft removal & polish.
 
 - [ ] **`dynamic_price` cart tampering** (now live post-restore). Server-side validate the price
   against the product in `buyProduct` / `createOrder`; never trust request `dynamic_price`.
-- [ ] **IDOR sweep.** Scope every mutating lookup to the owner (`where('user_id', auth()->id())
-  ->firstOrFail()`): blog status/delete/update (`blogControler.php:63,76,96`), classified-ads
-  delete/edit/update (`adsController.php:21,26,75`), wishlist delete (`wishlistController.php:36`).
+- [x] **IDOR sweep.** ✅ Wishlist delete + classified-ads delete/edit/update now scope to the owner
+  (`where('user_id', auth()->id())->firstOrFail()`). Blog status/delete/update now use an
+  admin-or-owner guard (`authorizeBlog()`) — admins keep moderation (routes are shared with the admin
+  group) while account users are limited to their own. Verified: cross-user access → 404/403,
+  owner/admin access allowed.
 - [ ] **Refund / partial-payment idempotency.** Guard against replay in `Admin/Ecommerce/
   OrderController` refund (`:673` undefined `$id`, `:688` `refund_two`) and `partialStatus` (`:531`).
 - [ ] **Rotate + relocate hardcoded secrets.** FCM key (HomeController:184, OrderController:590,
@@ -55,8 +59,9 @@ gaps · **P3** = cruft removal & polish.
 - [ ] **Staff edit is a dead end** — no update handler/route.
 - [ ] **Blog `descripiton` typo** (`:54,122,152`) nulls descriptions; blog delete path missing `/`.
 - [ ] **Courier `sendsteedfast`** — `return back()` before success check; add try/catch around Guzzle.
-- [ ] **Remove active debug:** `dd($user)` LoginController:273, `echo $attribute;`
-  Vendor/ProductController:213; delete empty `ActiveVisitorController.php`.
+- [x] **Remove active debug (non-vendor):** removed `dd($user)` from `LoginController`; deleted the
+  empty dead `app/Http/Controllers/ActiveVisitorController.php`. ✅ *(`echo $attribute;` in
+  Vendor/ProductController left for the vendor pass.)*
 
 ## P3 — Cruft removal & visual polish
 
