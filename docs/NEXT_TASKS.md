@@ -70,8 +70,14 @@ gaps · **P3** = cruft removal & polish.
 ## P3 — Cruft removal & visual polish
 
 - [x] **`vite.config.js`** — dropped unused `bunny('Instrument Sans')` remote font (unblocks build). ✅
-- [ ] **Tier 1 dead files** (see PROJECT_STATUS §5): `checkout.blade.php.backup-debug`, `main_old.js`,
-  4 unreferenced CSS + 5 JS files, **~50 unused `public/assets/plugins/` folders.**
+- [x] **Tier 1 dead files.** ✅ Deleted 45 verified-zero-reference `public/assets/plugins/` folders
+  (`public/assets/plugins/` 57 MB → 29 MB) plus 3 dead files (`checkout.blade.php.backup-debug`,
+  `main_old.js`, `unministy.css`). **Verification-driven, not audit-driven:** every folder/file was
+  grep-checked for references first — this caught several the audit wrongly called dead (`jquery-ui.js`,
+  `city.js` = checkout city dropdown, `flexslider.css`, `image-zoom.js` are all still in use and were
+  **kept**). Post-delete checks: 0 blade references to any removed folder, 0 asset 404s on live pages.
+  Kept (referenced): bootstrap, datatables(+bs4/buttons/responsive), dropify, dropzone, file-uploader,
+  fontawesome-free, jquery, jszip, moment, pdfmake, select2(+theme), summernote.
 - [ ] **Tier 2 remote CDN deps:** drop FA Pro kit (FA5 already loaded), consolidate per-view Google
   Font imports, self-host or remove boxicons/Material Icons/Google Translate.
 - [ ] **Add `?.` optional chaining** to csrf-token lookups in `product-grid-view.blade.php:365` and
