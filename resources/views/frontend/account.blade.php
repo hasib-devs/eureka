@@ -5,6 +5,32 @@
 
 @section('content')
 
+<style>
+    .pi-uploader { display: flex; align-items: center; gap: 18px; }
+    .pi-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+    .pi-drop {
+        position: relative; width: 108px; height: 108px; border-radius: 18px; cursor: pointer;
+        overflow: hidden; flex: 0 0 auto; margin: 0;
+        background: linear-gradient(135deg, #faf6ea, #fff);
+        border: 2px dashed #e2d6ad; display: grid; place-items: center;
+        transition: border-color .15s ease, box-shadow .15s ease, transform .12s ease;
+    }
+    .pi-drop:hover { border-color: #c9a24b; box-shadow: 0 6px 16px rgba(201,162,75,.22); transform: translateY(-1px); }
+    .pi-drop img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pi-placeholder { display: grid; place-items: center; color: #c2ab6a; }
+    .pi-placeholder i { font-size: 30px; }
+    .pi-overlay {
+        position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; background: rgba(20,18,14,.55); color: #fff; font-size: 11.5px; font-weight: 600;
+        opacity: 0; transition: opacity .15s ease; text-align: center; padding: 6px;
+    }
+    .pi-overlay i { font-size: 17px; }
+    .pi-drop:hover .pi-overlay, .pi-drop.pi-empty .pi-overlay { opacity: 1; }
+    .pi-meta { display: flex; flex-direction: column; gap: 3px; }
+    .pi-meta .pi-title { font-weight: 700; color: #1a1a1a; font-size: 15px; }
+    .pi-meta .pi-hint { font-size: 12.5px; color: #8a8577; }
+</style>
+
 <div class="customar-dashboard">
     <div class="container">
         <div class="customar-access row">
@@ -19,7 +45,24 @@
                             <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="avatar">Profile Image</label>
-                                        <input type="file" name="avatar" id="avatar"class="form-control  @error('avatar') is-invalid @enderror" data-default-file="{{'/uploads/admin/'.auth()->user()->avatar}}">
+                                        @php $hasAvatar = auth()->user()->avatar && file_exists(public_path('uploads/member/'.auth()->user()->avatar)); @endphp
+                                        <div class="pi-uploader">
+                                            <input type="file" name="avatar" id="avatar" accept="image/*"
+                                                   class="pi-input @error('avatar') is-invalid @enderror">
+                                            <label for="avatar" class="pi-drop {{ $hasAvatar ? '' : 'pi-empty' }}" id="pi-drop">
+                                                @if ($hasAvatar)
+                                                    <img id="pi-preview" src="{{ '/uploads/member/'.auth()->user()->avatar }}" alt="Profile image">
+                                                @else
+                                                    <img id="pi-preview" src="" alt="Profile image" style="display:none">
+                                                    <span class="pi-placeholder" id="pi-placeholder"><i class="fas fa-user"></i></span>
+                                                @endif
+                                                <span class="pi-overlay"><i class="fas fa-camera"></i> Click to {{ $hasAvatar ? 'change' : 'upload' }}</span>
+                                            </label>
+                                            <div class="pi-meta">
+                                                <span class="pi-title">Profile photo</span>
+                                                <span class="pi-hint">Click the image to choose.<br>JPG or PNG, square works best.</span>
+                                            </div>
+                                        </div>
                                         @error('avatar')
                                             <div class="invalid-feedback text-danger d-block">{{ $message }}</div>
                                         @enderror
@@ -132,12 +175,21 @@
     
 <script src="{{asset('/')}}assets/frontend/js/city.js"></script>
 
-    <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
     <script>
-        
-        $(document).ready(function() {
-            $('.dropify').dropify();
-        });
-
+        (function () {
+            var input = document.getElementById('avatar');
+            if (!input) return;
+            input.addEventListener('change', function (e) {
+                var file = e.target.files && e.target.files[0];
+                if (!file) return;
+                var url = URL.createObjectURL(file);
+                var img = document.getElementById('pi-preview');
+                var ph = document.getElementById('pi-placeholder');
+                var drop = document.getElementById('pi-drop');
+                if (img) { img.src = url; img.style.display = 'block'; }
+                if (ph) { ph.style.display = 'none'; }
+                if (drop) { drop.classList.remove('pi-empty'); }
+            });
+        })();
     </script>
 @endpush
