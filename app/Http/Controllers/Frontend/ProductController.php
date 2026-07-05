@@ -91,7 +91,7 @@ class ProductController extends Controller
             ]);
         }
 
-        return view('frontend.category-product', compact('category', 'slug'));
+        return view('frontend.category-product', compact('category', 'slug', 'products'));
     }
 
     public function showProductByBrand($slug, Request $request)
