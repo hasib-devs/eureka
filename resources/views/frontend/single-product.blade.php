@@ -45,10 +45,13 @@
     overflow: hidden;
     border-radius: 2px;
     background: #fafafa;
+    aspect-ratio: 1 / 1;
 }
 
 .featured-stage img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
     transition: transform 0.8s var(--ease);
 }
