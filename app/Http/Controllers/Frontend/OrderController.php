@@ -311,14 +311,16 @@ class OrderController extends Controller
         try {
             $paymentUrl = UddoktaPay::init_payment([
                 'full_name' => $order->first_name,
-                'email' => $order->email ?: Auth::user()->email,
+                'email' => $order->email ?: (Auth::user()->email ?? 'noreply@'.parse_url(config('app.url'), PHP_URL_HOST)),
                 'amount' => (string) $order->total,
                 'metadata' => [
-                    'order_id' => $order->order_id,
-                    'invoice' => $order->invoice,
+                    'order_id' => (string) $order->order_id,
+                    'invoice' => (string) $order->invoice,
                 ],
-                'return_url' => route('order'),
-                'cancel_url' => route('order'),
+                'redirect_url' => route('uddoktapay.success'),
+                'cancel_url' => route('uddoktapay.cancel'),
+                'webhook_url' => url('/api/webhook'),
+                'return_type' => 'GET',
             ]);
 
             return redirect($paymentUrl);
@@ -327,6 +329,129 @@ class OrderController extends Controller
 
             return back();
         }
+    }
+
+    // ─── UddoktaPay Return / Confirmation ───────────────────────────────────
+
+    /**
+     * User-facing return after paying (GET redirect_url?invoice_id=...).
+     */
+    public function success2(Request $request)
+    {
+        return $this->handlePaymentReturn($request->input('invoice_id'));
+    }
+
+    /**
+     * Same as success2, for a POST return_type configuration.
+     */
+    public function success(Request $request)
+    {
+        return $this->handlePaymentReturn($request->input('invoice_id'));
+    }
+
+    /**
+     * User-facing cancel / failure return.
+     */
+    public function fail(Request $request)
+    {
+        notify()->error('Payment was cancelled or did not complete.', 'Payment');
+
+        return redirect()->route('order');
+    }
+
+    /**
+     * Server-to-server webhook from UddoktaPay. Authenticated by the shared
+     * API key header; re-verifies the payment before crediting the order.
+     */
+    public function webhook(Request $request)
+    {
+        $configuredKey = setting('uapi');
+        if (empty($configuredKey) || $request->header('RT-UDDOKTAPAY-API-KEY') !== $configuredKey) {
+            return response()->json(['status' => false], 401);
+        }
+
+        $invoiceId = $request->input('invoice_id');
+        if (! $invoiceId) {
+            return response()->json(['status' => false], 400);
+        }
+
+        try {
+            $payment = UddoktaPay::verify_payment($invoiceId);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false], 502);
+        }
+
+        $this->markOrderPaidFromPayment($payment);
+
+        return response()->json(['status' => true], 200);
+    }
+
+    /**
+     * Verify the invoice with UddoktaPay, credit the order if completed, and
+     * redirect the customer back to their order list with a status message.
+     */
+    private function handlePaymentReturn(?string $invoiceId)
+    {
+        if (! $invoiceId) {
+            notify()->error('Missing payment reference.', 'Payment');
+
+            return redirect()->route('order');
+        }
+
+        try {
+            $payment = UddoktaPay::verify_payment($invoiceId);
+        } catch (\Exception $e) {
+            notify()->warning('We could not verify your payment yet. If money was deducted it will be confirmed shortly.', 'Payment');
+
+            return redirect()->route('order');
+        }
+
+        $order = $this->markOrderPaidFromPayment($payment);
+
+        if ($order && $order->pay_staus == 1) {
+            notify()->success('Payment successful. Your order is confirmed.', 'Paid');
+        } else {
+            notify()->warning('Payment is not completed yet. Please try again or contact support.', 'Payment');
+        }
+
+        return redirect()->route('order');
+    }
+
+    /**
+     * Idempotently mark an order paid from a verified UddoktaPay payload.
+     * Only a COMPLETED payment whose amount covers the order total flips an
+     * as-yet-unpaid order — safe to call from both the redirect and the webhook.
+     */
+    private function markOrderPaidFromPayment(?array $payment): ?Order
+    {
+        if (! is_array($payment) || strtoupper($payment['status'] ?? '') !== 'COMPLETED') {
+            return null;
+        }
+
+        $orderId = $payment['metadata']['order_id'] ?? null;
+        if (! $orderId) {
+            return null;
+        }
+
+        $order = Order::where('order_id', $orderId)->first();
+        if (! $order) {
+            return null;
+        }
+
+        // Amount reconciliation: the paid amount must cover the order total
+        // (small epsilon for float/rounding). Underpaid → do not mark paid.
+        if ((float) ($payment['amount'] ?? 0) + 0.5 < (float) $order->total) {
+            return $order;
+        }
+
+        if ($order->pay_staus != 1) {
+            $order->pay_staus = 1;
+            $order->pay_date = now();
+            $order->transaction_id = $payment['transaction_id'] ?? $payment['invoice_id'] ?? $order->transaction_id;
+            $order->save();
+        }
+
+        return $order;
     }
 
     // ─── Helpers ────────────────────────────────────────────────────────────

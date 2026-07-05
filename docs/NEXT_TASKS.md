@@ -10,11 +10,15 @@ gaps · **P3** = cruft removal & polish.
 
 ## P0 — Broken / must fix
 
-- [ ] **UddoktaPay online payment: implement confirmation flow.** `webhook` / `success` / `success2`
-  / `fail` are referenced by `api.php:16` and `web.php:57,58,266,267` but don't exist → 500 on
-  callback. Implement with **signature verification + paid-amount-vs-order-total reconciliation**, and
-  set `pay_staus` on success. *(Or, if online payment is out of scope now, remove the routes + payment
-  CTAs so users can't reach a dead flow.)*
+- [x] **UddoktaPay online payment: confirmation flow implemented.** ✅ Added `success`/`success2`/`fail`
+  /`webhook` to `OrderController` (they were missing → the routes 500'd). `payCreate` now sends the
+  correct `redirect_url`/`cancel_url`/`webhook_url` (was `return_url` — wrong key) and `return_type=GET`.
+  A shared `markOrderPaidFromPayment()` re-verifies each invoice via `UddoktaPay::verify_payment()` and
+  only credits the order when the payment is **COMPLETED** and the **amount covers the order total**,
+  **idempotently** (safe for redirect + webhook both firing), setting `pay_staus=1`/`pay_date`/
+  `transaction_id`. The webhook authenticates via the `RT-UDDOKTAPAY-API-KEY` header and **fails closed**
+  when no key is configured. Verified: the formerly-500 endpoints now 302/401, and the credit logic was
+  unit-tested (completed/underpaid/pending/idempotent/unknown-order/epsilon-boundary).
 - [ ] **Vendor withdrawal — negative amount inflation.** `WithdrawController::create` has no
   validation (`:20-52`). Add `amount => required|numeric|min:1`, re-check `amount <= vendor->amount`,
   wrap decrement + `Withdraw::create` in a `DB::transaction` with `lockForUpdate()`. Fix `cancel()`
