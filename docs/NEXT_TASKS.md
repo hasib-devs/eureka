@@ -58,14 +58,35 @@ gaps · **P3** = cruft removal & polish.
 - [ ] **Multi-vendor split is inert** — `multi_order` never populated at checkout, so per-vendor
   commission / sub-status math runs on 0 rows. Decide: populate it (with care re: commission
   double-counting) or formally drop multi-vendor for now.
-- [ ] **Admin login redirect** — undefined `$this->redirectAdmin` lands admin on `/`.
-- [ ] **Settings `update()` type 1 persists nothing** (`:36-64`).
-- [ ] **Staff edit is a dead end** — no update handler/route.
-- [ ] **Blog `descripiton` typo** (`:54,122,152`) nulls descriptions; blog delete path missing `/`.
-- [ ] **Courier `sendsteedfast`** — `return back()` before success check; add try/catch around Guzzle.
+- [x] **Admin login redirect.** ✅ Added `protected $redirectAdmin = '/admin/dashboard'` — the OTP
+  confirm path (`superLoginconfirm`) used an undefined `$this->redirectAdmin` so admins landed on `/`.
+- [x] **Courier `sendsteedfast`.** ✅ Removed the unreachable `sendNotification()` line after
+  `return back()`. *(Deeper issue — it marks the order "sent" before checking the API response status,
+  so a failed Steadfast call still shows success — left for a pass that can exercise the live courier
+  API; can't be verified safely offline.)*
+- [x] **Empty `POSController` deleted.** ✅ Malware-cleaned stub with no class body; all routes were
+  already commented out.
 - [x] **Remove active debug (non-vendor):** removed `dd($user)` from `LoginController`; deleted the
   empty dead `app/Http/Controllers/ActiveVisitorController.php`. ✅ *(`echo $attribute;` in
   Vendor/ProductController left for the vendor pass.)*
+- [x] **csrf-token `?.` optional chaining** added in `product-grid-view` / `product-list-view` — fixes
+  the recurring null `getAttribute` console error. ✅
+
+### Audit false-positives (verified NOT bugs — no action)
+- **Settings `update()` type 1** is **dead code**, not a live bug: the only form that posts `type=1`
+  is commented out in `setting.blade.php`; logo/favicon uploads actually go through the separate
+  `setting/logo` route, and shipping/commission/currency go through `type=10` (which saves correctly).
+- **Blog `descripiton` typo** is harmless: the form field is *also* named `descripiton`
+  (`blog/index.blade.php`, `blog/form.blade.php`), so it matches the controller and descriptions save
+  fine. Renaming both sides is cosmetic-only churn with regression risk — skipped.
+
+### Still real, but need product decisions / external testing (not blind-fixed)
+- [ ] **Multi-vendor split is inert** — `multi_order` never populated at checkout. Decide: populate it
+  (careful re: commission double-counting) or formally drop multi-vendor. *(Vendor scope — deferred.)*
+- [ ] **Staff edit is a dead end** — `staffEdit` renders a form that references `$customer` vars and
+  posts to `customer/{id}`; there's no `staff.update` route/method. The staff CRUD is half-built and
+  inconsistent with the customer flow — needs a product decision (own update vs. reuse customer) before
+  building, so left rather than guessed.
 
 ## P3 — Cruft removal & visual polish
 

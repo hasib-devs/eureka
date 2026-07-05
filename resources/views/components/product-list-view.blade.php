@@ -224,7 +224,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        _token: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
                         id,
                         qty: 1,
                         color: 'blank'

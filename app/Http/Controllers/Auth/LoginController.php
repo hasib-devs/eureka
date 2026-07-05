@@ -31,10 +31,11 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     /**
-     * Where to redirect users after login.
+     * Where to redirect an admin after a successful login / OTP confirmation.
      *
      * @var string
      */
+    protected $redirectAdmin = '/admin/dashboard';
 
     /**
      * Create a new controller instance.
