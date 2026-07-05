@@ -99,12 +99,20 @@ gaps · **P3** = cruft removal & polish.
   **kept**). Post-delete checks: 0 blade references to any removed folder, 0 asset 404s on live pages.
   Kept (referenced): bootstrap, datatables(+bs4/buttons/responsive), dropify, dropzone, file-uploader,
   fontawesome-free, jquery, jszip, moment, pdfmake, select2(+theme), summernote.
-- [ ] **Tier 2 remote CDN deps:** drop FA Pro kit (FA5 already loaded), consolidate per-view Google
-  Font imports, self-host or remove boxicons/Material Icons/Google Translate.
-- [ ] **Add `?.` optional chaining** to csrf-token lookups in `product-grid-view.blade.php:365` and
-  `product-list-view.blade.php:227` (recurring null `getAttribute` JS error).
-- [ ] **Wrap legacy account tables** (compare, wishlist, order, cashout, download, myrefer, payform,
-  returns_order, ticket, ads/list) in an `overflow-x-auto` container for mobile.
+- [x] **Add `?.` optional chaining** to csrf-token lookups in `product-grid-view` / `product-list-view`
+  (recurring null `getAttribute` JS error). ✅
+- [x] **Wrap legacy account tables** (order, wishlist, returns_order, download, ticket, cashout,
+  myrefer, payform, compare) in an `overflow-x-auto` container for mobile. ✅ (view:cache compiles clean)
+- [ ] **Tier 2 remote CDN deps — NOT a safe blind delete (verified).** ⚠️
+  - **FA Pro kit** (`style.blade.php:9`) can't just be dropped: the storefront uses **`fal`
+    (FontAwesome Pro Light) icons in ~30+ places** (header_1/2/3, product cards, footer, cart). FA5
+    free has no `fal`, so deleting the kit blanks all of them. This needs a real migration — convert
+    each `fal` → free `far`/`fas` and visually verify — before the kit can go. (The kit URL also looks
+    invalid, so these icons may already be degraded in production — worth confirming on the live site.)
+  - **Google Translate** widget (`script.blade.php:8`) is a language feature, not cosmetic — removing
+    changes functionality; confirm it's unwanted first.
+  - **boxicons** (admin/vendor layouts) power sidebar icons; **per-view Google Font `@import`s** change
+    typography. All are functional/visual changes needing per-change verification, not a sweep.
 - [ ] **Tier 3 (last):** remove the Bootstrap/jQuery/slick/toast base from the storefront after
   porting `main.js`, sliders, and `$.toast` to the Tailwind/Alpine stack.
 
