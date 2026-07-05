@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <h4 class="mb-3">Order Payment</h4>
 
-                    <table class="table table-sm">
+                    <div class="overflow-x-auto"><table class="table table-sm">
                         <tr><th>Invoice</th><td>{{ $order->invoice }}</td></tr>
                         <tr><th>Customer</th><td>{{ $order->first_name }}</td></tr>
                         <tr><th>Subtotal</th><td>{{ number_format($order->subtotal, 2) }} {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</td></tr>
@@ -19,7 +19,7 @@
                         <tr><th>Discount</th><td>- {{ number_format($order->discount, 2) }} {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</td></tr>
                         @endif
                         <tr><th>Total</th><td><strong>{{ number_format($order->total, 2) }} {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></td></tr>
-                    </table>
+                    </table></div>
 
                     <form action="{{ route('order.pay.create', $order->order_id) }}" method="POST">
                         @csrf

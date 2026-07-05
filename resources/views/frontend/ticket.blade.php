@@ -52,7 +52,7 @@
                     <div class="right-wapper">
                         <h5><b>Order Ticket</b></h5>
                         <hr>
-                        <table>
+                        <div class="overflow-x-auto"><table>
                            <thead>
                                <tr>
                                 <th>Subject</th>
@@ -74,7 +74,7 @@
                             </tr>
                             @endforeach
                            </tbody>
-                        </table>
+                        </table></div>
                         @foreach($tickets as $ticket)
                          <div class="modal toggle" id="ticketshow{{$ticket->id}}" tabindex="-1" aria-labelledby="ticketshow" style="display: none;" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">

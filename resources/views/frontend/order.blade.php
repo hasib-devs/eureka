@@ -32,7 +32,7 @@ border-radius: 5px;
                 @include('layouts.frontend.partials.userside')
             </div>
             <div class="col-md-9 mt-[20px]">
-                <table class="timetable_sub mt-[20px] bg-white" id="example1">
+                <div class="overflow-x-auto"><table class="timetable_sub mt-[20px] bg-white" id="example1">
                     <thead>
                         <tr>
                             <th>Order NO.</th>
@@ -102,7 +102,7 @@ border-radius: 5px;
                         @endforeach
                          
                     </tbody>
-                </table>
+                </table></div>
             </div>
         </div>
     </div>
