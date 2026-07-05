@@ -246,6 +246,9 @@
         .sp-hero { padding: 40px 20px 32px; }
         .sp-cat-name { font-size: 17px; }
         .sp-grid { grid-template-columns: 1fr; gap: 18px; }
+        /* Full-width card on mobile: give the image a tall portrait ratio so it
+           scales with the card width instead of the component's short fixed height. */
+        .sp-grid .lux-product-thumb { height: auto !important; aspect-ratio: 4 / 5; }
     }
 </style>
 
