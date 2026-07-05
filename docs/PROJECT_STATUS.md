@@ -41,7 +41,7 @@ Legend: 🟢 fully working · 🟡 partial / has gaps · 🔴 broken / dead · �
 | Coupons | 🟡 | Session-based; stale `coupon` session not cleared when cart empties |
 | Checkout (COD) | 🟢 | Guest vs role-2/3 gate correct; empty cart → redirect home |
 | Orders (create/list/invoice/cancel/return/review/download) | 🟢 | Restored full 437-line `Frontend/OrderController` |
-| **Online payment (UddoktaPay)** | 🔴 | Payment *initiation* works, but **confirmation handlers `webhook`/`success`/`success2`/`fail` don't exist** → 500 on callback; `pay_staus` never set to paid online |
+| **Online payment (UddoktaPay)** | 🟢 | Confirmation flow implemented: `success`/`success2`/`fail`/`webhook` verify each invoice via `verify_payment()` and idempotently mark the order paid (`pay_staus=1`) only when COMPLETED and the amount covers the total; webhook is API-key authenticated and fails closed. *(End-to-end against the live gateway still needs real UddoktaPay credentials to exercise.)* |
 | Reviews | 🟢 | Recomputes product average |
 | Wishlist | 🟢 | Works (IDOR on delete — see security) |
 | Blog | 🟡 | Works, but `$request->descripiton` typo (blogControler:54,122,152) nulls the description unless the form field is literally misspelled; delete path missing `/` so files never unlinked |
