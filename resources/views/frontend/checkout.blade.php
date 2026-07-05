@@ -1,18 +1,10 @@
 
 @auth
     @if (auth()->user()->role_id == 2 || auth()->user()->role_id == 3)
-        @if (setting('CHECKOUT_TYPE') == 1)
-            @if (isset($request))
-                @include('frontend.partial.checkout.bc')
-            @else
-                @include('frontend.partial.checkout.c')
-            @endif
+        @if (isset($request))
+            @include('frontend.partial.checkout.bc_minimal')
         @else
-            @if (isset($request))
-                @include('frontend.partial.checkout.bc_minimal')
-            @else
-                @include('frontend.partial.checkout.c_minimal')
-            @endif
+            @include('frontend.partial.checkout.c_minimal')
         @endif
     @else
         @php
@@ -28,18 +20,10 @@
             exit;
         @endphp
     @else
-        @if (setting('CHECKOUT_TYPE') == 1)
-            @if (isset($request))
-                @include('frontend.partial.checkout.bc_guest')
-            @else
-                @include('frontend.partial.checkout.c_guest')
-            @endif
+        @if (isset($request))
+            @include('frontend.partial.checkout.bc_minimal')
         @else
-            @if (isset($request))
-                @include('frontend.partial.checkout.bc_minimal')
-            @else
-                @include('frontend.partial.checkout.c_minimal')
-            @endif
+            @include('frontend.partial.checkout.c_minimal')
         @endif
     @endif
 @endauth
