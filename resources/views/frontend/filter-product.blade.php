@@ -245,9 +245,7 @@
         .sp-hero-title { font-size: 30px; }
         .sp-hero { padding: 40px 20px 32px; }
         .sp-cat-name { font-size: 17px; }
-    }
-    @media (max-width: 420px) {
-        .sp-grid { gap: 14px; }
+        .sp-grid { grid-template-columns: 1fr; gap: 18px; }
     }
 </style>
 
