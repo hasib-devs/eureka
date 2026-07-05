@@ -135,26 +135,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('ticket/{ticket}', [ticketController::class, 'delete'])->name('ticket.delete');
     Route::get('ticket/show/{show}', [ticketController::class, 'show'])->name('ticket.show');
     Route::post('ticket/update', [ticketController::class, 'update'])->name('ticket.update');
-    Route::get('get/product/image/{id}', [ProductController::class, 'getProductImage']);
-    Route::post('update/product/image', [ProductController::class, 'updateImage'])->name('update.image');
-    Route::delete('delete/product/image/{id}', [ProductController::class, 'deleteImage']);
     Route::get('product/status/{id}', [ProductController::class, 'status'])->name('product.status');
     Route::get('user/status/{id}', [CustomerController::class, 'status'])->name('user.status');
     Route::get('product/active', [ProductController::class, 'activeProduct'])->name('product.active');
     Route::get('product/disable', [ProductController::class, 'disableProduct'])->name('product.disable');
-    Route::get('product/approve/{id}', [ProductController::class, 'approveProduct'])->name('product.approved');
     Route::get('product/unaproved', [ProductController::class, 'unaprovedProduct'])->name('product.unaproved');
     Route::get('low/product', [ProductController::class, 'lowProduct'])->name('low.product');
     Route::get('product/reached', [ProductController::class, 'reachedProduct'])->name('product.reached');
     Route::post('get/sub-categories', [ProductController::class, 'subCategory']);
     Route::post('get/mini-categories', [ProductController::class, 'miniCategory']);
     Route::post('get/extra-categories', [ProductController::class, 'extraCategory']);
-    Route::get('delete/product/download/{id}', [ProductController::class, 'deleteDownloadFile']);
-    Route::post('update/product/download', [ProductController::class, 'updateDownloadFile']);
     Route::get('product/type', [ProductController::class, 'type'])->name('product.type');
     Route::get('product/inhouse', [ProductController::class, 'inhouseProduct'])->name('product.inhouse.index');
     Route::get('product/inhouse/create', [ProductController::class, 'inhouseCreate'])->name('product.inhouse.create');
-    // Route::get('product/indexone', [ProductController::class, 'indexone'])->name('product.indexone'); // Commented by Hridoy
 
     Route::get('admin/product/color/{cc}/{pp}', [ProductController::class, 'nColorDelete'])->name('color.delete.n2');
     Route::get('admin/product/attr/{cc}', [ProductController::class, 'nattrDelete'])->name('attr.delete.n2');

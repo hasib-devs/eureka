@@ -16,40 +16,11 @@
         integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog=="
         crossorigin="anonymous" />
     <link rel="stylesheet" href="/assets/plugins/summernote/summernote-bs4.min.css">
-    <link rel="stylesheet" href="/assets/plugins/dropzone/min/dropzone.min.css">
-    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link type="text/css" rel="stylesheet" href="/assets/plugins/file-uploader/image-uploader.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css"
         rel="stylesheet">
     <style>
-        .spec {
-            background: gainsboro;
-        }
-
         .dropify-wrapper .dropify-message p {
             font-size: initial;
-        }
-
-        .custom-file::-webkit-file-upload-button {
-            visibility: hidden;
-        }
-
-        .custom-file::before {
-            content: 'Choose File';
-            display: inline-block;
-            background: linear-gradient(top, #f9f9f9, #e3e3e3);
-            border: 1px solid #ced4da;
-            border-radius: 3px;
-            padding: 8px 8px;
-            outline: none;
-            white-space: nowrap;
-            -webkit-user-select: none;
-            cursor: pointer;
-            text-shadow: 1px 1px #fff;
-            font-weight: 700;
-            font-size: 10pt;
-            width: 100%;
-            text-align: center;
         }
 
         .note-editor {
@@ -111,12 +82,6 @@
                     </div>
                 </div>
             </div>
-            <style>
-                .nc {
-                    border: 1px solid gainsboro;
-                    margin-top: 10px;
-                }
-            </style>
             <div class="flex flex-wrap">
                 <form class="w-full lg:w-2/3"
                     action="{{ isset($product) ? routeHelper('product/' . $product->id) : routeHelper('product') }}"
@@ -157,18 +122,6 @@
                                 <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="mb-4">
-                            <label for="vendor" class="block text-sm font-medium text-slate-700 mb-1">Select Vendor:</label>
-                            <select class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" name="vendor">
-                                <option value="">Select Vendor Optional</option>
-                                @foreach (App\Models\ShopInfo::get(['name', 'user_id']) as $vend)
-                                    <option
-                                        @isset($product->user_id)@if ($product->user_id == $vend->user_id)selected @endif
-                                @endisset
-                                        value="{{ $vend->user_id }}">{{ $vend->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
                         <div class="mb-4">
                             <label for="full_description" class="block text-sm font-medium text-slate-700 mb-1">Full Description:</label>
@@ -190,33 +143,12 @@
                                 @enderror
                             </div>
                             <div class="mb-4 w-full md:w-1/2 px-2">
-                                <label for="whole_price" class="block text-sm font-medium text-slate-700 mb-1">Whole Sell Price:</label>
-                                <input step="0.01" type="number" name="whole_price" id="whole_price"
-                                    placeholder="Enter product whole sell price"
-                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('whole_price') border-danger @else border-slate-300 @enderror"
-                                    value="{{ $product->whole_price ?? old('whole_price') }}">
-                                @error('whole_price')
-                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div class="mb-4 w-full md:w-1/2 px-2">
                                 <label for="regular_price" class="block text-sm font-medium text-slate-700 mb-1">Regular Price <span class="text-danger">(*)</span>:</label>
                                 <input step="0.01" type="number" name="regular_price" id="regular_price"
                                     placeholder="Enter product regular price"
                                     class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('regular_price') border-danger @else border-slate-300 @enderror"
                                     value="{{ $product->regular_price ?? old('regular_price') }}" required>
                                 @error('regular_price')
-                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4 w-full md:w-1/2 px-2">
-                                <label for="prdct_extra_msg" class="block text-sm font-medium text-slate-700 mb-1">Product Extra Message:</label>
-                                <input type="text" name="prdct_extra_msg" id="prdct_extra_msg"
-                                    placeholder="Express Delivery in Dhaka"
-                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('prdct_extra_msg') border-danger @else border-slate-300 @enderror"
-                                    value="{{ $product->prdct_extra_msg ?? '' }}">
-                                @error('prdct_extra_msg')
                                     <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -260,17 +192,6 @@
                                     <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="mb-4 w-full md:w-1/2 px-2">
-                                <label for="point" class="block text-sm font-medium text-slate-700 mb-1">Point:</label>
-                                <input type="number" name="point" id="point" placeholder="Enter product point"
-                                    class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('point') border-danger @else border-slate-300 @enderror"
-                                    value="{{ $product->point ?? old('point') }}">
-                                @error('point')
-                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-
 
                             <div class="mb-4 w-full md:w-1/2 px-2">
                                 <label for="quantity" class="block text-sm font-medium text-slate-700 mb-1">Quantity <span class="text-danger">(*)</span>:</label>
@@ -295,21 +216,6 @@
                                     @endforeach
                                 </select>
                                 @error('brand')
-                                    <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div class="mb-4 w-full md:w-1/2 px-2">
-                                <label for="campaign" class="block text-sm font-medium text-slate-700 mb-1">Select Campaing:</label>
-                                <select name="campaigns[]" id="campaign" multiple data-placeholder="Select Campaing"
-                                    class="category block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary select2 @error('campaigns') border-danger @else border-slate-300 @enderror">
-                                    <option value="">Select Campaing</option>
-                                    @foreach ($campaigns as $campaign)
-                                        <option value="{{ $campaign->id }}"
-                                            @isset($product) {{ $campaign->id == $product->brand_id ? 'selected' : '' }} @endisset>
-                                            {{ $campaign->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('campaigns')
                                     <p class="text-sm text-danger mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -367,8 +273,8 @@
                             <div class="mb-4 w-full md:w-1/2 px-2">
                                 <label for="extra_category" class="block text-sm font-medium text-slate-700 mb-1">Select Extra Category:</label>
                                 <select name="extra_categories[]" id="extra_category"
-                                    data-placeholder="Select Mini Category"
-                                    class="extra_categories block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary {{ isset($product) ? 'select2' : '' }} @error('mini_categories') border-danger @enderror"
+                                    data-placeholder="Select Extra Category"
+                                    class="extra_categories block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary {{ isset($product) ? 'select2' : '' }} @error('extra_categories') border-danger @enderror"
                                     {{ isset($product) ? 'multiple' : '' }}>
                                     @isset($product)
                                         @foreach ($product->extra_categories as $extra_category)
@@ -397,29 +303,7 @@
                                 @enderror
                             </div>
 
-                            <!-- <div class="form-group col-md-6">
-                                    <label for="size">Select Size:</label>
-                                    <select name="sizes[]" id="size" multiple data-placeholder="Select Size" class="form-control select2 @error('sizes') is-invalid @enderror" >
-                                        <option value="">Select Size</option>
-                                        @foreach ($sizes as $size)
-    <option value="{{ $size->id }}" @isset($product) @foreach ($product->sizes as $pro_size) {{ $size->id == $pro_size->id ? 'selected' : '' }} @endforeach @endisset>{{ $size->name }}</option>
-    @endforeach
-                                    </select>
-                                    @error('sizes')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-                                </div> -->
                             <input type='hidden' name="shipping_charge" value="1">
-                            <!-- <div class="form-group col-md-6">
-                                    <label for="tag">Shipping Charge:</label>
-                                    <select name="shipping_charge" id="shipping_charge" class="form-control @error('shipping_charge') is-invalid @enderror" required>
-                                        <option value="1">Paid</option>
-                                        <option value="0">Free</option>
-                                    </select>
-                                    @error('shipping_charge')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-                                </div> -->
 
                             <div class="mb-4 w-full px-2">
                                 <div class="rounded-md bg-slate-100 p-3">
@@ -479,82 +363,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="w-full px-2 mb-2">
-                                <button class="w-full text-left px-3 py-2 font-medium text-slate-800" type="button"
-                                    data-toggle="collapse" data-target="#BookOpen" aria-expanded="false"
-                                    aria-controls="BookOpen">
-                                    Specification for book:<i class="fas fa-arrow-down float-right mt-2"></i>
-                                </button>
-                            </div>
 
-
-                            <div class="flex flex-wrap -mx-2 w-full spec collapse px-2" id="BookOpen">
-
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="author_id" class="block text-sm font-medium text-slate-700 mb-1">Select Author:</label>
-                                    <select class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" name="author_id">
-                                        <option value="">Select Vendor </option>
-                                        @foreach (App\Models\Author::get(['name', 'id']) as $author)
-                                            <option
-                                                @isset($product->author_id)@if ($product->author_id == $author->id)selected @endif @endisset
-                                                value="{{ $author->id }}">{{ $author->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="pdf" class="block text-sm font-medium text-slate-700 mb-1">PDF file:</label>
-                                    <input type="file" name="pdf" class="block w-full text-sm text-slate-700">
-                                </div>
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="isbn" class="block text-sm font-medium text-slate-700 mb-1">isbn:</label>
-                                    <input type="text" name="isbn" id="isbn" placeholder="Write product isbn"
-                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('isbn') border-danger @else border-slate-300 @enderror"
-                                        value="{{ $product->isbn ?? old('isbn') }}">
-                                    @error('isbn')
-                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="edition" class="block text-sm font-medium text-slate-700 mb-1">edition:</label>
-                                    <input type="text" name="edition" id="edition"
-                                        placeholder="Write product edition"
-                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('edition') border-danger @else border-slate-300 @enderror"
-                                        value="{{ $product->edition ?? old('edition') }}">
-                                    @error('edition')
-                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="pages" class="block text-sm font-medium text-slate-700 mb-1">pages:</label>
-                                    <input type="text" name="pages" id="pages"
-                                        placeholder="Write product edition"
-                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('pages') border-danger @else border-slate-300 @enderror"
-                                        value="{{ $product->pages ?? old('pages') }}">
-                                    @error('pages')
-                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="country" class="block text-sm font-medium text-slate-700 mb-1">country:</label>
-                                    <input type="text" name="country" id="country"
-                                        placeholder="Write product country"
-                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('country') border-danger @else border-slate-300 @enderror"
-                                        value="{{ $product->country ?? old('country') }}">
-                                    @error('country')
-                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="mb-4 w-full md:w-1/2 px-2">
-                                    <label for="language" class="block text-sm font-medium text-slate-700 mb-1">language:</label>
-                                    <input type="text" name="language" id="language"
-                                        placeholder="Write product language"
-                                        class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('language') border-danger @else border-slate-300 @enderror"
-                                        value="{{ $product->language ?? old('language') }}">
-                                    @error('language')
-                                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
                             <div class="mb-4 w-full px-2">
                                 @isset($product)
                                     <div class="mb-2">
@@ -571,7 +380,7 @@
                                 <input type="file" name="video"
                                     class="block w-full text-sm text-slate-700 mb-2 @error('video') border-danger @enderror">
                                 <label for="yvideo" class="block text-sm font-medium text-slate-700 mb-1">OR Youtbe Video:</label>
-                                <input {{ $product->yvideo ?? old('yvideo') }} type="text" name="yvideo"
+                                <input value="{{ $product->yvideo ?? old('yvideo') }}" type="text" name="yvideo"
                                     class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary mb-2 @error('yvideo') border-danger @enderror">
                                 <label for="video_thumb" class="block text-sm font-medium text-slate-700 mb-1">Product Video Thumbnail:</label>
                                 <input type="file" name="video_thumb"
@@ -586,16 +395,16 @@
                                         Image</a></label>
                                 <input type="file" name="image" id="image" accept="image/*"
                                     class="dropify @error('image') is-invalid @enderror"
-                                    data-default-file="@isset($product) /uploads/product/{{ $product->image }}@enderror">
+                                    data-default-file="@isset($product) /uploads/product/{{ $product->image }}@endisset">
                             @error('image')
                                 <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="mb-4 w-full md:w-1/2 px-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Product Gallery Image <span class="text-danger">(*)</span>: <a target="_blank" href="https://youtu.be/JsZc-I_Wygk" class="text-primary hover:underline">How to Optimize Image</a></label>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Product Gallery Image: <a target="_blank" href="https://youtu.be/JsZc-I_Wygk" class="text-primary hover:underline">How to Optimize Image</a></label>
                             <div class="input-group" id="increment">
-                                <input type="file" class="form-control" accept="image/*" id="images" name="images[]"  ___inline_directive______________________________________40___  >
+                                <input type="file" class="form-control" accept="image/*" id="images" name="images[]">
                                 <select name="imagesc[]" id="imagesc">
                                     <option value="">Select Color</option>
                                     @foreach ($colors as $color)
@@ -606,7 +415,6 @@
                                     <span class="input-group-text">Add More</span>
                                 </div>
                             </div>
-                            {{-- <div class="input-images-1" style="padding-top: .5rem;"></div> --}}
                             @error('images')
                                 <p class="text-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
@@ -623,7 +431,7 @@
 
                             @isset($product)
                                 @foreach ($product->images as $image)
-                                    <div class="d" ___inline_directive_________________________________________________________________________________________________41___each>
+                                    <div class="d">
                                         <img src="{{ asset('uploads/product/' . $image->name) }}" style="width: 100px;height: 70px;object-fit: cover;">
                                         <div class="flex-1 text-right">
                                             <x-ui.button :href="route('admin.idelte', $image->id)" variant="danger" size="sm">Delete</x-ui.button>
@@ -636,194 +444,16 @@
                     </div>
 
                     <div class="flex flex-wrap gap-4 px-2 mb-4">
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="status"
-                                        id="status"
-                                        @isset($product) {{ $product->status ? 'checked' : '' }} @else checked @endisset>
-                                    <label class="text-sm font-medium text-slate-700" for="status">Status</label>
-                                    @error('status')
-                                        <p class="text-sm text-danger">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="book"
-                                        id="book"
-                                        @isset($product) {{ $product->book ? 'checked' : '' }} @else  @endisset>
-                                    <label class="text-sm font-medium text-slate-700" for="book">book</label>
-                                    @error('book')
-                                        <p class="text-sm text-danger">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="sheba"
-                                        id="sheba"
-                                        @isset($product) {{ $product->sheba ? 'checked' : '' }} @else  @endisset>
-                                    <label class="text-sm font-medium text-slate-700" for="sheba">sheba</label>
-                                    @error('sheba')
-                                        <p class="text-sm text-danger">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="download_able"
-                                        id="download_able"
-                                        @isset($product){{ $product->download_able ? 'checked' : '' }} @endisset>
-                                    <label class="text-sm font-medium text-slate-700" for="download_able">Download able</label>
-                                    @error('download_able')
-                                        <p class="text-sm text-danger">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            @isset($product)
-                                @if ($product->downloads->count() < 1)
-                                    {{-- Bootstrap modal — kept because Bootstrap JS drives it --}}
-                                    <div class="modal fade" id="modal-default">
-                                        <div class="modal-dialog modal-xl">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Add Product Downloadable file</h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="mb-4">
-                                                        <div class="mb-4">
-                                                            <div class="flex flex-wrap items-start gap-4 mb-4">
-                                                                <label for="inputEmail3"
-                                                                    class="w-full sm:w-1/6 text-sm font-medium text-slate-700 pt-2">Downloadable Files</label>
-                                                                <div class="flex-1">
-                                                                    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                                                                        <div class="border-b border-slate-200 px-4 py-3">
-                                                                            <div class="flex gap-4">
-                                                                                <div class="w-1/3"><strong>Name:</strong></div>
-                                                                                <div class="w-1/3"><strong>File URL:</strong></div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="p-2">
-                                                                            <div id="increment-file"></div>
-                                                                        </div>
-                                                                        <div class="border-t border-slate-200 px-4 py-3">
-                                                                            <span id="add-file" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-success text-white hover:opacity-90 h-10 px-4 text-sm cursor-pointer">Add File</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="flex flex-wrap items-center gap-4 mb-4">
-                                                                <label for="download_limit"
-                                                                    class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Limit</label>
-                                                                <div class="w-full sm:w-1/3">
-                                                                    <input type="number"
-                                                                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                                                        id="download_limit" name="download_limit"
-                                                                        value="{{ $product->download_limit ?? old('download_limit') }}">
-                                                                </div>
-                                                                <div class="flex-1">
-                                                                    <span class="text-sm text-slate-500">Leave blank for unlimited re-downloads</span>
-                                                                </div>
-                                                            </div>
-                                                            <div class="flex flex-wrap items-center gap-4 mb-4">
-                                                                <label for="download_expire"
-                                                                    class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Expire</label>
-                                                                <div class="w-full sm:w-1/3">
-                                                                    <input type="date"
-                                                                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                                                        id="download_expire" name="download_expire"
-                                                                        value="{{ $product->download_expire ?? old('download_expire') }}">
-                                                                </div>
-                                                                <div class="flex-1">
-                                                                    <span class="text-sm text-slate-500">Enter the number of days before a downlink link expires, or leave blank</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer justify-content-between">
-                                                    <x-ui.button type="button" variant="secondary" data-dismiss="modal">Close</x-ui.button>
-                                                    {{-- <button type="submit" class="btn btn-primary">Add</button> --}}
-                                                </div>
-                                            </div>
-                                            <!-- /.modal-content -->
-                                        </div>
-                                        <!-- /.modal-dialog -->
-                                    </div>
-                                @endif
-                            @else
-                                {{-- Bootstrap modal — kept because Bootstrap JS drives it --}}
-                                <div class="modal fade" id="modal-default">
-                                    <div class="modal-dialog modal-xl">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Add Product Downloadable file</h4>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="mb-4">
-                                                    <div class="mb-4">
-                                                        <div class="flex flex-wrap items-start gap-4 mb-4">
-                                                            <label for="inputEmail3"
-                                                                class="w-full sm:w-1/6 text-sm font-medium text-slate-700 pt-2">Downloadable Files</label>
-                                                            <div class="flex-1">
-                                                                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                                                                    <div class="border-b border-slate-200 px-4 py-3">
-                                                                        <div class="flex gap-4">
-                                                                            <div class="w-1/3"><strong>Name:</strong></div>
-                                                                            <div class="w-1/3"><strong>File URL:</strong></div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="p-2">
-                                                                        <div id="increment-file"></div>
-                                                                    </div>
-                                                                    <div class="border-t border-slate-200 px-4 py-3">
-                                                                        <span id="add-file" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-success text-white hover:opacity-90 h-10 px-4 text-sm cursor-pointer">Add File</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex flex-wrap items-center gap-4 mb-4">
-                                                            <label for="download_limit"
-                                                                class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Limit</label>
-                                                            <div class="w-full sm:w-1/3">
-                                                                <input type="number"
-                                                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                                                    id="download_limit" name="download_limit"
-                                                                    value="{{ $product->download_limit ?? old('download_limit') }}">
-                                                            </div>
-                                                            <div class="flex-1">
-                                                                <span class="text-sm text-slate-500">Leave blank for unlimited re-downloads</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex flex-wrap items-center gap-4 mb-4">
-                                                            <label for="download_expire"
-                                                                class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Expire</label>
-                                                            <div class="w-full sm:w-1/3">
-                                                                <input type="date"
-                                                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                                                    id="download_expire" name="download_expire"
-                                                                    value="{{ $product->download_expire ?? old('download_expire') }}">
-                                                            </div>
-                                                            <div class="flex-1">
-                                                                <span class="text-sm text-slate-500">Enter the number of days before a downlink link expires, or leave blank</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer justify-content-between">
-                                                <x-ui.button type="button" variant="secondary" data-dismiss="modal">Close</x-ui.button>
-                                                {{-- <button type="submit" class="btn btn-primary">Add</button> --}}
-                                            </div>
-                                        </div>
-                                        <!-- /.modal-content -->
-                                    </div>
-                                    <!-- /.modal-dialog -->
-                                </div>
-                            @endisset
-
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" name="status"
+                                id="status"
+                                @isset($product) {{ $product->status ? 'checked' : '' }} @else checked @endisset>
+                            <label class="text-sm font-medium text-slate-700" for="status">Status</label>
+                            @error('status')
+                                <p class="text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
 
                         </div>
                         <div class="border-t border-slate-200 px-4 py-3">
@@ -843,100 +473,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-        @if (isset($product->downloads) && $product->downloads->count() > 0)
-            <div class="rounded-lg border border-slate-200 bg-white shadow-sm mt-4">
-                <div class="border-b border-slate-200 px-4 py-3 font-medium text-slate-900">Update Product Download File</div>
-                <form action="{{ routeHelper('update/product/download') }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <div class="p-4">
-                        <div class="flex flex-wrap items-start gap-4 mb-4">
-                            <label for="inputEmail3" class="w-full sm:w-1/6 text-sm font-medium text-slate-700 pt-2">Downloadable Files</label>
-                            <div class="flex-1">
-                                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                                    <div class="border-b border-slate-200 px-4 py-3">
-                                        <div class="flex gap-4">
-                                            <div class="w-1/3"><strong>Name:</strong></div>
-                                            <div class="w-1/3"><strong>File URL:</strong></div>
-                                        </div>
-                                    </div>
-                                    <div class="p-2">
-                                        <div id="increment-file">
-                                            @isset($product->downloads)
-                                                @foreach ($product->downloads as $download)
-                                                    <div class="flex flex-wrap gap-2 mt-2">
-                                                        <div class="w-full md:w-1/3">
-                                                            <input type="text" name="file_name[]"
-                                                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                                                placeholder="Enter file name"
-                                                                value="{{ $download->name }}">
-                                                        </div>
-                                                        <div class="w-full md:w-1/3">
-                                                            <input type="text" name="file_url[]"
-                                                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                                                placeholder="Enter file url"
-                                                                value="{{ $download->url }}">
-                                                        </div>
-                                                        <div class="w-full md:w-1/6">
-                                                            <input type="file" name="files[]" class="block w-full text-sm text-slate-700">
-                                                        </div>
-                                                        <div class="w-full md:w-auto">
-                                                            <input type="hidden" name="ids[]"
-                                                                value="{{ $download->id }}">
-                                                            <a href="#" id="remove-file"
-                                                                data-id="{{ $download->id }}"
-                                                                class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-danger text-white hover:opacity-90 h-8 px-3 text-sm"><i
-                                                                    class="fa fa-trash-alt"></i></a>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            @endisset
-                                        </div>
-                                    </div>
-                                    <div class="border-t border-slate-200 px-4 py-3">
-                                        <span id="add-file" class="inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors bg-success text-white hover:opacity-90 h-10 px-4 text-sm cursor-pointer">Add File</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-4 mb-4">
-                            <label for="download_limit" class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Limit</label>
-                            <div class="w-full sm:w-1/3">
-                                <input type="number"
-                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                    id="download_limit" name="download_limit"
-                                    value="{{ $product->download_limit ?? old('download_limit') }}">
-                            </div>
-                            <div class="flex-1">
-                                <span class="text-sm text-slate-500">Leave blank for unlimited re-downloads</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-4 mb-4">
-                            <label for="download_expire" class="w-full sm:w-1/6 text-sm font-medium text-slate-700">Download Expire</label>
-                            <div class="w-full sm:w-1/3">
-                                <input type="date"
-                                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary"
-                                    id="download_expire" name="download_expire"
-                                    value="{{ $product->download_expire ?? old('download_expire') }}">
-                            </div>
-                            <div class="flex-1">
-                                <span class="text-sm text-slate-500">Enter the number of days before a downlink link expires, or leave blank</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border-t border-slate-200 px-4 py-3">
-                        <x-ui.button type="submit" variant="primary">Update</x-ui.button>
-                    </div>
-                </form>
-            </div>
-        @endif
-
-
     </section>
 
 @endsection
@@ -948,46 +484,15 @@
     <script src="/assets/plugins/summernote/summernote-bs4.min.js"></script>
     <script src="/assets/dist/extra.js"></script>
 
-    <script type="text/javascript" src="/assets/plugins/file-uploader/image-uploader.min.js"></script>
-    @isset($product)
-        @if ($product->downloads->count() < 1)
-            <script>
-                $(document).on('click', '#download_able', function(e) {
-
-                    if (this.checked) {
-                        $('#modal-default').modal('show')
-                    } else {
-                        $('#modal-default').modal('hide')
-                    }
-                })
-            </script>
-        @endif
-    @else
-        <script>
-            $(document).on('click', '#download_able', function(e) {
-
-                if (this.checked) {
-                    $('#modal-default').modal('show')
-                } else {
-                    $('#modal-default').modal('hide')
-                }
-            })
-        </script>
-    @endisset
-
     <script>
         $(document).ready(function() {
             $('.select2').select2();
             $('.dropify').dropify();
             $('#full_description').summernote();
-            // $('.input-images-1').imageUploader();
-
             $('#short_description').summernote();
-            $('#spec').summernote();
 
-            // increment
+            // increment gallery image row
             $(document).on('click', '#add', function(e) {
-
                 let htmlData = '<div class="input-group mt-2">';
                 htmlData +=
                     '<input type="file" class="form-control" accept="image/*" name="images[]" required>';
@@ -1000,7 +505,8 @@
                 htmlData += '</div>';
                 $('#increment').append(htmlData);
             });
-            // increment
+
+            // increment color row
             $(document).on('change', '#select_color', function(e) {
                 let colors = $(this).val();
                 var color = colors.split(',');
@@ -1021,57 +527,11 @@
                 htmlData += '</div>';
                 $('#increment_color').append(htmlData);
             });
-            // remove
+
+            // remove a dynamically added row
             $(document).on('click', '#remove', function(e) {
                 $(this).parent().remove();
             });
-
-            // increment file
-            $(document).on('click', '#add-file', function(e) {
-                let htmlData = '<div class="row mt-2">';
-                htmlData +=
-                    '<div class="col-md-4"><input type="text" name="file_name[]" id="" class="form-control" placeholder="Enter file name"></div>';
-                htmlData +=
-                    '<div class="col-md-4"><input type="text" name="file_url[]" id="" class="form-control" placeholder="Enter file url"></div>';
-                htmlData +=
-                    '<div class="col-md-2"><input type="file" name="files[]" id="" class="custom-file"></div>';
-                htmlData += '<div class="col-md-2">';
-                htmlData += '<input type="hidden" name="ids[]" value="0">';
-                htmlData +=
-                    '<button type="button" data-id="0" id="remove-file" class="btn btn-danger btn-sm"><i class="fa fa-trash-alt"></i></button></div>';
-                htmlData += '</div>';
-
-                $('#increment-file').append(htmlData);
-            });
-
-            // remove file
-            $(document).on('click', '#remove-file', function(e) {
-                e.preventDefault();
-                let btn = $(this);
-                let id = $(this).data('id');
-
-                if (id == 0) {
-                    $(this).parent().parent().remove();
-                } else {
-                    $.ajax({
-                        type: 'GET',
-                        url: '/admin/delete/product/download/' + id,
-                        dataType: "JSON",
-                        beforeSend: function() {
-                            $(btn).addClass('disabled');
-                        },
-                        success: function(response) {
-                            $(btn).parent().parent().remove();
-                        },
-                        complete: function() {
-                            $(btn).removeClass('disabled');
-                        }
-                    });
-                }
-
-            });
-
-
 
             $(document).on('change', '#category', function() {
 
@@ -1145,7 +605,7 @@
                     dataType: "JSON",
                     success: function(response) {
 
-                        let data = '<option value="">Select Mini Category</option>';
+                        let data = '<option value="">Select Extra Category</option>';
                         $.each(response, function(key, val) {
                             data += '<option value="' + val.id + '">' + val.name +
                                 '</option>';
@@ -1159,34 +619,6 @@
     </script>
     @isset($product)
         <script>
-            function productImages() {
-
-                let id = '{!! $product->id !!}';
-                console.log(id);
-                $.ajax({
-                    type: 'GET',
-                    url: '/admin/get/product/image/' + id,
-                    dataType: 'JSON',
-                    success: function(response) {
-
-                        let preloaded = [];
-                        $.each(response, function(key, val) {
-                            preloaded.push({
-                                id: val.id,
-                                src: '/uploads/product/' + val.name
-                            });
-                        });
-
-                        $('.input-images-1').imageUploader({
-                            preloaded: preloaded,
-                            imagesInputName: 'photos',
-                            preloadedInputName: 'old'
-                        });
-                    }
-                });
-            }
-            productImages();
-
             function attributes() {
                 var options = document.getElementById('category').selectedOptions;
                 var values = Array.from(options).map(({
@@ -1260,15 +692,11 @@
     <script>
         $('#ncolor').colorpicker();
 
-
-        // Dicount required while change discount type
+        // Discount required while discount type changes
         $(document).on('change', '#dis_type', function(e) {
-            // Check if the selected value is not equal to 0
             if ($(this).val() != "0") {
-                // Make discount_price input required
                 $('#discount_price').prop('required', true);
             } else {
-                // Make discount_price input not required
                 $('#discount_price').prop('required', false);
             }
         });
