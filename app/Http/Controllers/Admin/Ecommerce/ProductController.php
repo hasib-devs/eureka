@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Ecommerce;
 
 use App\Http\Controllers\Controller;
-use App\Models\DownloadProduct;
 use App\Models\Product;
 use App\Models\Comment;
 use App\Models\Review;
@@ -13,7 +12,6 @@ use App\Models\Category;
 use App\Models\ExtraMiniCategory;
 use App\Models\Attribute;
 use App\Models\miniCategory;
-use App\Models\Campaign;
 use App\Exports\ProductsExport;
 use App\Imports\ProductsImport;
 use App\Models\Brand;
@@ -21,7 +19,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Image;
 
 class ProductController extends Controller
 {
@@ -133,24 +130,6 @@ class ProductController extends Controller
 
         return view('admin.e-commerce.product.index', compact('products', 'categories', 'brands', 'statuses'));
     }
-
-    // Commented by Hridoy
-    // public function indexone(Request $request)
-    // {
-    //     $query = Product::join('category_product', 'category_product.product_id', '=', 'products.id') // Join with the category_product table
-    //                     ->join('categories', 'category_product.category_id', '=', 'categories.id') // Join with the categories table
-    //                     ->select('products.*', 'category_product.category_id'); // Select relevant columns from products and category_product
-    
-    //     // Check if category filter is applied
-    //     if ($request->has('category') && $request->category != 'All') {
-    //         $query->where('category_product.category_id', $request->category); // Filter by category_id
-    //     }
-    
-    //     $products = $query->latest('products.id')->paginate(10); // Get the products with pagination
-    //     $categories = Category::all(); // Get all categories
-    
-    //     return view('admin.e-commerce.product.index', compact('products', 'categories'));
-    // }
 
     public function lowProduct(){
         $products=\App\Models\Product::where('quantity','<','6')->where('user_id',auth()->id())->paginate(10);
@@ -311,12 +290,10 @@ class ProductController extends Controller
         $type='normal';
         $categories = DB::table('categories')->latest('id')->get(['id', 'name']);
         $colors     = DB::table('colors')->latest('id')->get(['id', 'name','slug','code']);
-    
-        $campaigns = Campaign::where('status',1)->get();
         $sizes      = DB::table('sizes')->latest('id')->get(['id', 'name']);
         $tags       = DB::table('tags')->latest('id')->get(['id', 'name']);
         $brands     = DB::table('brands')->latest('id')->get(['id', 'name']);
-        return view('admin.e-commerce.product.form', compact('campaigns','categories', 'colors', 'sizes', 'tags', 'brands','type'));
+        return view('admin.e-commerce.product.form', compact('categories', 'colors', 'sizes', 'tags', 'brands','type'));
     }
 
     /**
@@ -330,11 +307,10 @@ class ProductController extends Controller
         $categories = DB::table('categories')->latest('id')->get(['id', 'name']);
         $colors     = DB::table('colors')->latest('id')->get(['id', 'name','slug','code']);
         $attributes = Attribute::all();
-        $campaigns  = Campaign::where('status',1)->get();
         $sizes      = DB::table('sizes')->latest('id')->get(['id', 'name']);
         $tags       = DB::table('tags')->latest('id')->get(['id', 'name']);
         $brands     = DB::table('brands')->latest('id')->get(['id', 'name']);
-        return view('admin.e-commerce.product.form', compact('campaigns','categories', 'colors', 'sizes', 'tags', 'brands','type','attributes'));
+        return view('admin.e-commerce.product.form', compact('categories', 'colors', 'sizes', 'tags', 'brands','type','attributes'));
     }
 
     /**
@@ -357,7 +333,6 @@ class ProductController extends Controller
             'full_description'  => 'nullable|string',
             'buying_price'      => 'nullable|numeric',
             'regular_price'     => 'required|numeric',
-            'whole_price'       => 'nullable|numeric',
             'dis_type'          => 'nullable',
             'discount_price'    => 'nullable|numeric',
             'quantity'          => 'required|integer',
@@ -376,28 +351,9 @@ class ProductController extends Controller
             'shipping_charge'   => 'required|boolean',
             'images'            => 'nullable|array',
             'images.*'          => 'image',
-            'file_name'         => 'nullable',
-            'file_name.*'       => 'nullable|string|max:255',
-            'file_url'          => 'nullable',
-            'file_url.*'        => 'nullable',
-            'download_limit'    => 'nullable|integer',
-            'download_expire'   => 'nullable|date',
-            'prdct_extra_msg'   => 'nullable|string',
-
         ]);
 
-        
-
-        $book = $request->file('pdf');
-        if ($book) {
-            $currentDate = Carbon::now()->toDateString();
-            $bookName = $currentDate.'-'.uniqid().'.'.$book->getClientOriginalExtension();
-            if (!file_exists('uploads/admin/book')) {
-                mkdir('uploads/admin/book', 0777, true);
-            }
-            $book->move(public_path('uploads/admin/book'), $bookName);
-        }
-         $video = $request->file('video');
+        $video = $request->file('video');
         if ($video) {
             $currentDate = Carbon::now()->toDateString();
             $videoName = $currentDate.'-'.uniqid().'.'.$video->getClientOriginalExtension();
@@ -425,20 +381,10 @@ class ProductController extends Controller
             if (!file_exists('uploads/product')) {
                 mkdir('uploads/product', 0777, true);
             }
-            
-            
-            $filepath = $image->move(public_path('uploads/product'), $imageName);
-            $imagesize   = getimagesize($filepath);
-            $width  = $imagesize[0] - (5/100 * $imagesize[0]);
-            $height = $imagesize[1] - (5/100 * $imagesize[1]);
-           // $image  = Image::make($filepath);
-            //$image->save($filepath);
+
+            $image->move(public_path('uploads/product'), $imageName);
         }
 
-        if ($request->filled('download_able')) {
-            $download_limit = $request->download_limit;
-            $download_expire = $request->download_expire;
-        }
        if($request->dis_type==2){
             $discount=($request->regular_price/100)*$request->discount_price;
             $discount_price=$request->regular_price-$discount;
@@ -453,7 +399,7 @@ class ProductController extends Controller
              $point=setting('Default_Point')*$request->regular_price;
         }
         if($discount_price<0){
-            $discount_price='Null';
+            $discount_price=null;
         }
         $linky='';
         if($request->yvideo){
@@ -476,41 +422,27 @@ class ProductController extends Controller
        }
         }
         $product = Product::create([
-            'user_id'           => $request->vendor ?? 1,
+            'user_id'           => auth()->id(),
             'brand_id'          => $request->brand,
             'slug'              => rand(pow(10, 5-1), pow(10, 15)-1),
             'title'             => $request->title,
             'sku'               => $request->sku,
-            'author_id'             => $request->author_id,
-            'book_file'             => $bookName ?? NULL,
             'short_description' => $request->short_description,
-            'isbn' => $request->isbn,
-            'edition' => $request->edition,
-            'pages' => $request->pages,
-            'video' => $videoName?? Null,
-            'videoTName' => $videoTName?? Null,
-            'yvideo' => $linky,
-            'country' => $request->country,
-            'language' => $request->language,
+            'video'             => $videoName ?? null,
+            'video_thumb'       => $videoTName ?? null,
+            'yvideo'            => $linky,
             'full_description'  => $request->full_description,
             'buying_price'      => $request->buying_price,
             'regular_price'     => $request->regular_price,
-            'whole_price'       => $request->whole_price,
             'discount_price'    => $discount_price,
             'dis_type'          => $request->dis_type,
-            'point'             => $request->point ?? $point,
+            'point'             => $point,
             'quantity'          => $request->quantity,
             'image'             => $imageName,
             'status'            => $request->filled('status'),
-            'is_aproved'            => $request->filled('status'),
+            'is_aproved'        => $request->filled('status'),
             'type'              => $typen,
             'shipping_charge'   => $request->shipping_charge,
-            'download_able'     => $request->filled('download_able'),
-            'download_limit'    => $download_limit ?? NULL,
-            'download_expire'   => $download_expire ?? NULL,
-            'sheba'             => $request->filled('sheba'),
-            'book'             => $request->filled('book'),
-            'prdct_extra_msg'   => $request->prdct_extra_msg,
         ]);
 
         $product->categories()->sync($request->categories, []);
@@ -548,9 +480,6 @@ class ProductController extends Controller
                     )
                 );}
             }
-        }
-             if(!empty( $request->get('campaigns'))){
-            $product->campaigns()->sync($request->campaigns, []);
         }
        $product->tags()->sync($request->tags ?? []);
 $product->sizes()->sync($request->sizes ?? []);
@@ -597,41 +526,6 @@ if ($request->hasFile('images')) {
     }
 }
 
-        if ($request->filled('download_able')) {
-            // store product image in storage and database
-            $files = $request->file('files');
-            
-            if (isset($files)) {
-
-                foreach ($files as $key => $file) {
-
-                    $currentDate = Carbon::now()->toDateString();
-                    $fileName    = $currentDate.'-'.uniqid().'.'.$file->getClientOriginalExtension();
-                    
-                    if (!file_exists('uploads/product/download')) {
-                        mkdir('uploads/product/download', 0777, true);
-                    }
-                    $file->move(public_path('uploads/product/download'), $fileName);
-                    
-                    $product->downloads()->create([
-                        'name' => $request->file_name[$key],
-                        'file' => $fileName
-                    ]);
-                }
-            } 
-            if($request->file_url){
-                foreach ($request->file_url as $index => $file_url) {
-                
-                if ($file_url != '') {
-                    $product->downloads()->create([
-                        'name' => $request->file_name[$index],
-                        'url'  => $file_url
-                    ]);
-                }
-            }
-            }
-        }
-
         notify()->success("Product successfully added", "Added");
         return redirect()->to(routeHelper('product'));
     }
@@ -665,7 +559,6 @@ if ($request->hasFile('images')) {
         $colors     = DB::table('colors')->latest('id')->get();
         $sizes      = DB::table('sizes')->latest('id')->get(['id', 'name']);
         $tags       = DB::table('tags')->latest('id')->get(['id', 'name']);
-        $campaigns = Campaign::where('status',1)->get();
 
         $attributes = Attribute::all();
         $colors_product = DB::table('color_product')
@@ -673,7 +566,7 @@ if ($request->hasFile('images')) {
                     ->join('colors', 'colors.id', '=', 'color_product.color_id')
                     ->where('color_product.product_id', $product->id)
                     ->get();
-        
+
 
         $brands     = DB::table('brands')->latest('id')->get(['id', 'name']);
         return view('admin.e-commerce.product.form', compact(
@@ -684,18 +577,8 @@ if ($request->hasFile('images')) {
             'sizes',
             'tags',
             'brands',
-            'brands',
-            'product',
-            'campaigns'
+            'product'
         ));
-
-        $categories = DB::table('categories')->latest('id')->get(['id', 'name']);
-        $colors     = DB::table('colors')->latest('id')->get(['id', 'name','slug']);
-        $attributes = Attribute::all();
-        $sizes      = DB::table('sizes')->latest('id')->get(['id', 'name']);
-        $tags       = DB::table('tags')->latest('id')->get(['id', 'name']);
-        $brands     = DB::table('brands')->latest('id')->get(['id', 'name']);
-        return view('admin.e-commerce.product.form', compact('categories', 'colors', 'sizes', 'tags', 'brands','type','attributes'));
     }
 
     public function nColorDelete($cc,$pp){
@@ -730,17 +613,12 @@ if ($request->hasFile('images')) {
      */
     public function update(Request $request, Product $product)
     {
-
-        // dd($request);
-
         $this->validate($request, [
             'title'             => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'full_description'  => 'nullable|string',
             'regular_price'     => 'required|numeric',
             'discount_price'    => 'nullable|numeric',
-            'whole_price'       => 'nullable|numeric',
-            'point'             => 'required',
             'quantity'          => 'required|integer',
             'categories'        => 'required|array',
             'categories.*'      => 'required|integer',
@@ -754,25 +632,7 @@ if ($request->hasFile('images')) {
             'colors.*'          => 'integer',
             'image'             => 'nullable|image',
             'shipping_charge'   => 'required|boolean',
-            'file_name'         => 'nullable',
-            'file_name.*'       => 'nullable|string|max:255',
-            'file_url'          => 'nullable',
-            'file_url.*'        => 'nullable',
-            'download_limit'    => 'nullable|integer',
-            'download_expire'   => 'nullable|date',
-            'prdct_extra_msg'   => 'nullable|string',
         ]);
-        $book = $request->file('pdf');
-        if ($book) {
-            $currentDate = Carbon::now()->toDateString();
-            $bookName = $currentDate.'-'.uniqid().'.'.$book->getClientOriginalExtension();
-            if (!file_exists('uploads/admin/book')) {
-                mkdir('uploads/admin/book', 0777, true);
-            }
-            $book->move(public_path('uploads/admin/book'), $bookName);
-        }else {
-            $bookName = $product->book_file;
-        }
 
         $video = $request->file('video');
         if ($video) {
@@ -808,19 +668,10 @@ if ($request->hasFile('images')) {
             if (!file_exists('uploads/product')) {
                 mkdir('uploads/product', 0777, true);
             }
-            $filepath = $image->move(public_path('uploads/product'), $imageName);
-            $imagesize   = getimagesize($filepath);
-            $width  = $imagesize[0] - (1/100 * $imagesize[0]);
-            $height = $imagesize[1] - (1/100 * $imagesize[1]);
-            //$image  = Image::make($filepath);
-            //$image->save($filepath);
+            $image->move(public_path('uploads/product'), $imageName);
         }
         else {
             $imageName = $product->image;
-        }
-        if ($request->filled('download_able')) {
-            $download_limit  = $request->download_limit;
-            $download_expire = $request->download_expire;
         }
         if($request->dis_type==2){
             $discount=($request->regular_price/100)*$request->discount_price;
@@ -836,8 +687,9 @@ if ($request->hasFile('images')) {
             $point=setting('Default_Point')*$request->regular_price;
         }
         if($discount_price<0){
-            $discount_price='Null';
+            $discount_price=null;
         }
+        $linky = null;
         if($request->yvideo){
             $url=$request->yvideo;
             $provider=parse_url($request->yvideo);
@@ -858,39 +710,24 @@ if ($request->hasFile('images')) {
             }
         }
         $product->update([
-            'user_id'           => $request->vendor ?? 1,
             'brand_id'          => $request->brand,
             'title'             => $request->title,
             'sku'               => $request->sku,
             'short_description' => $request->short_description,
-            'author_id'             => $request->author_id,
-            'book_file'             => $bookName ?? Null,
-            'isbn' => $request->isbn,
-            'edition' => $request->edition,
-            'pages' => $request->pages,
-            'country' => $request->country,
-            'video'=>$videoName?? Null,
-            'video_thumb'=>$videoTName?? Null,
-            'language' => $request->language,
-            'yvideo' => $linky??$request->yvideo,
+            'video'             => $videoName ?? null,
+            'video_thumb'       => $videoTName ?? null,
+            'yvideo'            => $linky ?? $request->yvideo,
             'full_description'  => $request->full_description,
-            'buying_price'     => $request->buying_price,
+            'buying_price'      => $request->buying_price,
             'regular_price'     => $request->regular_price,
-            'whole_price'     => $request->whole_price,
             'discount_price'    => $discount_price,
-            'dis_type'    => $request->dis_type,
+            'dis_type'          => $request->dis_type,
             'quantity'          => $request->quantity,
-            'point'    => $request->point ?? $point,
+            'point'             => $point,
             'image'             => $imageName,
             'status'            => $request->filled('status'),
-            'is_aproved'            => $request->filled('status'),
+            'is_aproved'        => $request->filled('status'),
             'shipping_charge'   => $request->shipping_charge,
-            'download_able'     => $request->filled('download_able'),
-            'download_limit'    => $download_limit ?? NULL,
-            'download_expire'   => $download_expire ?? NULL,
-            'sheba'             => $request->filled('sheba'),
-            'book'             => $request->filled('book'),
-            'prdct_extra_msg'   => $request->prdct_extra_msg,
         ]);
 
 
@@ -926,85 +763,34 @@ if ($request->hasFile('images')) {
         
        $product->tags()->sync($request->tags ?? []);
 $product->sizes()->sync($request->sizes ?? []);
-        $i=0;
-
+        // Replace the whole set so editing doesn't duplicate existing rows.
+        DB::table('color_product')->where('product_id', $product->id)->delete();
         $i = 0;
-if (!empty($request->get('colors'))) {
-    foreach ($request->colors as $colors) {
-        DB::table('color_product')->insert([
-            'color_id'   => $colors,
-            'product_id' => $product->id,
-            'qnty'       => $request->color_quantits[$i] ?? 0,
-            'price'      => $request->color_prices[$i] ?? 0,
-        ]);
-        $i++;
-    }
-}
-       $a = 0;
-if (!empty($request->get('attributes'))) {
-    foreach ($request->get('attributes') as $attribute) {
-
-        DB::table('attribute_product')->insert([
-            'attribute_value_id' => $attribute,
-            'product_id'         => $product->id,
-            'qnty'               => $request->attributes_quantits[$a] ?? 0,
-            'price'              => $request->attribute_prices[$a] ?? 0,
-        ]);
-
-        $a++;
-    }
-}
-        if ($request->filled('download_able')) {
-            // store product image in storage and database
-            $files = $request->file('files');
-            
-            if (isset($files)) {
-
-                foreach ($files as $key => $file) {
-
-                    $currentDate = Carbon::now()->toDateString();
-                    $fileName    = $currentDate.'-'.uniqid().'.'.$file->getClientOriginalExtension();
-                    
-                    if (!file_exists('uploads/product/download')) {
-                        mkdir('uploads/product/download', 0777, true);
-                    }
-                    $file->move(public_path('uploads/product/download'), $fileName);
-                    
-                    $product->downloads()->create([
-                        'name' => $request->file_name[$key],
-                        'url'  => NULL,
-                        'file' => $fileName
-                    ]);
-                }
-            }
-
-            if(isset($request->file_url)) {
-                foreach ($request->file_url as $index => $file_url) {
-                
-                    if ($file_url != '') {
-                        $product->downloads()->create([
-                            'name' => $request->file_name[$index],
-                            'url'  => $file_url,
-                            'file' => NULL
-                        ]);
-                    }
-                }
-            }
-            
-        }
-        else {
-            if ($product->downloads) {
-                foreach ($product->downloads as $download) {
-                    if ($download->file != NULL) {
-                        if (file_exists('uploads/product/download/'.$download->file)) {
-                            unlink('uploads/product/download/'.$download->file);
-                        }
-                    }
-                    $download->delete();
-                }
+        if (!empty($request->get('colors'))) {
+            foreach ($request->colors as $colors) {
+                DB::table('color_product')->insert([
+                    'color_id'   => $colors,
+                    'product_id' => $product->id,
+                    'qnty'       => $request->color_quantits[$i] ?? 0,
+                    'price'      => $request->color_prices[$i] ?? 0,
+                ]);
+                $i++;
             }
         }
 
+        DB::table('attribute_product')->where('product_id', $product->id)->delete();
+        $a = 0;
+        if (!empty($request->get('attributes'))) {
+            foreach ($request->get('attributes') as $attribute) {
+                DB::table('attribute_product')->insert([
+                    'attribute_value_id' => $attribute,
+                    'product_id'         => $product->id,
+                    'qnty'               => $request->attributes_quantits[$a] ?? 0,
+                    'price'              => $request->attribute_prices[$a] ?? 0,
+                ]);
+                $a++;
+            }
+        }
         notify()->success("Product successfully update", "Update");
         return redirect()->to(routeHelper('product'));
         
@@ -1040,51 +826,6 @@ if (!empty($request->get('attributes'))) {
 
         $product->delete();
         notify()->success("Product successfully deleted", "Delete");
-        return back();
-    }
-
-    // get product images
-    public function getProductImage($id)
-    {
-        $product = ProductImage::where('product_id', $id)->get();
-        return response()->json($product);
-    }
-
-    // update product image
-    public function updateImage(Request $request)
-    {
-        $this->validate($request, [
-            'photos'   => 'nullable|array',
-            'photos.*' => 'image|mimes:jpg,jpeg,png,bmp,jfif|max:1024'
-        ]);
-        
-        $images = ProductImage::where('product_id', $request->id)->get();
-
-        foreach ($images as $image) 
-        {
-            if (file_exists('uploads/product/'.$image->name)) {
-                unlink('uploads/product/'.$image->name);
-            }
-            $image->delete();
-        }
-
-        $images = $request->file('images');
-         foreach ($images as $key=>$gallery) {
-            $currentDate      = Carbon::now()->toDateString();
-            $galleryImageName = $currentDate.'-'.uniqid().'.'.$gallery->getClientOriginalExtension();
-            
-            if (!file_exists('uploads/product')) {
-                mkdir('uploads/product', 0777, true);
-            }
-            $gallery->move(public_path('uploads/product'), $galleryImageName);
-
-            // save product database
-            $product->images()->create([
-                'name' => $galleryImageName,
-                'color_attri' => $request->imagesc[$key],
-            ]);
-        }
-        notify()->success("Product image successfully updated", "Updated");
         return back();
     }
 
@@ -1159,116 +900,6 @@ if (!empty($request->get('attributes'))) {
     {
         $data = miniCategory::whereIn('category_id', $request->ids)->get(['id', 'name']);
         return response()->json($data);
-    }
-
-    // delete download product file
-    public function deleteDownloadFile($id)
-    {
-        $download = DownloadProduct::findOrFail($id);
-        
-        if ($download->file != NULL) {
-            if (file_exists('uploads/product/download/'.$download->file)) {
-                unlink('uploads/product/download/'.$download->file);
-            }
-        }
-        
-        $download->delete();
-        return response()->json(['Success', 'Delete Successful']);
-    }
-
-    // update product downloadable file
-    public function updateDownloadFile(Request $request) 
-    {
-        $this->validate($request, [
-            'product_id'      => 'required|integer',
-            'file_name'       => 'required|array',
-            'file_name.*'     => 'string|max:255',
-            'file_url'        => 'nullable|array',
-            'files'           => 'nullable|array',
-            'files.*'         => 'file',
-            'ids'             => 'required|array',
-            'ids.*'           => 'integer',
-            'download_limit'  => 'required|integer',
-            'download_expire' => 'required|date'
-        ]);
-
-        $product = Product::find($request->product_id);
-        
-        $product->update([
-            'download_able'   => true,
-            'download_limit'  => $request->download_limit,
-            'download_expire' => $request->download_expire,
-        ]);
-        
-        $files = $request->file('files');
-        if (isset($files)) {
-
-            foreach ($files as $key => $file) {
-                
-                $currentDate = Carbon::now()->toDateString();
-                $fileName    = $currentDate.'-'.uniqid().'.'.$file->getClientOriginalExtension();
-                
-                $download = DownloadProduct::find($request->ids[$key]);
-                if ($download) {
-                    
-                    if($download->file != NULL) {
-                        if (file_exists('uploads/product/download/'.$download->file)) {
-                            unlink('uploads/product/download/'.$download->file);
-                        }
-                    }
-                    
-                    if (!file_exists('uploads/product/download')) {
-                        mkdir('uploads/product/download', 0777, true);
-                    }
-                    $file->move(public_path('uploads/product/download'), $fileName);
-                    
-                    $download->update([
-                        'name' => $request->file_name[$key],
-                        'url'  => NULL,
-                        'file' => $fileName
-                    ]);
-                }
-                else {
-                    if (!file_exists('uploads/product/download')) {
-                        mkdir('uploads/product/download', 0777, true);
-                    }
-                    $file->move(public_path('uploads/product/download'), $fileName);
-                    
-                    DownloadProduct::create([
-                        'product_id' => $request->product_id,
-                        'name'       => $request->file_name[$key],
-                        'url'        => NULL,
-                        'file'       => $fileName
-                    ]);
-                }
-            }
-        } 
-        foreach ($request->ids as $index => $id) {
-            
-            $download = DownloadProduct::find($id);
-            if ($download) {
-                if ($request->file_url[$index] != '') {
-                    $download->update([
-                        'name' => $request->file_name[$index],
-                        'url'  => $request->file_url[$index],
-                        'file' => NULL,
-                    ]);
-                }
-            } 
-            else {
-                if ($request->file_url[$index] != '') {
-                    DownloadProduct::create([
-                        'product_id' => $request->product_id,
-                        'name'       => $request->file_name[$index],
-                        'url'        => $request->file_url[$index],
-                        'file'       => NULL,
-                    ]);
-                }
-            }
-        }
-
-        notify()->success("Product downloadable file successfully updated", "Update");
-        return back();
     }
 
     public function imex()
