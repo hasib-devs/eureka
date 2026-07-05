@@ -33,8 +33,12 @@ gaps · **P3** = cruft removal & polish.
 
 ## P1 — Security (open findings)
 
-- [ ] **`dynamic_price` cart tampering** (now live post-restore). Server-side validate the price
-  against the product in `buyProduct` / `createOrder`; never trust request `dynamic_price`.
+- [x] **`dynamic_price` cart tampering.** ✅ Added `App\Services\ProductPriceCalculator` as the single
+  pricing source of truth (base + attribute + colour). `OrderController@buyProduct` now recomputes the
+  unit price server-side and no longer reads `request->dynamic_price`; `ProductController@getAttrPrice`
+  uses the same service so the previewed price always equals the charged price. Verified: tampered
+  `dynamic_price` is ignored, colour/attribute surcharges apply correctly, live endpoint returns the
+  right price. *(Bonus: buy-now previously dropped attribute/colour surcharges — now fixed.)*
 - [x] **IDOR sweep.** ✅ Wishlist delete + classified-ads delete/edit/update now scope to the owner
   (`where('user_id', auth()->id())->firstOrFail()`). Blog status/delete/update now use an
   admin-or-owner guard (`authorizeBlog()`) — admins keep moderation (routes are shared with the admin
