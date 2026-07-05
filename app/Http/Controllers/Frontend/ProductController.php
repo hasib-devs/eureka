@@ -475,7 +475,7 @@ class ProductController extends Controller
     public function productDetails($slug)
     {
         $product = Product::query()
-            ->with('comments', 'reviews', 'attributes_values.attributes')
+            ->with('comments', 'reviews', 'attributes_values.attributes', 'images')
             ->where('slug', $slug)
             ->where('status', true)
             ->firstOrFail();

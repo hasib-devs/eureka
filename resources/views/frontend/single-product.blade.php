@@ -1,25 +1,12 @@
+@extends('layouts.frontend.app')
 
+@section('title', $product->title)
 
+@push('meta')
+    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->short_description ?? $product->full_description ?? $product->title), 150) }}">
+@endpush
 
-<style>
-.main-product-page-top-space{
-    padding-top:110px;
-}
-@media(max-width:768px){
-    .main-product-page-top-space{
-        padding-top:85px;
-    }
-}
-</style>
-
-<div class='main-product-page-top-space'>
-@include('layouts.frontend.partials.header_1')
-
-
-
-
-
-
+@section('content')
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Inter:wght@300;400;500;600&display=swap');
@@ -37,7 +24,7 @@
     display: flex;
     flex-wrap: wrap;
     max-width: 1200px;
-    margin: 50px auto;
+    margin: 40px auto;
     padding: 0 20px;
     gap: 80px;
     font-family: 'Inter', sans-serif;
@@ -315,88 +302,146 @@ details[open] summary::after {
     line-height: 1.8;
 }
 
-@media (max-width: 900px) {
+/* ===== Tablet ===== */
+@media (max-width: 991px) {
     .boutique-wrapper {
         gap: 40px;
-        padding: 40px 20px;
-        margin: 0 auto;
+        padding: 24px 18px;
+        margin: 10px auto;
     }
 
     .gallery-column,
     .info-column {
         min-width: 100%;
+        flex: 1 1 100%;
     }
 
     .brand-title {
         font-size: 32px;
     }
 
-    .thumbnail-grid img {
-        height: 180px;
+    .thumbnail-grid img,
+    .thumbnail-grid video {
+        height: 200px;
+    }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+    .boutique-wrapper {
+        gap: 26px;
+        padding: 16px 14px;
+        margin: 0 auto;
+    }
+
+    .brand-title {
+        font-size: 24px;
+        letter-spacing: -0.5px;
+    }
+
+    .category-label {
+        letter-spacing: 3px;
+        margin-bottom: 10px;
+    }
+
+    .price-tag {
+        font-size: 22px;
+        margin-bottom: 24px;
+    }
+
+    .price-tag del {
+        font-size: 16px;
+    }
+
+    .rating-box {
+        margin-bottom: 18px;
+    }
+
+    .thumbnail-grid {
+        gap: 10px;
+    }
+
+    .thumbnail-grid img,
+    .thumbnail-grid video {
+        height: 150px;
+    }
+
+    .video-item {
+        height: 220px !important;
+    }
+
+    .specs-grid {
+        gap: 18px;
+        padding-top: 22px;
+        margin-bottom: 28px;
+    }
+
+    .spec-item span {
+        font-size: 14px;
+    }
+
+    .color-selection-container {
+        margin: 22px 0;
+        padding-top: 20px;
+    }
+
+    .swatch-name {
+        opacity: 1;
     }
 
     .action-group {
         flex-direction: column;
+        gap: 12px;
+        margin-bottom: 34px;
     }
-}
-.lux-search-form {
-    display: none;
-    align-items: center;
-    gap: 8px;
-}
 
-.lux-search-form.active {
-    display: flex;
-}
+    .btn-lux {
+        padding: 16px;
+    }
 
-.lux-search-form input {
-    width: 180px;
-    height: 36px;
-    border: 1px solid #ddd;
-    padding: 0 12px;
-    font-size: 13px;
-    outline: none;
-}
+    summary {
+        padding: 20px 0;
+        font-size: 12px;
+    }
 
-.lux-search-form button {
-    height: 36px;
-    border: none;
-    background: #000;
-    color: #fff;
-    padding: 0 12px;
-    cursor: pointer;
+    .details-content {
+        font-size: 14px;
+        line-height: 1.7;
+    }
 }
 </style>
 
 @php
     $galleryImages = collect();
 
-$productImages = is_array($product->image) ? $product->image : json_decode($product->image, true);
-
-if (!is_array($productImages)) {
-    $productImages = !empty($product->image) ? [$product->image] : [];
-}
-
-$mainImage = count($productImages) > 0
-    ? asset('uploads/product/' . $productImages[0])
-    : asset('frontend/images/placeholder.png');
-
-foreach ($productImages as $img) {
-    if (!empty($img)) {
-        $galleryImages->push(asset('uploads/product/' . $img));
+    // Main image is stored as a single filename in products.image
+    // (older records may hold a JSON array, so handle both).
+    $productImages = is_array($product->image) ? $product->image : json_decode($product->image, true);
+    if (!is_array($productImages)) {
+        $productImages = !empty($product->image) ? [$product->image] : [];
     }
-}
+    foreach ($productImages as $img) {
+        if (!empty($img)) {
+            $galleryImages->push(asset('uploads/product/' . $img));
+        }
+    }
 
-    
-    
+    // Extra gallery images live in the product_images table (images() relation).
+    foreach ($product->images as $img) {
+        if (!empty($img->name)) {
+            $galleryImages->push(asset('uploads/product/' . $img->name));
+        }
+    }
+
     $galleryImages = $galleryImages->unique()->values();
-    $productVideo = $product->video ?? $product->product_video ?? null;
+    $mainImage = $galleryImages->first() ?? asset('frontend/images/placeholder.png');
 
-if (!empty($productVideo)) {
-    $productVideo = str_starts_with($productVideo, 'http')
-        ? $productVideo
-        : asset('uploads/product/video/' . $productVideo);
-}
+    $productVideo = $product->video ?? $product->product_video ?? null;
+    if (!empty($productVideo)) {
+        $productVideo = str_starts_with($productVideo, 'http')
+            ? $productVideo
+            : asset('uploads/product/video/' . $productVideo);
+    }
 
     $finalPrice = $product->discount_price ?: $product->regular_price;
     $reviewCount = $product->reviews ? $product->reviews->count() : 0;
@@ -421,10 +466,10 @@ if (!empty($productVideo)) {
                 <img src="{{ $mainImage }}" alt="{{ $product->title }}" class="active" onclick="changeProductImage(this)">
             @endforelse
             @if(!empty($productVideo))
-    <video class="video-item" controls muted loop playsinline>
-        <source src="{{ $productVideo }}" type="video/mp4">
-    </video>
-@endif
+                <video class="video-item" controls muted loop playsinline>
+                    <source src="{{ $productVideo }}" type="video/mp4">
+                </video>
+            @endif
         </div>
     </div>
 
@@ -557,7 +602,6 @@ document.querySelectorAll('.swatch-wrapper').forEach(function (swatch) {
     });
 });
 
-
 function setAddToCartMode() {
     setTimeout(function () {
         window.location.href = "{{ route('cart') }}";
@@ -572,5 +616,4 @@ function buyNowProduct() {
 }
 </script>
 
-
-</div>
+@endsection
