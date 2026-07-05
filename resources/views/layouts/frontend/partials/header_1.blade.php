@@ -825,6 +825,32 @@
                 padding-top: 58px !important;
             }
         }
+
+        /* ===== Mobile header layout fix =====
+           Keep the top header balanced on phones: logo on the left, the
+           search + cart actions on the right. The old absolute-positioned
+           cart button overlapped the logo, and the search/cart in the right
+           group were hidden, leaving the whole right side empty. */
+        @media (max-width: 768px) {
+            .mobile-cart-openar {
+                display: none !important;
+            }
+
+            .hdr-right {
+                gap: 14px;
+                align-items: center;
+            }
+
+            #mobileSearchBtn {
+                display: inline-flex !important;
+                width: 30px;
+                height: 30px;
+            }
+
+            .hdr-right > a[title="Cart"] {
+                display: inline-flex !important;
+            }
+        }
     </style>
 
     <!--{{-- Optional Top info (desktop only) --}}
