@@ -362,7 +362,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        _token: document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        _token: document.querySelector('meta[name="csrf-token"]')?.getAttribute(
                             'content'),
                         id
                     })

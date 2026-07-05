@@ -18,6 +18,7 @@ use App\Models\ExtraMiniCategory;
 use App\Models\miniCategory;
 use App\Models\Product;
 use App\Models\SubCategory;
+use App\Services\ProductPriceCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use View;
@@ -270,7 +271,7 @@ class ProductController extends Controller
     /**
      * show products by collection
      *
-     * @param  mixed $slug
+     * @param  mixed  $slug
      * @return void
      */
     public function showProductByCollection($slug, Request $request)
@@ -564,7 +565,7 @@ class ProductController extends Controller
     /**
      * comment by product
      *
-     * @param  mixed $slug
+     * @param  mixed  $slug
      * @return void
      */
     public function comment(Request $request, $slug)
@@ -589,9 +590,9 @@ class ProductController extends Controller
     /**
      * product comment reply
      *
-     * @param  mixed $request
-     * @param  mixed $slug
-     * @param  mixed $id
+     * @param  mixed  $request
+     * @param  mixed  $slug
+     * @param  mixed  $id
      * @return void
      */
     public function reply(Request $request, $slug, $id)
@@ -617,7 +618,7 @@ class ProductController extends Controller
     /**
      * product filtering by requested data
      *
-     * @param  mixed $request
+     * @param  mixed  $request
      * @return void
      */
     public function productFilter(Request $request)
@@ -690,7 +691,7 @@ class ProductController extends Controller
             }
         }
 
-        $sort = new Sorting();
+        $sort = new Sorting;
         $value = $sort->getValue($request->sort);
         if ($value === $sort->oldToNew) {
             $products = $products->orderBy('id', 'asc')->get();
@@ -714,7 +715,7 @@ class ProductController extends Controller
     /**
      * show product details to cart
      *
-     * @param  mixed $slug
+     * @param  mixed  $slug
      * @return void
      */
     public function productInfo($slug)
@@ -813,50 +814,11 @@ class ProductController extends Controller
         return response()->json([$product, $attrs, $values, $camp]);
     }
 
-    public function getAttrPrice(Request $request)
+    public function getAttrPrice(Request $request, ProductPriceCalculator $pricing)
     {
-        $attributes = Attribute::all();
-        $price = 0;
-        foreach ($attributes as $attribute) {
-            $attribute_prouct = DB::table('attribute_product')
-                ->select('*')
-                ->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')
-                ->addselect('attribute_values.name as vName')
-                ->addselect('attribute_product.id as vid')
-                ->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')
-                ->where('attribute_product.product_id', $request->id)
-                ->where('attributes.id', $attribute->id)
-                ->get();
-            if ($attribute_prouct->count() > 0) {
-                $slug = $attribute->slug;
-                $id = $request->$slug;
-                if ($id > 0) {
-                    $attr_pro = DB::table('attribute_product')->where('product_id', $request->id)->where('attribute_value_id', $id)->first();
-                    $price += $attr_pro->price;
-                }
-            }
-        }
+        $product = Product::findOrFail($request->id);
 
-        $c = Color::where('slug', $request->color)->first();
-        if (! empty($c)) {
-            $color = DB::table('color_product')->where('product_id', $request->id)->where('color_id', $c->id)->first();
-        }
-        $product = Product::find($request->id);
-        if (isset($request->camp)) {
-            $camp = CampaingProduct::find($request->camp);
-            $op = $camp->price;
-        } elseif (empty($product->discount_price)) {
-            $op = $product->regular_price;
-        } else {
-            $op = $product->discount_price;
-        }
-        if (! empty($color)) {
-            $price += $op + $color->price;
-        } else {
-            $price += $op;
-        }
-
-        return response()->json($price);
+        return response()->json($pricing->unitPrice($request, $product));
     }
 
     public function allBrand()
@@ -865,36 +827,33 @@ class ProductController extends Controller
 
         return view('frontend.brands', compact('brands'));
     }
-    
-    
 
-        public function homeAsCategory(Request $request)
-        {
-            // blade compatibility
-            $request->merge([
-                'category' => null,
-            ]);
-        
+    public function homeAsCategory(Request $request)
+    {
+        // blade compatibility
+        $request->merge([
+            'category' => null,
+        ]);
 
-            $products = Product::where('status', 1)
-                ->latest('id')
-                ->paginate(20); 
-        
-            $min = 0;
-            $max = 999999999;
-            $unr = url('/');
-        
-            return view('frontend.filter-product', compact(
-                'products',
-                'request',
-                'min',
-                'max',
-                'unr'
-            ));
-        }
+        $products = Product::where('status', 1)
+            ->latest('id')
+            ->paginate(20);
 
-// <div class="mt-4">
-//     {{ $products->withQueryString()->links() }}
-// </div>
+        $min = 0;
+        $max = 999999999;
+        $unr = url('/');
+
+        return view('frontend.filter-product', compact(
+            'products',
+            'request',
+            'min',
+            'max',
+            'unr'
+        ));
+    }
+
+    // <div class="mt-4">
+    //     {{ $products->withQueryString()->links() }}
+    // </div>
 
 }

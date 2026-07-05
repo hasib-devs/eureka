@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Services\SteadfastCourierService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Services\SteadfastCourierService;
 
 class CourierController extends Controller
 {
@@ -32,7 +32,6 @@ class CourierController extends Controller
         $note = $request->input('note');
         // dd($invoice);
 
-
         // Create order using Steadfast Courier API
         $response = $steadfastService->createOrder(
             $invoice,
@@ -49,15 +48,15 @@ class CourierController extends Controller
             $order->status = 9; // sended to courier
             DB::table('multi_order')->where('order_id', $invoice)->update(['status' => 9]);
             $order->save();
-        
-            notify()->success("Courerier Sended successfully", "Congratulations");
+
+            notify()->success('Courerier Sended successfully', 'Congratulations');
+
             return back();
-            $this->sendNotification('Courier', $order->invoice, $order->user_id);
         }
 
-        
-        if($response['status'] != 200){
-            notify()->warning($response['errors']['invoice'][0], "Something Wrong");
+        if ($response['status'] != 200) {
+            notify()->warning($response['errors']['invoice'][0], 'Something Wrong');
+
             return back();
         }
 
@@ -65,25 +64,23 @@ class CourierController extends Controller
         // return response()->json($response);
         // dd($response);
 
-
-
         // All Response
-            //         array:3 [▼
-            // "status" => 200
-            // "message" => "Consignment has been created successfully."
-            // "consignment" => array:11 [▼
-            //     "consignment_id" => 74261643
-            //     "invoice" => "80"
-            //     "tracking_code" => "46D248B1E"
-            //     "recipient_name" => "Shamim Khan"
-            //     "recipient_phone" => "01721600688"
-            //     "recipient_address" => "h, Dhaka, Dhaka,"
-            //     "cod_amount" => 0
-            //     "status" => "in_review"
-            //     "note" => "N/A"
-            //     "created_at" => "2024-02-18T11:58:59.000000Z"
-            //     "updated_at" => "2024-02-18T11:58:59.000000Z"
-            // ]
-            // ]
+        //         array:3 [▼
+        // "status" => 200
+        // "message" => "Consignment has been created successfully."
+        // "consignment" => array:11 [▼
+        //     "consignment_id" => 74261643
+        //     "invoice" => "80"
+        //     "tracking_code" => "46D248B1E"
+        //     "recipient_name" => "Shamim Khan"
+        //     "recipient_phone" => "01721600688"
+        //     "recipient_address" => "h, Dhaka, Dhaka,"
+        //     "cod_amount" => 0
+        //     "status" => "in_review"
+        //     "note" => "N/A"
+        //     "created_at" => "2024-02-18T11:58:59.000000Z"
+        //     "updated_at" => "2024-02-18T11:58:59.000000Z"
+        // ]
+        // ]
     }
 }

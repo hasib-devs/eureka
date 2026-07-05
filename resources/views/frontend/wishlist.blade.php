@@ -39,7 +39,7 @@
                     <p class="mb-[10px]">  {!!$product->short_description !!}</p>
                 </a> 
               
-                <table>
+                <div class="overflow-x-auto"><table>
                    <tbody>
                         <tr>
                         <th>MRP </th>
@@ -64,7 +64,7 @@
                         <td><strong class="my-0 mx-[10px]">:</strong>@foreach ($product->colors as $color){{$color->name}} @endforeach</td>
                     </tr>
                    </tbody>
-                </table>
+                </table></div>
                  <div class="rating1">
                     @php
                         if ($product->reviews->count() > 0) {

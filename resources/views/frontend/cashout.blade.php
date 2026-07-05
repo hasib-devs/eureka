@@ -63,7 +63,7 @@ border-radius: 5px;
         </div>
     </div>
     <!-- Default box -->
-<table id="example1" class="table table-bordered table-striped">
+<div class="overflow-x-auto"><table id="example1" class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>SL</th>
@@ -106,7 +106,7 @@ border-radius: 5px;
                     @endforeach
                 </tbody>
               
-            </table>
+            </table></div>
 </section>
                 </div>
             </div>

@@ -16,7 +16,7 @@
                 @include('layouts.frontend.partials.userside')
             </div>
             <div class="col-md-9">
-                <table class="timetable_sub mt-5 bg-white">
+                <div class="overflow-x-auto"><table class="timetable_sub mt-5 bg-white">
                     <thead>
                         <tr>
                             <th>Order NO.</th>
@@ -53,7 +53,7 @@
                         @endforeach
                          
                     </tbody>
-                </table>
+                </table></div>
             </div>
         </div>
     </div>

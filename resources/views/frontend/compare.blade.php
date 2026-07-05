@@ -11,7 +11,7 @@
 
     <div class="checkout-right">
         <div class="container w-full my-5 mx-auto border border-[#ddd] p-5 box-border">
-            <table class="w-full border-collapse text-center">
+            <div class="overflow-x-auto"><table class="w-full border-collapse text-center">
                 <a href="{{ route('compare.clear') }}" class="btn btn-danger mb-2 float-right">Clear compare</a>
                 <!-- Table Header -->
                 <thead>
@@ -61,7 +61,7 @@
                         @endforeach
                     </tr>
                 </tbody>
-            </table>
+            </table></div>
         </div>
     </div>
 

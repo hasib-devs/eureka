@@ -27,7 +27,7 @@ border-radius: 5px;
                 <div class="custmer-right ">
                 <div class="row bg-white rounded-[5px]">
             <div class="col-md-12 customar-menu">
-            <table id="example1" class="table table-bordered table-striped">
+            <div class="overflow-x-auto"><table id="example1" class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>SL</th>
@@ -44,7 +44,7 @@ border-radius: 5px;
                     @endforeach
                     
                 </tbody>
-            </table>
+            </table></div>
             </div>
         </div>
                 </div>
