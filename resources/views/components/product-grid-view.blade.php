@@ -310,11 +310,8 @@
                     }
                 });
 
-                // কার্ট সংখ্যা আপডেট
-                if(document.getElementById('total-cart-amount')) {
-                    let currentCount = parseInt(document.getElementById('total-cart-amount').textContent) || 0;
-                    document.getElementById('total-cart-amount').textContent = currentCount + 1;
-                }
+                // কার্ট সংখ্যা আপডেট (সার্ভারের authoritative count দিয়ে)
+                if (window.updateCartCount) window.updateCartCount(data.count);
 
                 // টোস্ট মেসেজ দেখানো (Undefined ফিক্স)
                 let status = data.alert || data.status || 'Success';
