@@ -20,108 +20,121 @@
 @endpush
 
 @section('content')
-    {{-- Page header --}}
-    <section class="mb-4">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-slate-800">
-                @isset($brand)
-                    Edit Brand
-                @else
-                    Add Brand
-                @endisset
-            </h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li>/</li>
-                <li class="text-slate-700">
+
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">
                     @isset($brand)
                         Edit Brand
                     @else
                         Add Brand
                     @endisset
-                </li>
-            </ol>
+                </h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    @isset($brand)
+                        Update the details of this brand
+                    @else
+                        Create a new product brand
+                    @endisset
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                @isset($brand)
+                    <x-ui.button variant="outline" :href="routeHelper('brand/' . $brand->id)">
+                        <i class="fas fa-eye text-xs"></i> Show
+                    </x-ui.button>
+                @endisset
+                <x-ui.button variant="outline" :href="routeHelper('brand')">
+                    <i class="fas fa-long-arrow-alt-left text-xs"></i> Back to List
+                </x-ui.button>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ routeHelper('brand') }}" class="transition-colors hover:text-primary">Brands</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">
+                        @isset($brand)
+                            Edit
+                        @else
+                            Add
+                        @endisset
+                    </li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    {{-- Main content --}}
-    <section>
-        <div class="mx-auto max-w-3xl">
-            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                {{-- Card header --}}
-                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <h3 class="font-semibold text-slate-800">
-                        @isset($brand)
-                            Edit Brand
-                        @else
-                            Add New Brand
-                        @endisset
-                    </h3>
-                    <div class="flex items-center gap-2">
-                        @isset($brand)
-                            <x-ui.button variant="info" size="sm" :href="routeHelper('brand/' . $brand->id)">
-                                <i class="fas fa-eye"></i>
-                                Show
-                            </x-ui.button>
-                        @endisset
-                        <x-ui.button variant="danger" size="sm" :href="routeHelper('brand')">
-                            <i class="fas fa-long-arrow-alt-left"></i>
-                            Back to List
-                        </x-ui.button>
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
+            <form action="{{ isset($brand) ? routeHelper('brand/' . $brand->id) : routeHelper('brand') }}"
+                method="POST" enctype="multipart/form-data">
+                @csrf
+                @isset($brand)
+                    @method('PUT')
+                @endisset
+
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-copyright"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">
+                                @isset($brand)
+                                    Edit Brand Details
+                                @else
+                                    Add New Brand
+                                @endisset
+                            </h3>
+                            <p class="text-xs text-slate-500">Name, description, cover photo and visibility</p>
+                        </div>
                     </div>
-                </div>
 
-                {{-- Form spanning card body + footer --}}
-                <form action="{{ isset($brand) ? routeHelper('brand/' . $brand->id) : routeHelper('brand') }}"
-                    method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @isset($brand)
-                        @method('PUT')
-                    @endisset
-
-                    {{-- Card body --}}
-                    <div class="p-4 space-y-4">
+                    <div class="space-y-4 p-5">
                         {{-- Name --}}
                         <x-ui.input
                             name="name"
-                            label="Name:"
+                            label="Name"
                             type="text"
-                            :value="$brand->name ?? old('name')"
+                            :value="$brand->name ?? null"
                             placeholder="Write brand name"
                             required
                             autocomplete="off"
                         />
 
                         {{-- Description --}}
-                        <x-ui.textarea name="description" label="Description:" :rows="5" placeholder="Write category description">{{ $brand->description ?? old('description') }}</x-ui.textarea>
+                        <x-ui.textarea name="description" label="Description" :rows="5" placeholder="Write category description">{{ $brand->description ?? old('description') }}</x-ui.textarea>
 
-                        {{-- Cover Photo --}}
+                        {{-- Cover Photo (Dropify — keep raw input, JS hooks preserved) --}}
                         <div>
-                            <label for="cover_photo" class="block text-sm font-medium text-slate-700 mb-1">Cover Photo:</label>
+                            <label for="cover_photo" class="mb-1 block text-sm font-medium text-slate-700">Cover Photo</label>
                             <input type="file" name="cover_photo" id="cover_photo" accept="image/*"
-                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm @error('cover_photo') border-danger @enderror"
+                                class="block w-full @error('cover_photo') border border-danger rounded-lg @enderror"
                                 data-default-file="@isset($brand)/uploads/brand/{{ $brand->cover_photo }}@endisset">
                             @error('cover_photo')
-                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
 
                         {{-- Status toggle --}}
                         <div>
-                            <label class="inline-flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" name="status" id="status" ___inline_directive_________________________________________________________________________3___>
-                                <div class="relative w-10 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            <label class="inline-flex cursor-pointer items-center gap-3">
+                                <input type="checkbox" class="peer sr-only" name="status" id="status" @checked($brand->status ?? true)>
+                                <div class="peer relative h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:shadow after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-5 peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50"></div>
                                 <span class="text-sm font-medium text-slate-700">Status</span>
                             </label>
                             @error('status')
-                                <p class="text-sm text-danger mt-1">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    {{-- Card footer --}}
-                    <div class="border-t border-slate-200 px-4 py-3">
-                        <x-ui.button variant="primary" type="submit">
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4">
+                        <x-ui.button variant="outline" :href="routeHelper('brand')">
+                            Cancel
+                        </x-ui.button>
+                        <x-ui.button type="submit" variant="primary">
                             @isset($brand)
                                 <i class="fas fa-arrow-circle-up"></i>
                                 Update
@@ -131,8 +144,8 @@
                             @endisset
                         </x-ui.button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </section>
 @endsection

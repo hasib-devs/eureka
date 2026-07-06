@@ -11,129 +11,142 @@
 
 @section('content')
 
-    {{-- Page header --}}
-    <section class="mb-4">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-slate-800">Disable Product List</h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li class="text-slate-400">/</li>
-                <li class="text-slate-700">Disable Product List</li>
-            </ol>
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Disabled Products</h1>
+                <p class="mt-1 text-sm text-slate-500">Products currently hidden from the storefront</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <x-ui.button variant="primary" :href="routeHelper('product/create')">
+                    <i class="fas fa-plus text-xs"></i>
+                    Add Product
+                </x-ui.button>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">Disabled Products</li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    {{-- Main content --}}
-    <section>
+    <section class="mb-6">
 
-        <x-ui.card>
-            <x-slot:header>
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-slate-800">Disable Product List</h3>
-                    <x-ui.button variant="success" size="sm" :href="routeHelper('product/create')">
-                        <i class="fas fa-plus-circle"></i>
-                        Add Product
-                    </x-ui.button>
-                </div>
-            </x-slot:header>
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-4">
+                <h2 class="text-base font-semibold text-slate-900">Disable Product List</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20">
+                    {{ $products->count() }} {{ Str::plural('product', $products->count()) }}
+                </span>
+            </div>
 
-            <x-ui.table id="example1">
-                <thead>
-                    <tr>
-                        <th>SL</th>
-                        <th>Image</th>
-                        <th>Title</th>
-                        <th>RP</th>
-                        <th>DP</th>
-                        <th>Stock</th>
-                        <th>Brand</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($products as $key => $data)
-                        <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td>
-                                <img src="{{ asset('uploads/product/' . $data->image) }}" alt="Product Image"
-                                    width="60px">
-                            </td>
-                            <td>{{ $data->title }}</td>
-                            <td>{{ $data->regular_price }}</td>
-                            <td>{{ $data->discount_price }}</td>
-                            <td>
-                                @if ($data->quantity > 0)
-                                    <x-ui.badge variant="success">Available</x-ui.badge>
-                                @else
-                                    <x-ui.badge variant="danger">Unavailable</x-ui.badge>
-                                @endif
-                            </td>
-                            <td>{{ $data->brand->name ?? '' }}</td>
-                            <td>
-                                @if ($data->status)
-                                    <x-ui.badge variant="success">Active</x-ui.badge>
-                                @else
-                                    <x-ui.badge variant="danger">Disable</x-ui.badge>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="inline-flex gap-1">
-                                    <x-ui.button variant="primary" size="sm"
-                                        :href="route('admin.product.order', $data->id)" title="Order Product">
-                                        <i class="fab fa-jedi-order"></i>
-                                    </x-ui.button>
-                                    @if ($data->status)
-                                        <x-ui.button variant="success" size="sm"
-                                            :href="routeHelper('product/status/' . $data->id)" title="Disable">
-                                            <i class="fas fa-thumbs-up"></i>
-                                        </x-ui.button>
-                                    @else
-                                        <x-ui.button variant="warning" size="sm"
-                                            :href="routeHelper('product/status/' . $data->id)" title="Active">
-                                            <i class="fas fa-thumbs-down"></i>
-                                        </x-ui.button>
-                                    @endif
-                                    <x-ui.button variant="primary" size="sm"
-                                        :href="routeHelper('product/' . $data->id)">
-                                        <i class="fas fa-eye"></i>
-                                    </x-ui.button>
-                                    <x-ui.button variant="info" size="sm"
-                                        :href="routeHelper('product/' . $data->id . '/edit')">
-                                        <i class="fas fa-edit"></i>
-                                    </x-ui.button>
-                                    @if (auth()->user()->desig != 3)
-                                        <x-ui.button variant="danger" size="sm" href="javascript:void(0)"
-                                            data-id="{{ $data->id }}" id="deleteData">
-                                            <i class="nav-icon fas fa-trash-alt"></i>
-                                        </x-ui.button>
-                                    @endif
-                                    <form id="delete-data-form-{{ $data->id }}"
-                                        action="{{ routeHelper('product/' . $data->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </div>
-                            </td>
+            <div class="overflow-x-auto p-5">
+                <table id="example1" class="w-full min-w-[960px] text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-200 bg-slate-50/80 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                            <th class="w-14 px-4 py-3.5">SL</th>
+                            <th class="px-4 py-3.5">Product</th>
+                            <th class="px-4 py-3.5 text-right">Regular Price</th>
+                            <th class="px-4 py-3.5 text-right">Discount Price</th>
+                            <th class="px-4 py-3.5">Stock</th>
+                            <th class="px-4 py-3.5">Brand</th>
+                            <th class="px-4 py-3.5">Status</th>
+                            <th class="px-4 py-3.5 text-right">Action</th>
                         </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th>SL</th>
-                        <th>Image</th>
-                        <th>Title</th>
-                        <th>RP</th>
-                        <th>DP</th>
-                        <th>Stock</th>
-                        <th>Brand</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </tfoot>
-            </x-ui.table>
-
-        </x-ui.card>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse ($products as $key => $data)
+                            <tr class="group transition-colors hover:bg-slate-50/80">
+                                <td class="px-4 py-4 text-slate-500">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <img src="{{ asset('uploads/product/' . $data->image) }}" alt="Product Image"
+                                            class="h-10 w-10 rounded-lg object-cover ring-1 ring-slate-200">
+                                        <span class="font-semibold text-slate-800">{{ $data->title }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-right tabular-nums font-semibold text-slate-800">
+                                    {{ $data->regular_price !== null ? number_format($data->regular_price, 2) : '' }}
+                                </td>
+                                <td class="px-4 py-4 text-right tabular-nums text-slate-500">
+                                    {{ $data->discount_price !== null ? number_format($data->discount_price, 2) : '' }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    @if ($data->quantity > 0)
+                                        <x-ui.badge variant="success" dot>Available</x-ui.badge>
+                                    @else
+                                        <x-ui.badge variant="danger" dot>Unavailable</x-ui.badge>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 text-slate-500">{{ $data->brand->name ?? '' }}</td>
+                                <td class="px-4 py-4">
+                                    @if ($data->status)
+                                        <x-ui.badge variant="success" dot>Active</x-ui.badge>
+                                    @else
+                                        <x-ui.badge variant="danger" dot>Disable</x-ui.badge>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('admin.product.order', $data->id) }}"
+                                            title="Create order for this product"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </a>
+                                        @if ($data->status)
+                                            <a href="{{ routeHelper('product/status/' . $data->id) }}"
+                                                title="Disable product"
+                                                class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-danger hover:bg-danger/10 hover:text-danger hover:shadow">
+                                                <i class="fas fa-ban"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ routeHelper('product/status/' . $data->id) }}"
+                                                title="Activate product"
+                                                class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                        @endif
+                                        <a href="{{ routeHelper('product/' . $data->id) }}"
+                                            title="View product"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ routeHelper('product/' . $data->id . '/edit') }}"
+                                            title="Edit product"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        @if (auth()->user()->desig != 3)
+                                            <a href="javascript:void(0)" data-id="{{ $data->id }}" id="deleteData"
+                                                title="Delete product"
+                                                class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-danger hover:bg-danger/10 hover:text-danger hover:shadow">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        @endif
+                                        <form id="delete-data-form-{{ $data->id }}"
+                                            action="{{ routeHelper('product/' . $data->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-5 py-20 text-center">
+                                    <div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-slate-50 ring-1 ring-slate-200">
+                                        <i class="fas fa-box-open text-xl text-slate-300"></i>
+                                    </div>
+                                    <p class="font-semibold text-slate-700">No disabled products found</p>
+                                    <p class="mt-1 text-sm text-slate-500">Products will appear here once they are disabled.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </section>
 
@@ -155,12 +168,14 @@
     <script src="/assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script>
         $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            @if ($products->count())
+                $("#example1").DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            @endif
         })
     </script>
 @endpush

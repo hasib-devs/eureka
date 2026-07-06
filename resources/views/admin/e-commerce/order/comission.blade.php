@@ -2,77 +2,64 @@
 
 @section('title', 'Comission List')
 
-@push('css')
-    <!-- DataTables -->
-    <link rel="stylesheet" href="/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-@endpush
-
 @section('content')
 
-    <section class="mb-4">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-slate-800">Comission List</h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-slate-700">Home</a></li>
-                <li><span class="mx-1">/</span></li>
-                <li class="text-slate-700">Comission List</li>
-            </ol>
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Commissions</h1>
+                <p class="mt-1 text-sm text-slate-500">Approved commission amounts earned from vendor orders</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">Commission List</li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    <section>
-        <x-ui.card>
-            <x-slot:header>Order List</x-slot:header>
+    <section class="mb-6">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-4">
+                <h2 class="text-base font-semibold text-slate-900">Commission List</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/20">
+                    {{ $comissions->count() }} {{ Str::plural('commission', $comissions->count()) }}
+                </span>
+            </div>
 
-            <x-ui.table id="example1">
-                <thead>
-                    <tr>
-                        <th>SL</th>
-                        <th>vendor</th>
-                        <th>amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($comissions as $key => $data)
-                        <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td>{{ $data->user->shop_info->name }}</td>
-                            <td>{{ $data->amount }}</td>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[560px] text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-200 bg-slate-50/80 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                            <th class="w-14 px-4 py-3.5">SL</th>
+                            <th class="px-4 py-3.5">Vendor</th>
+                            <th class="px-4 py-3.5 text-right">Amount</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </x-ui.table>
-        </x-ui.card>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse ($comissions as $data)
+                            <tr class="group transition-colors hover:bg-slate-50/80">
+                                <td class="px-4 py-4 text-slate-500">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-4 font-semibold text-slate-800">{{ $data->user->shop_info->name }}</td>
+                                <td class="px-4 py-4 text-right font-semibold tabular-nums text-slate-800">{{ number_format($data->amount, 2) }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="px-5 py-20 text-center">
+                                    <div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-slate-50 ring-1 ring-slate-200">
+                                        <i class="fas fa-coins text-xl text-slate-300"></i>
+                                    </div>
+                                    <p class="font-semibold text-slate-700">No commissions found</p>
+                                    <p class="mt-1 text-sm text-slate-500">Approved commissions from vendor orders will show up here.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </section>
 
 @endsection
-
-@push('js')
-    <!-- DataTables  & Plugins -->
-    <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/jszip/jszip.min.js"></script>
-    <script src="/assets/plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="/assets/plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
-    <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-
-
-        })
-    </script>
-@endpush

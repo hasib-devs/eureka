@@ -25,13 +25,22 @@
     <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
 
 
-    @notifyCss
+    {{-- @notifyCss replaced by the layered import below: notify.css ships a preflight-style
+         button/background reset that must not beat Tailwind's layered utilities. --}}
 
     @stack('css')
 
-    <!-- adminlte.css retained as the Bootstrap base for the JS widgets; the admin chrome is
-         the dashboard-assets sidebar + a Tailwind shell. -->
-    <link rel="stylesheet" href="/assets/dist/css/adminlte.css">
+    <!-- adminlte.css retained as the Bootstrap base for the JS widgets, but demoted into the
+         lowest cascade layer: its unlayered element resets (a{background-color:transparent})
+         and !important-free rules must not beat Tailwind's layered utilities. The @layer
+         statement fixes the full layer order before anything else declares layers. -->
+    <style>
+        {{-- 'reclaim' is declared FIRST: for !important declarations layer priority reverses,
+             so reclaim's !important brand-color rules beat adminlte's !important utilities. --}}
+        @layer reclaim, adminlte, theme, base, components, utilities;
+        @import url('/assets/dist/css/adminlte.css') layer(adminlte);
+        @import url('{{ asset('vendor/mckenziearts/laravel-notify/dist/notify.css') }}') layer(adminlte);
+    </style>
 
     <!-- Tailwind LAST so its utilities win on the (being-)converted content. -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
