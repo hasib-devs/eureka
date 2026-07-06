@@ -8,10 +8,26 @@
                 <i class="bx bx-menu"></i>
             </button>
 
+            @php
+                $__user = auth()->user();
+                $__hasAvatar = $__user && $__user->avatar && file_exists(public_path('uploads/admin/'.$__user->avatar));
+            @endphp
             <div class="profile">
-                <div>
-                    <h4 class="text-lg">ANAS LUXY WORLD</h4>
-                    <p>Admin Panel</p>
+                <form action="{{ route('admin.profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
+                    @csrf
+                    <label class="profile-avatar" title="Change profile picture">
+                        @if ($__hasAvatar)
+                            <img src="{{ asset('uploads/admin/'.$__user->avatar) }}" alt="Profile">
+                        @else
+                            <span class="profile-avatar-fallback">{{ strtoupper(mb_substr($__user->name ?? 'A', 0, 1)) }}</span>
+                        @endif
+                        <span class="profile-avatar-edit"><i class="bx bx-camera"></i></span>
+                        <input type="file" name="avatar" accept="image/*" hidden onchange="this.form.submit()">
+                    </label>
+                </form>
+                <div class="profile-meta">
+                    <h4>{{ $__user->name ?? 'Admin' }}</h4>
+                    <p>Administrator</p>
                 </div>
             </div>
 
@@ -298,6 +314,78 @@
         </aside>
 
         <style>
+            /* ---- Premium profile card ---- */
+            .profile {
+                background: linear-gradient(135deg, #fffdf3, #ffffff);
+                border: 1px solid rgba(242, 210, 49, 0.4);
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            }
+            .profile #avatarForm {
+                margin: 0;
+            }
+            .profile-avatar {
+                position: relative;
+                display: block;
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                overflow: hidden;
+                cursor: pointer;
+                flex-shrink: 0;
+                border: 2px solid #f2d231;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
+            }
+            .profile-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+            .profile-avatar-fallback {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #f2d231, #e0b41a);
+                color: #1a1a1a;
+                font-weight: 800;
+                font-size: 1.25rem;
+            }
+            .profile-avatar-edit {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 42%;
+                background: rgba(0, 0, 0, 0.55);
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.85rem;
+                opacity: 0;
+                transition: opacity 0.18s ease;
+            }
+            .profile-avatar:hover .profile-avatar-edit {
+                opacity: 1;
+            }
+            .profile-meta h4 {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: #1a1a1a;
+                line-height: 1.2;
+                margin: 0;
+            }
+            .profile-meta p {
+                font-size: 0.68rem;
+                font-weight: 600;
+                color: #b8901a;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                margin-top: 3px;
+            }
+
             .account-actions {
                 display: flex;
                 gap: 8px;
