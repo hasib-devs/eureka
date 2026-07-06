@@ -319,25 +319,23 @@
         </aside>
 
         <style>
-            /* ==== Premium corporate sidebar ================================
-               Overrides the light base styles in dashboard-assets/style.css
-               (this block comes later in the document, so it wins at equal
-               specificity). Behavior hooks (.rail, .collapsed, data attrs)
-               are unchanged. */
+            /* ==== Sidebar theme ============================================
+               Light mode: the original white sidebar look (the base styles in
+               dashboard-assets/style.css supply the white panel and the gold
+               hover/active states). Dark mode: the corporate graphite theme,
+               scoped under html.admin-dark. Structure/behavior hooks (.rail,
+               .collapsed, data attrs) are theme-neutral. */
             .dashboard-sidebar {
-                background: #0c1322;
-                border-right: 1px solid rgba(148, 163, 184, 0.12);
-                backdrop-filter: none;
                 font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
             }
 
-            /* ---- Single profile section ---- */
+            /* ---- Single profile section (structure + light colors) ---- */
             .profile-block {
                 margin: 0 16px 18px 16px;
-                border: 1px solid rgba(148, 163, 184, 0.14);
+                border: 1px solid rgba(0, 0, 0, 0.08);
                 border-radius: 14px;
-                background: rgba(255, 255, 255, 0.03);
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+                background: #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
                 overflow: hidden;
             }
             .profile {
@@ -360,7 +358,7 @@
                 overflow: hidden;
                 cursor: pointer;
                 flex-shrink: 0;
-                border: 1px solid rgba(148, 163, 184, 0.35);
+                border: 1px solid rgba(0, 0, 0, 0.12);
             }
             .profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
             .profile-avatar-fallback {
@@ -369,8 +367,8 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: linear-gradient(135deg, #334155, #1e293b);
-                color: #e2e8f0;
+                background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+                color: #334155;
                 font-weight: 700;
                 font-size: 1.15rem;
             }
@@ -392,7 +390,7 @@
             .profile-meta h4 {
                 font-size: 0.92rem;
                 font-weight: 650;
-                color: #f1f5f9;
+                color: #1e293b;
                 line-height: 1.2;
                 margin: 0;
                 letter-spacing: 0.1px;
@@ -403,7 +401,7 @@
             .profile-meta p {
                 font-size: 0.64rem;
                 font-weight: 600;
-                color: #8494ac;
+                color: #94a3b8;
                 letter-spacing: 1.3px;
                 text-transform: uppercase;
                 margin: 3px 0 0 0;
@@ -415,8 +413,8 @@
                 gap: 6px;
                 margin: 0;
                 padding: 8px;
-                border-top: 1px solid rgba(148, 163, 184, 0.12);
-                background: rgba(255, 255, 255, 0.02);
+                border-top: 1px solid rgba(0, 0, 0, 0.06);
+                background: #fafbfc;
             }
             .account-actions .account-link,
             .account-actions .logout-btn {
@@ -432,22 +430,23 @@
                 cursor: pointer;
                 border: 0;
                 background: transparent;
-                color: #9aa9bf;
+                color: #64748b;
                 text-decoration: none;
                 transition: background 0.16s, color 0.16s;
             }
             .account-actions .account-link i,
             .account-actions .logout-btn i { font-size: 1.05rem; }
             .account-actions .logout-form { flex: 1; margin: 0; display: flex; }
-            .account-actions .logout-btn { width: 100%; color: #f87171; }
+            .account-actions .logout-btn { width: 100%; color: #dc2626; }
             .account-actions .account-link:hover,
             .account-actions .account-link.active {
-                background: rgba(255, 255, 255, 0.08);
-                color: #fff;
+                background: #f1f5f9;
+                color: #0f172a;
             }
-            .account-actions .logout-btn:hover { background: rgba(220, 38, 38, 0.18); color: #fca5a5; }
+            .account-actions .logout-btn:hover { background: #fee2e2; color: #b91c1c; }
 
-            /* ---- Section labels + items ---- */
+            /* ---- Section labels + items (structure; light colors come from
+                   the base stylesheet, incl. the original gold hover/active) ---- */
             .menu-section { margin-bottom: 14px; }
             .menu-section label {
                 display: flex;
@@ -459,21 +458,18 @@
                 border-radius: 6px;
                 font-size: 0.64rem;
                 font-weight: 700;
-                color: #64748b;
                 letter-spacing: 1.6px;
                 transition: color 0.15s;
             }
-            .menu-section label:hover { color: #cbd5e1; }
             .menu-section label .chev {
                 font-size: 1rem;
-                color: #475569;
+                color: #bbb;
                 transition: transform 0.2s;
             }
             .menu-section.collapsed > ul { display: none; }
             .menu-section.collapsed label .chev { transform: rotate(-90deg); }
 
             .dashboard-sidebar li {
-                color: #94a3b8;
                 position: relative;
                 font-size: 0.875rem;
                 font-weight: 500;
@@ -487,32 +483,12 @@
                 text-align: center;
                 flex-shrink: 0;
             }
-            .dashboard-sidebar li:hover {
-                background: rgba(255, 255, 255, 0.06);
-                color: #f1f5f9;
-                font-weight: 500;
-                transform: translateX(2px);
-            }
-            .dashboard-sidebar li.active {
-                background: rgba(255, 255, 255, 0.07);
-                color: #fff;
-                font-weight: 600;
-            }
-            .dashboard-sidebar li.active::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: 20%;
-                bottom: 20%;
-                width: 3px;
-                border-radius: 999px;
-                background: #f85606;
-            }
+            .dashboard-sidebar li:hover { transform: translateX(2px); }
 
-            /* ---- Thin dark scrollbar ---- */
-            .nav-container { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.25) transparent; }
+            /* ---- Thin scrollbar ---- */
+            .nav-container { scrollbar-width: thin; }
             .nav-container::-webkit-scrollbar { width: 5px; }
-            .nav-container::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); border-radius: 999px; }
+            .nav-container::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, .3); border-radius: 999px; }
             .nav-container::-webkit-scrollbar-track { background: transparent; }
 
             /* ---- Icons-only (rail) mode ---- */
@@ -532,6 +508,63 @@
             .dashboard-sidebar.rail li i { font-size: 1.35rem; }
             .dashboard-sidebar.rail .account-actions { flex-direction: column; }
             .dashboard-sidebar.rail .account-actions .account-link span { display: none; }
+
+            /* ==== Dark mode (html.admin-dark): corporate graphite ==== */
+            html.admin-dark .dashboard-sidebar {
+                background: #0c1322;
+                border-right: 1px solid rgba(148, 163, 184, 0.12);
+                backdrop-filter: none;
+            }
+            html.admin-dark .profile-block {
+                border-color: rgba(148, 163, 184, 0.14);
+                background: rgba(255, 255, 255, 0.03);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            }
+            html.admin-dark .profile-avatar { border-color: rgba(148, 163, 184, 0.35); }
+            html.admin-dark .profile-avatar-fallback {
+                background: linear-gradient(135deg, #334155, #1e293b);
+                color: #e2e8f0;
+            }
+            html.admin-dark .profile-meta h4 { color: #f1f5f9; }
+            html.admin-dark .profile-meta p { color: #8494ac; }
+            html.admin-dark .account-actions {
+                border-top-color: rgba(148, 163, 184, 0.12);
+                background: rgba(255, 255, 255, 0.02);
+            }
+            html.admin-dark .account-actions .account-link { color: #9aa9bf; }
+            html.admin-dark .account-actions .account-link:hover,
+            html.admin-dark .account-actions .account-link.active {
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+            }
+            html.admin-dark .account-actions .logout-btn { color: #f87171; }
+            html.admin-dark .account-actions .logout-btn:hover { background: rgba(220, 38, 38, 0.18); color: #fca5a5; }
+            html.admin-dark .menu-section label { color: #64748b; }
+            html.admin-dark .menu-section label:hover { color: #cbd5e1; }
+            html.admin-dark .menu-section label .chev { color: #475569; }
+            html.admin-dark .dashboard-sidebar li { color: #94a3b8; }
+            html.admin-dark .dashboard-sidebar li:hover {
+                background: rgba(255, 255, 255, 0.06);
+                color: #f1f5f9;
+                font-weight: 500;
+            }
+            html.admin-dark .dashboard-sidebar li.active {
+                background: rgba(255, 255, 255, 0.07);
+                color: #fff;
+                font-weight: 600;
+            }
+            html.admin-dark .dashboard-sidebar li.active::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 20%;
+                bottom: 20%;
+                width: 3px;
+                border-radius: 999px;
+                background: #f85606;
+            }
+            html.admin-dark .nav-container { scrollbar-color: rgba(148,163,184,.25) transparent; }
+            html.admin-dark .nav-container::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); }
         </style>
 
         <script>
