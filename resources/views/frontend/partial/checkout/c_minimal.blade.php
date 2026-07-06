@@ -414,9 +414,9 @@
                             </div>
 
 
-                            <div class="form-group col-md-12 d-none" id="email_wrap">
-                                <label for="email">Email Address <sup class="text-[red]">*</sup></label>
-                                <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="text"  />
+                            <div class="form-group col-md-12" id="email_wrap">
+                                <label for="email">ইমেইল <span class="text-slate-400">(ঐচ্ছিক)</span></label>
+                                <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="email"  />
                                 @error('email')
                                     <small class="form-text text-danger">{{$message}}</small>
                                 @enderror
@@ -975,9 +975,8 @@ $stotal = 0;
         })
 
 
-        // Email Off
+        // Email stays visible & optional; only drop the required flag when not needed
         function off_email(){
-            $('#email_wrap').addClass('d-none');
             $('#email').removeAttr('required');
         }
             
@@ -1174,8 +1173,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function saveIncompleteLead() {
         const formData = collectFormData();
 
-        if (!formData.name && !formData.phone) {
-            console.log('Name and phone both empty, skipping save');
+        if (!formData.name && !formData.phone && !formData.email && !formData.address) {
+            console.log('All fields empty, skipping save');
             return;
         }
 
@@ -1220,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.addEventListener('beforeunload', function() {
         const formData = collectFormData();
-        if (formData.name || formData.phone) {
+        if (formData.name || formData.phone || formData.email || formData.address) {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', leadUrl, false);
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -1235,7 +1234,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setInterval(function() {
         const formData = collectFormData();
-        if (formData.name || formData.phone) saveIncompleteLead();
+        if (formData.name || formData.phone || formData.email || formData.address) saveIncompleteLead();
     }, 30000);
 
     console.log('Cart tracking setup complete');

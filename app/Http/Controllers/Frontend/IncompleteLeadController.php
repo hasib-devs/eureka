@@ -212,11 +212,11 @@ class IncompleteLeadController extends Controller
                 'has_cart_items' => !empty($request->cart_items)
             ]);
 
-            // Minimum requirement check
-            if (empty($request->name) && empty($request->phone)) {
+            // Minimum requirement check — save the lead if any one field is filled
+            if (empty($request->name) && empty($request->phone) && empty($request->email) && empty($request->address)) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Name or phone is required'
+                    'message' => 'At least one field is required'
                 ], 400);
             }
 
