@@ -277,6 +277,16 @@
         }
 
         /* Enhanced Hamburger */
+        .hamburger {
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+        }
+
         .hamburger .bars {
             width: 24px;
             height: 18px;
@@ -517,20 +527,24 @@
         }
 
         @media (min-width: 769px) {
+            /* Left and right share the leftover space equally so the center
+               nav is aligned to the true page center regardless of how many
+               menu items a guest vs. logged-in user sees. */
             .hdr-left {
-                min-width: 180px;
-                flex-shrink: 0;
+                flex: 1 1 0;
+                min-width: 0;
+                justify-content: flex-start;
             }
 
             .hdr-center {
-                flex: 1;
+                flex: 0 1 auto;
                 min-width: 0;
                 justify-content: center;
             }
 
             .hdr-right {
+                flex: 1 1 0;
                 min-width: 0;
-                flex-shrink: 0;
                 justify-content: flex-end;
                 gap: 20px;
             }
@@ -788,7 +802,7 @@
 
         /* Nav center column */
         .hdr-center {
-            flex: 1;
+            flex: 0 1 auto;
             justify-content: center;
             overflow: hidden;
         }
@@ -826,25 +840,40 @@
             }
         }
 
-        /* ===== Mobile header layout fix =====
-           Keep the top header balanced on phones: logo on the left, the
-           search + cart actions on the right. The old absolute-positioned
-           cart button overlapped the logo, and the search/cart in the right
-           group were hidden, leaving the whole right side empty. */
+        /* ===== Mobile header layout =====
+           Phone top bar: hamburger (left) · logo (center) · cart (right).
+           The hamburger and cart columns are equal width so the logo stays
+           optically centered. */
         @media (max-width: 768px) {
             .mobile-cart-openar {
                 display: none !important;
             }
 
-            .hdr-right {
-                gap: 14px;
-                align-items: center;
+            .header-row {
+                gap: 8px;
             }
 
+            .hamburger.mobile-only {
+                flex: 0 0 44px;
+                justify-content: flex-start;
+            }
+
+            .hdr-left {
+                flex: 1;
+                min-width: 0;
+                justify-content: center;
+            }
+
+            .hdr-right {
+                flex: 0 0 44px;
+                gap: 14px;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            /* Right side shows the cart only */
             #mobileSearchBtn {
-                display: inline-flex !important;
-                width: 30px;
-                height: 30px;
+                display: none !important;
             }
 
             .hdr-right > a[title="Cart"] {
@@ -873,12 +902,15 @@
     <div class="main-header">
         <div class="header-row container">
 
-            <div class="mobile-cart-openar mobile-only">
-                <a href="{{ route('cart') }}" class="mobile-cart-button" aria-label="Cart">
-                    <img src="{{ asset('assets/frontend/images/cart-icon.png') }}" alt="Cart"
-                        style="width:22px; height:22px; object-fit:contain;">
-                </a>
-            </div>
+            {{-- Mobile: hamburger (opens the category sidebar) --}}
+            <button type="button" class="hamburger mobile-only" data-open-mobile-sidebar
+                aria-label="Open menu" aria-expanded="false">
+                <span class="bars" aria-hidden="true">
+                    <span class="b1"></span>
+                    <span class="b2"></span>
+                    <span class="b3"></span>
+                </span>
+            </button>
 
             {{-- LEFT: Logo --}}
             <div class="hdr-left">
