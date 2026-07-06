@@ -334,6 +334,38 @@
 
     <x-notify::notify />
     @include('layouts.frontend.partials.script')
+
+    {{-- Live cart-count sync: refresh every cart badge the instant an item is
+         added, with no page reload. The server returns the authoritative count. --}}
+    <script>
+        window.updateCartCount = function (count) {
+            if (count === undefined || count === null) return;
+            var n = parseInt(count, 10);
+            if (isNaN(n)) n = 0;
+            document.querySelectorAll(
+                '#cartCount, #total-cart-amount, #total-cart-amount2, .badge-foo'
+            ).forEach(function (el) {
+                el.textContent = n;
+                if (el.classList.contains('badge')) {
+                    el.classList.remove('updated');
+                    void el.offsetWidth; // restart the bounce animation
+                    el.classList.add('updated');
+                }
+            });
+        };
+
+        // Catch every jQuery add-to-cart request site-wide and refresh the badges,
+        // regardless of each page's own (legacy) success handler.
+        if (window.jQuery) {
+            jQuery(document).ajaxSuccess(function (event, xhr, settings) {
+                var url = (settings && settings.url) ? settings.url : '';
+                if (url.indexOf('/add/cart') === -1) return;
+                var res = xhr.responseJSON;
+                if (res && res.count !== undefined) window.updateCartCount(res.count);
+            });
+        }
+    </script>
+
     @include('layouts.frontend.partials.mobile-sidebar')
 
 <script>

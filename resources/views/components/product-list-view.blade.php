@@ -233,10 +233,8 @@
                 .then(response => response.json())
                 .then(data => {
 
-                    document.getElementById('total-cart-amount').textContent = Number(document.getElementById(
-                        'total-cart-amount').textContent) + 1
-                    document.getElementById('total-cart-amount2').textContent = Number(document.getElementById(
-                        'total-cart-amount2').textContent) + 1
+                    // সার্ভারের authoritative count দিয়ে সব কার্ট ব্যাজ আপডেট
+                    if (window.updateCartCount) window.updateCartCount(data.count);
 
                     loadCartOnCanvas()
                     $.toast({
