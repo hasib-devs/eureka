@@ -1165,9 +1165,9 @@
                         })
                         .then(res => res.json())
                         .then(data => {
-                            document.querySelectorAll('.cart-count').forEach(function(el) {
-                                if (data.count !== undefined) el.innerText = data.count;
-                            });
+                            if (data.count !== undefined && window.updateCartCount) {
+                                window.updateCartCount(data.count);
+                            }
                         })
                         .catch(err => console.log(err));
                 });
