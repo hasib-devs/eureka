@@ -489,8 +489,8 @@ $product->sizes()->sync($request->sizes ?? []);
             DB::table('color_product')->insert([
                 'color_id'=>$colors,
                 'product_id'=>$product->id,
-                'qnty'=>$request->color_quantits[$i],
-                'price'=>$request->color_prices[$i],
+                'qnty'=>$request->color_quantits[$i] ?? 0,
+                'price'=>$request->color_prices[$i] ?? 0,
             ]);
             $i++;
         }}
@@ -501,8 +501,8 @@ $product->sizes()->sync($request->sizes ?? []);
             DB::table('attribute_product')->insert([
                 'attribute_value_id'=>$attribute,
                 'product_id'=>$product->id,
-                'qnty'=>$request->attributes_quantits[$a],
-                'price'=>$request->attribute_prices[$a],
+                'qnty'=>$request->attributes_quantits[$a] ?? 0,
+                'price'=>$request->attribute_prices[$a] ?? 0,
             ]);
             $a++;
         }}
@@ -745,7 +745,7 @@ if ($request->hasFile('images')) {
             // save product database
             $product->images()->create([
                 'name' => $galleryImageName,
-                'color_attri' => $request->imagesc[$key],
+                'color_attri' => $request->imagesc[$key] ?? null,
             ]);
         }}
         

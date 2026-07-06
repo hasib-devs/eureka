@@ -66,7 +66,8 @@
     gap: 15px;
 }
 .thumbnail-grid img,
-.thumbnail-grid video {
+.thumbnail-grid video,
+.thumbnail-grid iframe {
     width: 100%;
     height: 280px;
     object-fit: cover;
@@ -77,13 +78,13 @@
     border-radius: 4px;
 }
 
-.video-item {
-    grid-column: span 2;
-    height: 350px !important;
+/* Video/YouTube tile: same-size frame as the image thumbnails. */
+.thumbnail-grid .thumb-video {
     background: #000;
-    border-radius: 8px;
+    opacity: 1;
+    cursor: default;
+    border: none;
     outline: none;
-    opacity: 1 !important;
 }
 
 .thumbnail-grid img:hover,
@@ -365,12 +366,9 @@ details[open] summary::after {
     }
 
     .thumbnail-grid img,
-    .thumbnail-grid video {
+    .thumbnail-grid video,
+    .thumbnail-grid iframe {
         height: 150px;
-    }
-
-    .video-item {
-        height: 220px !important;
     }
 
     .specs-grid {
@@ -439,12 +437,16 @@ details[open] summary::after {
     $galleryImages = $galleryImages->unique()->values();
     $mainImage = $galleryImages->first() ?? asset('frontend/images/placeholder.png');
 
-    $productVideo = $product->video ?? $product->product_video ?? null;
-    if (!empty($productVideo)) {
-        $productVideo = str_starts_with($productVideo, 'http')
-            ? $productVideo
-            : asset('uploads/product/video/' . $productVideo);
-    }
+    // A product video can be either an uploaded MP4 (products.video) or a
+    // YouTube embed URL (products.yvideo). Handle both so the gallery shows
+    // whichever the admin added.
+    $productVideoFile = !empty($product->video)
+        ? (str_starts_with($product->video, 'http') ? $product->video : asset('uploads/product/video/' . $product->video))
+        : null;
+    $productVideoYoutube = !empty($product->yvideo) ? $product->yvideo : null;
+    $productVideoThumb = !empty($product->video_thumb)
+        ? (str_starts_with($product->video_thumb, 'http') ? $product->video_thumb : asset('uploads/product/video/' . $product->video_thumb))
+        : null;
 
     $finalPrice = $product->discount_price ?: $product->regular_price;
     $reviewCount = $product->reviews ? $product->reviews->count() : 0;
@@ -468,10 +470,17 @@ details[open] summary::after {
             @empty
                 <img src="{{ $mainImage }}" alt="{{ $product->title }}" class="active" onclick="changeProductImage(this)">
             @endforelse
-            @if(!empty($productVideo))
-                <video class="video-item" controls muted loop playsinline>
-                    <source src="{{ $productVideo }}" type="video/mp4">
+            @if(!empty($productVideoFile))
+                <video class="thumb-video" controls muted loop playsinline
+                    @if(!empty($productVideoThumb)) poster="{{ $productVideoThumb }}" @endif>
+                    <source src="{{ $productVideoFile }}" type="video/mp4">
                 </video>
+            @endif
+            @if(!empty($productVideoYoutube))
+                <iframe class="thumb-video" src="{{ $productVideoYoutube }}"
+                    title="{{ $product->title }} video"
+                    loading="lazy" allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             @endif
         </div>
     </div>
