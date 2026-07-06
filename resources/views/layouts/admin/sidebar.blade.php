@@ -4,9 +4,16 @@
         @endphp
 
         <aside class="dashboard-sidebar">
-            <button type="button" class="sidebar-toggle" aria-label="Collapse sidebar" data-sidebar-toggle>
-                <i class="bx bx-menu"></i>
-            </button>
+            <div class="sidebar-brand">
+                <span class="sidebar-brand-mark"><i class="bx bxs-bolt"></i></span>
+                <span class="sidebar-brand-text">
+                    <strong>Eureka</strong>
+                    <small>Admin Panel</small>
+                </span>
+                <button type="button" class="sidebar-toggle" aria-label="Collapse sidebar" data-sidebar-toggle>
+                    <i class="bx bx-menu"></i>
+                </button>
+            </div>
 
             @php
                 $__user = auth()->user();
@@ -314,12 +321,67 @@
         </aside>
 
         <style>
-            /* ---- Premium profile card ---- */
-            .profile {
-                background: linear-gradient(135deg, #fffdf3, #ffffff);
-                border: 1px solid rgba(242, 210, 49, 0.4);
-                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            /* ==== Premium dark sidebar =====================================
+               Overrides the light base styles in dashboard-assets/style.css
+               (this block comes later in the document, so it wins at equal
+               specificity). All behavior hooks (.rail, .collapsed, labels,
+               data attributes) are unchanged. */
+            .dashboard-sidebar {
+                background: linear-gradient(180deg, #0f172a 0%, #111827 60%, #0b1120 100%);
+                border-right: 1px solid rgba(148, 163, 184, 0.12);
+                backdrop-filter: none;
             }
+
+            /* ---- Brand header ---- */
+            .sidebar-brand {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                margin: 0 20px 18px 20px;
+                padding-bottom: 18px;
+                border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            }
+            .sidebar-brand-mark {
+                display: grid;
+                place-items: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 11px;
+                background: linear-gradient(135deg, #f2d231, #f85606);
+                color: #111;
+                font-size: 1.25rem;
+                box-shadow: 0 8px 18px -6px rgba(248, 86, 6, 0.55);
+                flex-shrink: 0;
+            }
+            .sidebar-brand-text {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.15;
+                min-width: 0;
+            }
+            .sidebar-brand-text strong {
+                color: #f8fafc;
+                font-size: 1.02rem;
+                font-weight: 800;
+                letter-spacing: 0.2px;
+            }
+            .sidebar-brand-text small {
+                color: #64748b;
+                font-size: 0.66rem;
+                font-weight: 600;
+                letter-spacing: 1.4px;
+                text-transform: uppercase;
+                margin-top: 2px;
+            }
+
+            /* ---- Profile card ---- */
+            .profile {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(148, 163, 184, 0.14);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            }
+            .profile-meta h4 { color: #f1f5f9 !important; }
+            .profile-meta p  { color: #f2d231 !important; }
             .profile #avatarForm {
                 margin: 0;
             }
@@ -373,14 +435,12 @@
             .profile-meta h4 {
                 font-size: 0.9rem;
                 font-weight: 700;
-                color: #1a1a1a;
                 line-height: 1.2;
                 margin: 0;
             }
             .profile-meta p {
                 font-size: 0.68rem;
                 font-weight: 600;
-                color: #b8901a;
                 letter-spacing: 0.5px;
                 text-transform: uppercase;
                 margin-top: 3px;
@@ -400,13 +460,13 @@
                 justify-content: center;
                 gap: 6px;
                 padding: 9px 10px;
-                border-radius: 8px;
+                border-radius: 9px;
                 font-size: 0.85rem;
                 font-weight: 500;
                 cursor: pointer;
-                border: 1px solid rgba(0, 0, 0, 0.08);
-                background: #fff;
-                color: #444;
+                border: 1px solid rgba(148, 163, 184, 0.16);
+                background: rgba(255, 255, 255, 0.04);
+                color: #cbd5e1;
                 text-decoration: none;
                 transition: 0.2s;
             }
@@ -418,34 +478,40 @@
 
             .account-actions .logout-btn {
                 width: 100%;
-                color: #c0392b;
+                color: #f87171;
             }
 
             .account-actions .account-link:hover,
             .account-actions .account-link.active {
                 background: #f2d231;
-                color: #000;
+                border-color: #f2d231;
+                color: #111;
             }
 
             .account-actions .logout-btn:hover {
-                background: #c0392b;
+                background: #dc2626;
                 color: #fff;
-                border-color: #c0392b;
+                border-color: #dc2626;
             }
 
-            /* Collapsible menu sections */
+            /* ---- Section labels + items (dark overrides) ---- */
             .menu-section label {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
                 cursor: pointer;
                 user-select: none;
-                padding-right: 12px;
+                padding: 6px 12px 6px 0;
+                border-radius: 6px;
+                color: #64748b;
+                transition: color 0.15s;
             }
+            .menu-section label:hover { color: #cbd5e1; }
+            .menu-section label span { letter-spacing: 1.6px; }
 
             .menu-section label .chev {
                 font-size: 1rem;
-                color: #bbb;
+                color: #475569;
                 transition: transform 0.2s;
             }
 
@@ -457,26 +523,69 @@
                 transform: rotate(-90deg);
             }
 
+            .dashboard-sidebar li {
+                color: #94a3b8;
+                position: relative;
+                font-weight: 500;
+                transition: background 0.16s, color 0.16s, transform 0.16s;
+            }
+            .dashboard-sidebar li i {
+                font-size: 1.1rem;
+                width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .dashboard-sidebar li:hover {
+                background: rgba(255, 255, 255, 0.06);
+                color: #f1f5f9;
+                font-weight: 500;
+                transform: translateX(2px);
+            }
+            .dashboard-sidebar li.active {
+                background: linear-gradient(90deg, rgba(242, 210, 49, 0.16), rgba(248, 86, 6, 0.10));
+                color: #f2d231;
+                font-weight: 600;
+                box-shadow: inset 0 0 0 1px rgba(242, 210, 49, 0.22);
+            }
+            .dashboard-sidebar li.active::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 20%;
+                bottom: 20%;
+                width: 3px;
+                border-radius: 999px;
+                background: linear-gradient(180deg, #f2d231, #f85606);
+            }
+
+            /* ---- Thin dark scrollbar for the nav ---- */
+            .nav-container { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.25) transparent; }
+            .nav-container::-webkit-scrollbar { width: 5px; }
+            .nav-container::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); border-radius: 999px; }
+            .nav-container::-webkit-scrollbar-track { background: transparent; }
+
             /* Sidebar collapse toggle */
             .sidebar-toggle {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 38px;
-                height: 38px;
-                margin: 0 20px 16px auto;
-                border: 1px solid rgba(0, 0, 0, 0.08);
-                border-radius: 8px;
-                background: #fff;
-                color: #444;
+                width: 34px;
+                height: 34px;
+                margin-left: auto;
+                border: 1px solid rgba(148, 163, 184, 0.16);
+                border-radius: 9px;
+                background: rgba(255, 255, 255, 0.04);
+                color: #94a3b8;
                 cursor: pointer;
-                font-size: 1.25rem;
+                font-size: 1.15rem;
                 transition: 0.2s;
+                flex-shrink: 0;
             }
 
             .sidebar-toggle:hover {
                 background: #f2d231;
-                color: #000;
+                border-color: #f2d231;
+                color: #111;
             }
 
             /* ---- Icons-only (rail) mode ---- */
@@ -485,11 +594,19 @@
                 min-width: 76px;
             }
 
-            .dashboard-sidebar.rail .sidebar-toggle {
-                margin: 0 auto 16px auto;
+            .dashboard-sidebar.rail .sidebar-brand {
+                flex-direction: column;
+                gap: 10px;
+                margin: 0 10px 14px 10px;
+                padding-bottom: 14px;
             }
 
-            /* Hide the brand card and section headers when collapsed */
+            .dashboard-sidebar.rail .sidebar-toggle {
+                margin: 0 auto;
+            }
+
+            /* Hide brand text, profile card and section headers when collapsed */
+            .dashboard-sidebar.rail .sidebar-brand-text,
             .dashboard-sidebar.rail .profile,
             .dashboard-sidebar.rail .menu-section label {
                 display: none;
