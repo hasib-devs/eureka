@@ -63,7 +63,7 @@ jobs:
           until ssh $SSH_OPTS -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" \
                   "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "$remote_cmd"; do
             n=$((n + 1))
-            if [ "$n" -ge 3 ]; then
+            if [ "$n" -ge 5 ]; then
               echo "::error::Failed to update code on server after $n attempts."
               exit 1
             fi
@@ -79,7 +79,7 @@ jobs:
                   public/build/ \
                   "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/build/"; do
             n=$((n + 1))
-            if [ "$n" -ge 3 ]; then
+            if [ "$n" -ge 5 ]; then
               echo "::error::Failed to upload built assets after $n attempts."
               exit 1
             fi
@@ -94,7 +94,7 @@ jobs:
                   "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
                   "cd ${{ secrets.DEPLOY_PATH }} && bash scripts/deploy.sh"; do
             n=$((n + 1))
-            if [ "$n" -ge 3 ]; then
+            if [ "$n" -ge 5 ]; then
               echo "::error::Post-deploy script failed after $n attempts."
               exit 1
             fi
