@@ -42,6 +42,11 @@
         @import url('{{ asset('vendor/mckenziearts/laravel-notify/dist/notify.css') }}') layer(adminlte);
     </style>
 
+    <!-- Apply the saved admin theme before first paint (prevents light-mode flash). -->
+    <script>
+        try { if (localStorage.getItem('adminTheme') === 'dark') document.documentElement.classList.add('admin-dark'); } catch (e) {}
+    </script>
+
     <!-- Tailwind LAST so its utilities win on the (being-)converted content. -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])

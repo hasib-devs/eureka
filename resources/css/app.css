@@ -75,6 +75,7 @@ div.fixed.inset-0.flex.items-end.justify-center { z-index: 999999; }
    with !important, which hijacks the brand palette (primary rendered Bootstrap blue instead of
    the theme orange). The 'reclaim' layer is declared first in the admin layout: for !important declarations layer priority reverses, so these beat AdminLTE's !important utilities. */
 @layer reclaim {
+.bg-white     { background-color: var(--color-white) !important; }
 .bg-primary   { background-color: var(--color-primary) !important; }
 .text-primary { color: var(--color-primary) !important; }
 .bg-secondary   { background-color: var(--color-secondary) !important; }
@@ -88,3 +89,40 @@ div.fixed.inset-0.flex.items-end.justify-center { z-index: 999999; }
 .bg-info      { background-color: var(--color-info) !important; }
 .text-info    { color: var(--color-info) !important; }
 }
+
+/* dashboard-assets' decorative .card rule (55px radius, white text, hover lift) bleeds onto
+   Bootstrap-widget markup that also carries a .card class — summernote's .note-editor —
+   now that adminlte.css sits in a lower layer. Restore sane values there. */
+.note-editor.card {
+    border-radius: 0.5rem;
+    color: inherit;
+    overflow: visible;
+    padding: 0;
+    box-shadow: none;
+    transition: none;
+}
+.note-editor.card:hover { transform: none; }
+
+/* ==== Admin dark mode ====================================================
+   The admin views are written with the light slate ladder; every Tailwind v4
+   utility resolves through var(--color-*), so remapping the ladder under
+   html.admin-dark re-themes the whole panel. Toggled from the sidebar,
+   persisted in localStorage('adminTheme'), applied pre-paint from a head
+   script in the admin layout. Storefront never gets this class. */
+html.admin-dark {
+    color-scheme: dark;
+    --color-white:     #101828;  /* card surfaces */
+    --color-slate-50:  #182132;  /* soft fills / row hover */
+    --color-slate-100: #1f2a3d;  /* dividers / subtle fills */
+    --color-slate-200: #2a3850;  /* borders */
+    --color-slate-300: #3e4e6b;  /* muted icons / strong borders */
+    --color-slate-400: #8494ac;
+    --color-slate-500: #9aa9bf;  /* secondary text */
+    --color-slate-600: #c3cede;
+    --color-slate-700: #dbe3ee;  /* control text */
+    --color-slate-800: #ecf1f8;  /* primary text */
+    --color-slate-900: #f8fafc;  /* headings */
+    --color-primary-50:  #341d0b; /* hover tints flip to deep amber */
+    --color-primary-100: #46260d;
+}
+html.admin-dark body { background: #0b1120; }

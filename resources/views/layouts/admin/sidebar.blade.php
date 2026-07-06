@@ -4,53 +4,51 @@
         @endphp
 
         <aside class="dashboard-sidebar">
-            <div class="sidebar-brand">
-                <span class="sidebar-brand-mark"><i class="bx bxs-bolt"></i></span>
-                <span class="sidebar-brand-text">
-                    <strong>Eureka</strong>
-                    <small>Admin Panel</small>
-                </span>
-                <button type="button" class="sidebar-toggle" aria-label="Collapse sidebar" data-sidebar-toggle>
-                    <i class="bx bx-menu"></i>
-                </button>
-            </div>
-
             @php
                 $__user = auth()->user();
                 $__hasAvatar = $__user && $__user->avatar && file_exists(public_path('uploads/admin/'.$__user->avatar));
             @endphp
-            <div class="profile">
-                <form action="{{ route('admin.profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
-                    @csrf
-                    <label class="profile-avatar" title="Change profile picture">
-                        @if ($__hasAvatar)
-                            <img src="{{ asset('uploads/admin/'.$__user->avatar) }}" alt="Profile">
-                        @else
-                            <span class="profile-avatar-fallback">{{ strtoupper(mb_substr($__user->name ?? 'A', 0, 1)) }}</span>
-                        @endif
-                        <span class="profile-avatar-edit"><i class="bx bx-camera"></i></span>
-                        <input type="file" name="avatar" accept="image/*" hidden onchange="this.form.submit()">
-                    </label>
-                </form>
-                <div class="profile-meta">
-                    <h4>{{ $__user->name ?? 'Admin' }}</h4>
-                    <p>Administrator</p>
-                </div>
-            </div>
 
-            <!-- ACCOUNT -->
-            <div class="account-actions">
-                <a href="{{ url('admin/profile') }}" class="account-link {{ $navActive('admin/profile*') }}">
-                    <i class="bx bx-user-circle"></i> Profile
-                </a>
-                @if (Route::has('logout'))
-                    <form method="POST" action="{{ route('logout') }}" class="logout-form">
+            {{-- Single profile section: identity + account/theme/collapse actions --}}
+            <div class="profile-block">
+                <div class="profile">
+                    <form action="{{ route('admin.profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
                         @csrf
-                        <button type="submit" class="logout-btn">
-                            <i class="bx bx-log-out"></i> Logout
-                        </button>
+                        <label class="profile-avatar" title="Change profile picture">
+                            @if ($__hasAvatar)
+                                <img src="{{ asset('uploads/admin/'.$__user->avatar) }}" alt="Profile">
+                            @else
+                                <span class="profile-avatar-fallback">{{ strtoupper(mb_substr($__user->name ?? 'A', 0, 1)) }}</span>
+                            @endif
+                            <span class="profile-avatar-edit"><i class="bx bx-camera"></i></span>
+                            <input type="file" name="avatar" accept="image/*" hidden onchange="this.form.submit()">
+                        </label>
                     </form>
-                @endif
+                    <div class="profile-meta">
+                        <h4>{{ $__user->name ?? 'Admin' }}</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+
+                <div class="account-actions">
+                    <a href="{{ url('admin/profile') }}" class="account-link {{ $navActive('admin/profile*') }}" title="My profile">
+                        <i class="bx bx-user-circle"></i><span>Profile</span>
+                    </a>
+                    <button type="button" class="account-link" aria-label="Toggle dark mode" title="Toggle dark mode" data-theme-toggle>
+                        <i class="bx bx-moon"></i>
+                    </button>
+                    <button type="button" class="account-link" aria-label="Collapse sidebar" title="Collapse sidebar" data-sidebar-toggle>
+                        <i class="bx bx-menu"></i>
+                    </button>
+                    @if (Route::has('logout'))
+                        <form method="POST" action="{{ route('logout') }}" class="logout-form">
+                            @csrf
+                            <button type="submit" class="logout-btn" title="Logout">
+                                <i class="bx bx-log-out"></i>
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </div>
 
             <nav class="nav-container">
@@ -321,104 +319,64 @@
         </aside>
 
         <style>
-            /* ==== Premium dark sidebar =====================================
+            /* ==== Premium corporate sidebar ================================
                Overrides the light base styles in dashboard-assets/style.css
                (this block comes later in the document, so it wins at equal
-               specificity). All behavior hooks (.rail, .collapsed, labels,
-               data attributes) are unchanged. */
+               specificity). Behavior hooks (.rail, .collapsed, data attrs)
+               are unchanged. */
             .dashboard-sidebar {
-                background: linear-gradient(180deg, #0f172a 0%, #111827 60%, #0b1120 100%);
+                background: #0c1322;
                 border-right: 1px solid rgba(148, 163, 184, 0.12);
                 backdrop-filter: none;
+                font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
             }
 
-            /* ---- Brand header ---- */
-            .sidebar-brand {
+            /* ---- Single profile section ---- */
+            .profile-block {
+                margin: 0 16px 18px 16px;
+                border: 1px solid rgba(148, 163, 184, 0.14);
+                border-radius: 14px;
+                background: rgba(255, 255, 255, 0.03);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+                overflow: hidden;
+            }
+            .profile {
                 display: flex;
                 align-items: center;
-                gap: 11px;
-                margin: 0 20px 18px 20px;
-                padding-bottom: 18px;
-                border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-            }
-            .sidebar-brand-mark {
-                display: grid;
-                place-items: center;
-                width: 38px;
-                height: 38px;
-                border-radius: 11px;
-                background: linear-gradient(135deg, #f2d231, #f85606);
-                color: #111;
-                font-size: 1.25rem;
-                box-shadow: 0 8px 18px -6px rgba(248, 86, 6, 0.55);
-                flex-shrink: 0;
-            }
-            .sidebar-brand-text {
-                display: flex;
-                flex-direction: column;
-                line-height: 1.15;
-                min-width: 0;
-            }
-            .sidebar-brand-text strong {
-                color: #f8fafc;
-                font-size: 1.02rem;
-                font-weight: 800;
-                letter-spacing: 0.2px;
-            }
-            .sidebar-brand-text small {
-                color: #64748b;
-                font-size: 0.66rem;
-                font-weight: 600;
-                letter-spacing: 1.4px;
-                text-transform: uppercase;
-                margin-top: 2px;
-            }
-
-            /* ---- Profile card ---- */
-            .profile {
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(148, 163, 184, 0.14);
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-            }
-            .profile-meta h4 { color: #f1f5f9 !important; }
-            .profile-meta p  { color: #f2d231 !important; }
-            .profile #avatarForm {
+                gap: 12px;
                 margin: 0;
+                padding: 14px;
+                background: transparent;
+                border-radius: 0;
+                box-shadow: none;
             }
+            .profile #avatarForm { margin: 0; }
             .profile-avatar {
                 position: relative;
                 display: block;
-                width: 48px;
-                height: 48px;
+                width: 44px;
+                height: 44px;
                 border-radius: 12px;
                 overflow: hidden;
                 cursor: pointer;
                 flex-shrink: 0;
-                border: 2px solid #f2d231;
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
+                border: 1px solid rgba(148, 163, 184, 0.35);
             }
-            .profile-avatar img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                display: block;
-            }
+            .profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
             .profile-avatar-fallback {
                 width: 100%;
                 height: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: linear-gradient(135deg, #f2d231, #e0b41a);
-                color: #1a1a1a;
-                font-weight: 800;
-                font-size: 1.25rem;
+                background: linear-gradient(135deg, #334155, #1e293b);
+                color: #e2e8f0;
+                font-weight: 700;
+                font-size: 1.15rem;
             }
             .profile-avatar-edit {
                 position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 0;
+                left: 0; right: 0; bottom: 0;
                 height: 42%;
                 background: rgba(0, 0, 0, 0.55);
                 color: #fff;
@@ -429,29 +387,37 @@
                 opacity: 0;
                 transition: opacity 0.18s ease;
             }
-            .profile-avatar:hover .profile-avatar-edit {
-                opacity: 1;
-            }
+            .profile-avatar:hover .profile-avatar-edit { opacity: 1; }
+            .profile-meta { min-width: 0; }
             .profile-meta h4 {
-                font-size: 0.9rem;
-                font-weight: 700;
+                font-size: 0.92rem;
+                font-weight: 650;
+                color: #f1f5f9;
                 line-height: 1.2;
                 margin: 0;
+                letter-spacing: 0.1px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .profile-meta p {
-                font-size: 0.68rem;
+                font-size: 0.64rem;
                 font-weight: 600;
-                letter-spacing: 0.5px;
+                color: #8494ac;
+                letter-spacing: 1.3px;
                 text-transform: uppercase;
-                margin-top: 3px;
+                margin: 3px 0 0 0;
             }
 
+            /* Action strip inside the profile section */
             .account-actions {
                 display: flex;
-                gap: 8px;
-                margin: 0 20px 18px 20px;
+                gap: 6px;
+                margin: 0;
+                padding: 8px;
+                border-top: 1px solid rgba(148, 163, 184, 0.12);
+                background: rgba(255, 255, 255, 0.02);
             }
-
             .account-actions .account-link,
             .account-actions .logout-btn {
                 flex: 1;
@@ -459,42 +425,30 @@
                 align-items: center;
                 justify-content: center;
                 gap: 6px;
-                padding: 9px 10px;
+                padding: 8px 6px;
                 border-radius: 9px;
-                font-size: 0.85rem;
+                font-size: 0.8rem;
                 font-weight: 500;
                 cursor: pointer;
-                border: 1px solid rgba(148, 163, 184, 0.16);
-                background: rgba(255, 255, 255, 0.04);
-                color: #cbd5e1;
+                border: 0;
+                background: transparent;
+                color: #9aa9bf;
                 text-decoration: none;
-                transition: 0.2s;
+                transition: background 0.16s, color 0.16s;
             }
-
-            .account-actions .logout-form {
-                flex: 1;
-                margin: 0;
-            }
-
-            .account-actions .logout-btn {
-                width: 100%;
-                color: #f87171;
-            }
-
+            .account-actions .account-link i,
+            .account-actions .logout-btn i { font-size: 1.05rem; }
+            .account-actions .logout-form { flex: 1; margin: 0; display: flex; }
+            .account-actions .logout-btn { width: 100%; color: #f87171; }
             .account-actions .account-link:hover,
             .account-actions .account-link.active {
-                background: #f2d231;
-                border-color: #f2d231;
-                color: #111;
-            }
-
-            .account-actions .logout-btn:hover {
-                background: #dc2626;
+                background: rgba(255, 255, 255, 0.08);
                 color: #fff;
-                border-color: #dc2626;
             }
+            .account-actions .logout-btn:hover { background: rgba(220, 38, 38, 0.18); color: #fca5a5; }
 
-            /* ---- Section labels + items (dark overrides) ---- */
+            /* ---- Section labels + items ---- */
+            .menu-section { margin-bottom: 14px; }
             .menu-section label {
                 display: flex;
                 align-items: center;
@@ -503,34 +457,32 @@
                 user-select: none;
                 padding: 6px 12px 6px 0;
                 border-radius: 6px;
+                font-size: 0.64rem;
+                font-weight: 700;
                 color: #64748b;
+                letter-spacing: 1.6px;
                 transition: color 0.15s;
             }
             .menu-section label:hover { color: #cbd5e1; }
-            .menu-section label span { letter-spacing: 1.6px; }
-
             .menu-section label .chev {
                 font-size: 1rem;
                 color: #475569;
                 transition: transform 0.2s;
             }
-
-            .menu-section.collapsed > ul {
-                display: none;
-            }
-
-            .menu-section.collapsed label .chev {
-                transform: rotate(-90deg);
-            }
+            .menu-section.collapsed > ul { display: none; }
+            .menu-section.collapsed label .chev { transform: rotate(-90deg); }
 
             .dashboard-sidebar li {
                 color: #94a3b8;
                 position: relative;
+                font-size: 0.875rem;
                 font-weight: 500;
+                letter-spacing: 0.1px;
+                padding: 9px 12px;
                 transition: background 0.16s, color 0.16s, transform 0.16s;
             }
             .dashboard-sidebar li i {
-                font-size: 1.1rem;
+                font-size: 1.08rem;
                 width: 20px;
                 text-align: center;
                 flex-shrink: 0;
@@ -542,10 +494,9 @@
                 transform: translateX(2px);
             }
             .dashboard-sidebar li.active {
-                background: linear-gradient(90deg, rgba(242, 210, 49, 0.16), rgba(248, 86, 6, 0.10));
-                color: #f2d231;
+                background: rgba(255, 255, 255, 0.07);
+                color: #fff;
                 font-weight: 600;
-                box-shadow: inset 0 0 0 1px rgba(242, 210, 49, 0.22);
             }
             .dashboard-sidebar li.active::before {
                 content: '';
@@ -555,101 +506,32 @@
                 bottom: 20%;
                 width: 3px;
                 border-radius: 999px;
-                background: linear-gradient(180deg, #f2d231, #f85606);
+                background: #f85606;
             }
 
-            /* ---- Thin dark scrollbar for the nav ---- */
+            /* ---- Thin dark scrollbar ---- */
             .nav-container { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.25) transparent; }
             .nav-container::-webkit-scrollbar { width: 5px; }
             .nav-container::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); border-radius: 999px; }
             .nav-container::-webkit-scrollbar-track { background: transparent; }
 
-            /* Sidebar collapse toggle */
-            .sidebar-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 34px;
-                height: 34px;
-                margin-left: auto;
-                border: 1px solid rgba(148, 163, 184, 0.16);
-                border-radius: 9px;
-                background: rgba(255, 255, 255, 0.04);
-                color: #94a3b8;
-                cursor: pointer;
-                font-size: 1.15rem;
-                transition: 0.2s;
-                flex-shrink: 0;
-            }
-
-            .sidebar-toggle:hover {
-                background: #f2d231;
-                border-color: #f2d231;
-                color: #111;
-            }
-
             /* ---- Icons-only (rail) mode ---- */
-            .dashboard-sidebar.rail {
-                width: 76px;
-                min-width: 76px;
-            }
-
-            .dashboard-sidebar.rail .sidebar-brand {
-                flex-direction: column;
-                gap: 10px;
-                margin: 0 10px 14px 10px;
-                padding-bottom: 14px;
-            }
-
-            .dashboard-sidebar.rail .sidebar-toggle {
-                margin: 0 auto;
-            }
-
-            /* Hide brand text, profile card and section headers when collapsed */
-            .dashboard-sidebar.rail .sidebar-brand-text,
-            .dashboard-sidebar.rail .profile,
-            .dashboard-sidebar.rail .menu-section label {
-                display: none;
-            }
-
-            .dashboard-sidebar.rail .nav-container {
-                padding: 0 10px;
-            }
-
-            /* In rail mode every group is reachable, so never hide its items */
-            .dashboard-sidebar.rail .menu-section > ul {
-                display: block;
-            }
-
-            /* Center each item and drop its text label, keeping only the icon */
+            .dashboard-sidebar.rail { width: 76px; min-width: 76px; }
+            .dashboard-sidebar.rail .profile-block { margin: 0 10px 14px 10px; }
+            .dashboard-sidebar.rail .profile { padding: 10px; justify-content: center; }
+            .dashboard-sidebar.rail .profile-meta { display: none; }
+            .dashboard-sidebar.rail .menu-section label { display: none; }
+            .dashboard-sidebar.rail .nav-container { padding: 0 10px; }
+            .dashboard-sidebar.rail .menu-section > ul { display: block; }
             .dashboard-sidebar.rail li {
                 justify-content: center;
                 gap: 0;
                 font-size: 0;
                 padding: 10px 0;
             }
-
-            .dashboard-sidebar.rail li i {
-                font-size: 1.35rem;
-            }
-
-            /* Account actions: stack into icon-only buttons */
-            .dashboard-sidebar.rail .account-actions {
-                flex-direction: column;
-                margin: 0 10px 16px 10px;
-            }
-
-            .dashboard-sidebar.rail .account-actions .account-link,
-            .dashboard-sidebar.rail .account-actions .logout-btn {
-                font-size: 0;
-                gap: 0;
-                padding: 9px 0;
-            }
-
-            .dashboard-sidebar.rail .account-actions .account-link i,
-            .dashboard-sidebar.rail .account-actions .logout-btn i {
-                font-size: 1.2rem;
-            }
+            .dashboard-sidebar.rail li i { font-size: 1.35rem; }
+            .dashboard-sidebar.rail .account-actions { flex-direction: column; }
+            .dashboard-sidebar.rail .account-actions .account-link span { display: none; }
         </style>
 
         <script>
@@ -677,6 +559,28 @@
                         rail = !sidebar.classList.contains('rail');
                         applyRail(rail);
                         try { localStorage.setItem(RAIL_KEY, rail ? '1' : '0'); } catch (e) {}
+                    });
+                }
+
+                /* ---------- Dark mode toggle ---------- */
+                const THEME_KEY = 'adminTheme';
+                const themeToggle = sidebar.querySelector('[data-theme-toggle]');
+
+                function applyTheme(dark) {
+                    document.documentElement.classList.toggle('admin-dark', dark);
+                    if (themeToggle) {
+                        const icon = themeToggle.querySelector('i');
+                        if (icon) icon.className = dark ? 'bx bx-sun' : 'bx bx-moon';
+                    }
+                }
+
+                applyTheme(document.documentElement.classList.contains('admin-dark'));
+
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', function () {
+                        const dark = !document.documentElement.classList.contains('admin-dark');
+                        applyTheme(dark);
+                        try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) {}
                     });
                 }
 

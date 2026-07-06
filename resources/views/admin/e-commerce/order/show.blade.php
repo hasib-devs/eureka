@@ -544,6 +544,55 @@
                         </table>
                     </div>
                 @endforeach
+
+                {{-- Orders without per-vendor rows (no multi_order records) would otherwise
+                     show nothing — fall back to a flat list of the order's items. --}}
+                @if ($vendors->isEmpty())
+                    <div class="overflow-x-auto rounded-lg ring-1 ring-slate-200">
+                        <table class="w-full min-w-[760px] text-left text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-slate-50/80 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <th class="w-14 px-4 py-3.5">SL</th>
+                                    <th class="px-4 py-3.5">Product</th>
+                                    <th class="px-4 py-3.5">Title</th>
+                                    <th class="px-4 py-3.5">Color</th>
+                                    <th class="px-4 py-3.5 text-right">Qty</th>
+                                    <th class="px-4 py-3.5 text-right">Price</th>
+                                    <th class="px-4 py-3.5 text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse ($order->orderDetails as $item)
+                                    <tr class="group transition-colors hover:bg-slate-50/80">
+                                        <td class="px-4 py-4 text-slate-500">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-4">
+                                            @if ($item->product)
+                                                <img src="{{ asset('uploads/product/' . $item->product->image) }}"
+                                                    alt="Product Image" class="h-10 w-10 rounded-lg object-cover ring-1 ring-slate-200">
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            @if ($item->product)
+                                                <a href="{{ route('admin.product.show', $item->product->id) }}"
+                                                    target="_blank" class="font-semibold text-primary hover:underline">{{ $item->title }}</a>
+                                            @else
+                                                <span class="font-semibold text-slate-800">{{ $item->title }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-4 text-slate-600">{{ $item->color != 'blank' ? $item->color : '' }}</td>
+                                        <td class="px-4 py-4 text-right tabular-nums text-slate-600">{{ $item->qty }}</td>
+                                        <td class="px-4 py-4 text-right tabular-nums text-slate-500">{{ $item->price }}</td>
+                                        <td class="px-4 py-4 text-right font-semibold tabular-nums text-slate-800">{{ $item->total_price }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-10 text-center text-sm text-slate-500">No items found on this order.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </div>
 

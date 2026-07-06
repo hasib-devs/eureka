@@ -35856,7 +35856,7 @@ blockquote.quote-gray-dark h6 {
 
 .bg-white,
 .bg-white > a {
-    color: #1f2d3d !important;
+    color: inherit;
 }
 
 .bg-white.btn:hover {
@@ -35936,7 +35936,7 @@ blockquote.quote-gray-dark h6 {
 
 .bg-white {
     background-color: #fff;
-    color: #1f2d3d !important;
+    color: inherit;
 }
 
 .bg-gradient-primary {
