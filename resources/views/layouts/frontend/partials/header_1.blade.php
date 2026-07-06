@@ -518,19 +518,19 @@
 
         @media (min-width: 769px) {
             .hdr-left {
+                flex: 1 1 0;
                 min-width: 180px;
-                flex-shrink: 0;
+                justify-content: flex-start;
             }
 
             .hdr-center {
-                flex: 1;
+                flex: 0 1 auto;
                 min-width: 0;
                 justify-content: center;
             }
 
             .hdr-right {
-                min-width: 0;
-                flex-shrink: 0;
+                flex: 1 1 0;
                 justify-content: flex-end;
                 gap: 20px;
             }
