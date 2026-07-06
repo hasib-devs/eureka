@@ -37,32 +37,31 @@
         text-transform: uppercase;
     }
 
-    /* ── FULL-WIDTH PRODUCT GRID (same as homepage products section) ── */
+    /* ── PRODUCT GRID (same layout/size as homepage products section:
+         4 cards per row with the slider's 20px card spacing) ── */
     .sp-products {
+        width: 100%;
         background: #fff;
         padding: 40px 0 66px;
-        width: 100vw !important;
-        max-width: 100vw !important;
-        margin-left: calc(50% - 50vw) !important;
-        margin-right: calc(50% - 50vw) !important;
     }
     .sp-products .lux-product-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 40px 20px;
         padding: 0;
         margin: 0;
     }
 
-    @media (min-width: 640px) {
+    /* Mirror the homepage slider's responsive slidesToShow (4 → 3 → 1) */
+    @media (max-width: 992px) {
         .sp-products .lux-product-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
 
-    @media (min-width: 1024px) {
+    @media (max-width: 768px) {
         .sp-products .lux-product-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(1, minmax(0, 1fr));
         }
     }
 
@@ -78,14 +77,16 @@
     <h1 class="sp-hero-title">All Products</h1>
 </div>
 
-{{-- ====== FULL-WIDTH PRODUCT GRID ====== --}}
+{{-- ====== PRODUCT GRID (same as homepage products section) ====== --}}
 <section class="sp-products">
-    <div class="lux-product-grid">
-        @forelse ($products as $product)
-            <x-lux-product-card :product="$product" />
-        @empty
-            <x-product-empty-component />
-        @endforelse
+    <div class="px-4">
+        <div class="lux-product-grid">
+            @forelse ($products as $product)
+                <x-lux-product-card :product="$product" />
+            @empty
+                <x-product-empty-component />
+            @endforelse
+        </div>
     </div>
 </section>
 
