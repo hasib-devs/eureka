@@ -16,8 +16,6 @@
         integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog=="
         crossorigin="anonymous" />
     <link rel="stylesheet" href="/assets/plugins/summernote/summernote-bs4.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css"
-        rel="stylesheet">
     <style>
         .dropify-wrapper .dropify-message p {
             font-size: initial;
@@ -90,8 +88,8 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <form class="space-y-4 lg:col-span-2"
+        <div>
+            <form class="space-y-4"
                 action="{{ isset($product) ? routeHelper('product/' . $product->id) : routeHelper('product') }}"
                 method="POST" enctype="multipart/form-data">
                 @csrf
@@ -549,12 +547,6 @@
                 </div>
             </form>
 
-            {{-- Quick-create sidebar --}}
-            <div class="lg:col-span-1">
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-                    @include('components.product-sidebar')
-                </div>
-            </div>
         </div>
     </section>
 
@@ -770,10 +762,7 @@
             });
         </script>
     @endisset
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/js/bootstrap-colorpicker.min.js">
-    </script>
     <script>
-        $('#ncolor').colorpicker();
 
         // Discount required while discount type changes
         $(document).on('change', '#dis_type', function(e) {
