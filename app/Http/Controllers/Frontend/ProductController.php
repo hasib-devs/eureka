@@ -358,8 +358,12 @@ class ProductController extends Controller
             });
         }
 
-        // Retrieve products with pagination
-        $products = $query->with(['reviews', 'brand'])->skip($skip)->orderBy('id', 'desc')->take(12)->get();
+        // AJAX keeps paginated batches; the shop page itself shows every product
+        if ($request->ajax()) {
+            $products = $query->with(['reviews', 'brand'])->skip($skip)->orderBy('id', 'desc')->take(12)->get();
+        } else {
+            $products = $query->with(['reviews', 'brand'])->orderBy('id', 'desc')->get();
+        }
 
         $data = '';
         $data2 = '';
