@@ -10,7 +10,7 @@ it('renders a labelled select with the field name', function () {
         ->toContain('id="status"')
         ->toContain('Status')
         ->toContain('<label')
-        ->toContain('rounded-md');
+        ->toContain('rounded-lg');
 });
 
 it('renders without a label when none is given', function () {

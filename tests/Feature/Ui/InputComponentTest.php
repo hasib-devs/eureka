@@ -7,7 +7,7 @@ it('renders a labelled input with the field name', function () {
 
     expect($html)->toContain('name="email"')
         ->toContain('Email address')
-        ->toContain('rounded-md');
+        ->toContain('rounded-lg');
 });
 
 it('renders without a label when none is given', function () {

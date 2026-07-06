@@ -10,7 +10,7 @@ it('renders body content in a bordered card', function () {
     $html = Blade::render('<x-ui.card>Body here</x-ui.card>');
 
     expect($html)->toContain('Body here')
-        ->toContain('rounded-lg')
+        ->toContain('rounded-xl')
         ->toContain('border-slate-200');
 });
 

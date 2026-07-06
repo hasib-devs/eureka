@@ -10,11 +10,11 @@
     class="fixed inset-0 z-50 flex items-center justify-center p-4"
 >
     {{-- Backdrop --}}
-    <div class="absolute inset-0 bg-black/50" @click="open = false"></div>
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" @click="open = false"></div>
 
     {{-- Panel --}}
     @php $sizeMap = ['sm' => 'max-w-sm', 'md' => 'max-w-md', 'lg' => 'max-w-lg', 'xl' => 'max-w-3xl', '2xl' => 'max-w-5xl']; @endphp
-    <div class="relative z-10 w-full {{ $sizeMap[$size] ?? 'max-w-lg' }} rounded-lg bg-white shadow-xl">
+    <div class="relative z-10 w-full {{ $sizeMap[$size] ?? 'max-w-lg' }} rounded-2xl bg-white shadow-2xl">
 
         {{-- Header --}}
         <div class="flex items-center justify-between border-b px-4 py-3">

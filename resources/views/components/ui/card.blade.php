@@ -1,13 +1,13 @@
 @props(['header' => null, 'footer' => null])
 
-<div {{ $attributes->merge(['class' => 'rounded-lg border border-slate-200 bg-white shadow-sm']) }}>
+<div {{ $attributes->merge(['class' => 'rounded-xl border border-slate-200 bg-white shadow-sm']) }}>
     @isset($header)
-        <div class="border-b border-slate-200 px-4 py-3 font-medium text-slate-900">{{ $header }}</div>
+        <div class="border-b border-slate-200 px-5 py-4 font-medium text-slate-900">{{ $header }}</div>
     @endisset
 
-    <div class="p-4">{{ $slot }}</div>
+    <div class="p-5">{{ $slot }}</div>
 
     @isset($footer)
-        <div class="border-t border-slate-200 px-4 py-3">{{ $footer }}</div>
+        <div class="border-t border-slate-200 px-5 py-4">{{ $footer }}</div>
     @endisset
 </div>

@@ -7,7 +7,7 @@
 
 @php
     $hasError = isset($errors) && $errors->has($name);
-    $control = 'block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary '
+    $control = 'block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 '
         .($hasError ? 'border-danger' : 'border-slate-300');
 @endphp
 
