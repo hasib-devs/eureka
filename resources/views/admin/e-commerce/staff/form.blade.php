@@ -8,66 +8,72 @@
     @endisset
 @endsection
 
-
 @section('content')
-    <!-- Content Header -->
-    <section class="mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold text-slate-800">
-                @isset($staff)
-                    Edit staff
-                @else
-                    Add staff
-                @endisset
-            </h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:underline">Home</a></li>
-                <li class="before:content-['/'] before:mx-1">
+
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">
                     @isset($staff)
-                        Edit staff
+                        Edit Staff
                     @else
-                        Add staff
+                        Add Staff
                     @endisset
-                </li>
-            </ol>
+                </h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    @isset($staff)
+                        Update this staff member's details and role
+                    @else
+                        Create a new staff account with a role
+                    @endisset
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.staff.list') }}"
+                    class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-400 hover:bg-slate-50 hover:shadow">
+                    <i class="fas fa-long-arrow-alt-left text-xs"></i>
+                    Back to List
+                </a>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">
+                        @isset($staff)
+                            Edit Staff
+                        @else
+                            Add Staff
+                        @endisset
+                    </li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    <!-- Main content -->
-    <section>
+    <section class="mb-6">
         @if ($errors->any())
-            <div class="mb-4">
+            <div class="mb-4 space-y-2">
                 @foreach ($errors->all() as $error)
-                    <x-ui.alert variant="danger" class="mb-2">{{ $error }}</x-ui.alert>
+                    <x-ui.alert variant="danger">{{ $error }}</x-ui.alert>
                 @endforeach
             </div>
         @endif
 
-        <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-            <!-- Card Header -->
-            <div class="border-b border-slate-200 px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-slate-800">
-                        @isset($staff)
-                            Edit staff
-                        @else
-                            Add New staff
-                        @endisset
-                    </h3>
-                    <x-ui.button variant="danger" :href="routeHelper('staff')">
-                        <i class="fas fa-long-arrow-alt-left"></i>
-                        Back to List
-                    </x-ui.button>
+        <form action="{{ isset($staff) ? routeHelper('staff/' . $staff->id) : route('admin.staff.store') }}"
+            method="POST" enctype="multipart/form-data" class="space-y-4">
+            @csrf
+
+            {{-- Staff details --}}
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+                    <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-semibold text-slate-900">Staff details</h3>
+                        <p class="text-xs text-slate-500">Basic identity and contact information</p>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Form wraps body + footer -->
-            <form action="{{ isset($staff) ? routeHelper('staff/' . $staff->id) : route('admin.staff.store') }}"
-                method="POST" enctype="multipart/form-data">
-                @csrf
-
-                <!-- Card Body -->
-                <div class="p-4">
+                <div class="p-5">
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <x-ui.input name="name" label="Name:" type="text"
                             placeholder="Write staff name"
@@ -88,61 +94,62 @@
                             placeholder="write staff phone number"
                             :value="$staff->phone ?? old('phone')"
                             required />
+                    </div>
+                </div>
+            </div>
+
+            {{-- Role & profile --}}
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+                    <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-semibold text-slate-900">Role &amp; profile</h3>
+                        <p class="text-xs text-slate-500">Assign a role and upload a profile photo</p>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <x-ui.select name="position" label="Select Role:" required>
+                            <option value="1">Admin</option>
+                            <option value="2">Manager</option>
+                            <option value="3">Product Manager</option>
+                            <option value="4">Delivery Manager</option>
+                        </x-ui.select>
 
                         <div class="space-y-1">
                             <label for="profile" class="block text-sm font-medium text-slate-700">Profile:</label>
-                            <input type="file" name="profile" id="profile"
-                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-sm focus:border-primary focus:ring-1 focus:ring-primary @error('profile') border-danger @enderror"
-                                required>
+                            <label class="block cursor-pointer rounded-xl border-2 border-dashed border-slate-200 px-4 py-6 text-center transition-colors hover:border-primary/50 hover:bg-primary-50/30">
+                                <i class="fas fa-cloud-upload-alt mb-2 text-xl text-slate-400"></i>
+                                <p class="text-sm font-medium text-slate-700">Click to upload a profile photo</p>
+                                <input type="file" name="profile" id="profile"
+                                    class="mx-auto mt-3 block w-full max-w-xs text-sm text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary @error('profile') text-danger @enderror"
+                                    required>
+                            </label>
                             @error('profile')
                                 <p class="text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="space-y-1 md:col-span-2">
-                            <x-ui.select name="position" label="Select Role:" required>
-                                <option value="1">Admin</option>
-                                <option value="2">Manager</option>
-                                <option value="3">Product Manager</option>
-                                <option value="4">Delivery Manager</option>
-                            </x-ui.select>
-                            @error('method')
-                                <p class="text-sm text-danger">{{ $message }}</p>
-                            @enderror
+            {{-- Security (create only) --}}
+            @isset($staff)
+            @else
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-lock"></i>
                         </div>
-
-                        <!--   Commented-out fields (country, city, street, post_code) preserved below -->
-                        <!--   <div class="space-y-1">
-                                <label for="country" class="block text-sm font-medium text-slate-700">Country:</label>
-                                <input type="text" name="country" id="country" placeholder="write staff country name" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('country') border-danger @enderror" value="{{ $staff->staff_info->country ?? old('country') }}" required>
-                                @error('country')
-                                    <p class="text-sm text-danger">{{ $message }}</p>
-                                @enderror
-                            </div> -->
-                        <!--  <div class="space-y-1">
-                                <label for="city" class="block text-sm font-medium text-slate-700">City:</label>
-                                <input type="text" name="city" id="city" placeholder="write staff city name" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('city') border-danger @enderror" value="{{ $staff->staff_info->city ?? old('city') }}" required>
-                                @error('city')
-                                    <p class="text-sm text-danger">{{ $message }}</p>
-                                @enderror
-                            </div> -->
-                        <!--  <div class="space-y-1">
-                                <label for="street" class="block text-sm font-medium text-slate-700">Street:</label>
-                                <input type="text" name="street" id="street" placeholder="write staff street" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('street') border-danger @enderror" value="{{ $staff->staff_info->street ?? old('street') }}" required>
-                                @error('street')
-                                    <p class="text-sm text-danger">{{ $message }}</p>
-                                @enderror
-                            </div> -->
-                        <!--   <div class="space-y-1">
-                                <label for="post_code" class="block text-sm font-medium text-slate-700">Post Code:</label>
-                                <input type="text" name="post_code" id="post_code" placeholder="write staff post code" class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('post_code') border-danger @enderror" value="{{ $staff->staff_info->post_code ?? old('post_code') }}" required>
-                                @error('post_code')
-                                    <p class="text-sm text-danger">{{ $message }}</p>
-                                @enderror
-                            </div> -->
-
-                        @isset($staff)
-                        @else
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">Security</h3>
+                            <p class="text-xs text-slate-500">Set a login password for this account</p>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <x-ui.input name="password" label="Password:" type="password"
                                 placeholder="********"
                                 required />
@@ -150,23 +157,29 @@
                             <x-ui.input name="password_confirmation" label="Confirm Password:" type="password"
                                 placeholder="********"
                                 required />
-                        @endisset
+                        </div>
                     </div>
                 </div>
+            @endisset
 
-                <!-- Card Footer -->
-                <div class="border-t border-slate-200 px-4 py-3">
-                    <x-ui.button variant="primary" type="submit">
-                        @isset($staff)
-                            <i class="fas fa-arrow-circle-up"></i>
-                            Update
-                        @else
-                            <i class="fas fa-plus-circle"></i>
-                            Submit
-                        @endisset
-                    </x-ui.button>
-                </div>
-            </form>
-        </div>
+            {{-- Submit --}}
+            <div class="flex items-center justify-end gap-2 border-t border-slate-200 pt-4">
+                <a href="{{ route('admin.staff.list') }}"
+                    class="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-400 hover:bg-slate-50">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white shadow-sm transition-all hover:bg-primary-600 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[.98]">
+                    @isset($staff)
+                        <i class="fas fa-check text-xs"></i>
+                        Update
+                    @else
+                        <i class="fas fa-plus text-xs"></i>
+                        Submit
+                    @endisset
+                </button>
+            </div>
+        </form>
     </section>
+
 @endsection
