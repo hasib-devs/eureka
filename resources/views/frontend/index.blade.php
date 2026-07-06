@@ -770,13 +770,14 @@
         }
 
         /* =========================
-           Premium Dark Footer — full-width
+           Premium Light Footer — full-width
         ========================= */
         footer.lux-prem-footer {
-            background: #0c0c0c !important;
-            background-color: #0c0c0c !important;
+            background: #faf9f7 !important;
+            background-color: #faf9f7 !important;
             padding: 72px 0 0 !important;
-            color: #fff !important;
+            color: #111 !important;
+            border-top: 1px solid #ececec;
             /* break out of site-inner padding */
             width: 100vw !important;
             max-width: 100vw !important;
@@ -795,7 +796,7 @@
             grid-template-columns: 1.6fr 1fr 1fr 1fr;
             gap: 56px;
             padding-bottom: 60px;
-            border-bottom: 1px solid rgba(255,255,255,.07);
+            border-bottom: 1px solid rgba(0,0,0,.07);
         }
         /* Site logo in footer */
         .lux-prem-footer-logo {
@@ -809,7 +810,7 @@
         .lux-prem-footer-brand .brand-name {
             font-size: 17px !important;
             font-weight: 700 !important;
-            color: #fff !important;
+            color: #111 !important;
             margin: 0 0 12px !important;
             font-family: 'Cinzel Decorative', Georgia, serif !important;
             letter-spacing: 1px;
@@ -817,7 +818,7 @@
         }
         .lux-prem-footer-brand > p {
             font-size: 13px !important;
-            color: rgba(255,255,255,.4) !important;
+            color: #6b6b6b !important;
             line-height: 1.78 !important;
             margin: 0 0 24px !important;
             max-width: 230px;
@@ -830,17 +831,17 @@
             width: 34px;
             height: 34px;
             border-radius: 8px;
-            background: rgba(255,255,255,.06) !important;
-            border: 1px solid rgba(255,255,255,.09) !important;
-            color: rgba(255,255,255,.55) !important;
+            background: #fff !important;
+            border: 1px solid #e4e0d8 !important;
+            color: #777 !important;
             font-size: 12px;
             text-decoration: none !important;
             transition: all .25s ease;
         }
         .lux-prem-social a:hover {
-            background: rgba(201,169,110,.16) !important;
-            border-color: rgba(201,169,110,.42) !important;
-            color: #c9a96e !important;
+            background: rgba(201,169,110,.14) !important;
+            border-color: rgba(176,141,76,.5) !important;
+            color: #a8834b !important;
             transform: translateY(-2px);
         }
         /* Column headings */
@@ -849,16 +850,16 @@
             font-weight: 700 !important;
             letter-spacing: 2.5px;
             text-transform: uppercase;
-            color: #c9a96e !important;
+            color: #a8834b !important;
             margin: 0 0 18px !important;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(201,169,110,.15);
+            border-bottom: 1px solid rgba(176,141,76,.25);
         }
         .lux-prem-footer-col ul { list-style: none !important; padding: 0 !important; margin: 0 !important; }
         .lux-prem-footer-col li { margin-bottom: 10px !important; list-style: none !important; }
         .lux-prem-footer-col a {
             font-size: 13px !important;
-            color: rgba(255,255,255,.38) !important;
+            color: #6b6b6b !important;
             text-decoration: none !important;
             transition: all .2s ease;
             display: inline-flex;
@@ -870,11 +871,11 @@
             display: inline-block;
             width: 0;
             height: 1px;
-            background: #c9a96e;
+            background: #a8834b;
             transition: width .2s ease;
             vertical-align: middle;
         }
-        .lux-prem-footer-col a:hover { color: #fff !important; padding-left: 4px; }
+        .lux-prem-footer-col a:hover { color: #111 !important; padding-left: 4px; }
         .lux-prem-footer-col a:hover::before { width: 8px; }
         /* Bottom bar */
         .lux-prem-footer-bottom {
@@ -886,20 +887,20 @@
             justify-content: space-between;
             gap: 16px;
             flex-wrap: wrap;
-            border-top: 1px solid rgba(255,255,255,.05);
+            border-top: 1px solid rgba(0,0,0,.06);
         }
         .lux-prem-footer-bottom > span {
             font-size: 12px !important;
-            color: rgba(255,255,255,.22) !important;
+            color: #9a9a9a !important;
         }
         .lux-prem-footer-bottom-links { display: flex; gap: 20px; }
         .lux-prem-footer-bottom-links a {
             font-size: 12px !important;
-            color: rgba(255,255,255,.22) !important;
+            color: #9a9a9a !important;
             text-decoration: none !important;
             transition: color .2s ease;
         }
-        .lux-prem-footer-bottom-links a:hover { color: rgba(255,255,255,.7) !important; }
+        .lux-prem-footer-bottom-links a:hover { color: #111 !important; }
 
         /* =========================
            Responsive
