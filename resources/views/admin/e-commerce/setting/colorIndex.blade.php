@@ -2,115 +2,85 @@
 
 @section('title', 'Settings')
 
-
 @section('content')
 
-    {{-- Page header --}}
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h1 class="text-2xl font-semibold text-slate-800">Setting &ndash; <small class="text-base font-normal text-slate-500">Color</small></h1>
-        <ol class="flex items-center gap-1 text-sm text-slate-500">
-            <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-            <li class="before:mx-1 before:content-['/']">My Profile</li>
-        </ol>
-    </div>
-
-    {{-- Main content --}}
-    <x-ui.card :header="'Application Settings'">
-        <div class="flex justify-center">
-            <div class="w-full max-w-2xl">
-                {{-- Inner card with form spanning body + footer --}}
-                <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                    <div class="border-b border-slate-200 px-4 py-3 font-medium text-slate-900">
-                        Setting &ndash; Color Change
-                    </div>
-
-                    <form id="color_form" action="{{ routeHelper('setting') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="p-4">
-                            <input type="hidden" name="type" value="4">
-
-                            <ul class="list-none space-y-4 p-0">
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="PRIMARY_COLOR" class="w-64 text-sm font-medium capitalize text-slate-700">Primary Color:</label>
-                                    <input type="color" id="PRIMARY_COLOR_CHOOSER"
-                                        value="{{ $PRIMARY_COLOR->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="PRIMARY_COLOR" name="PRIMARY_COLOR"
-                                        value="{{ $PRIMARY_COLOR->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="PRIMARY_BG_TEXT_COLOR" class="w-64 text-sm font-medium capitalize text-slate-700">Primary Background Text Color:</label>
-                                    <input type="color" id="PRIMARY_BG_TEXT_COLOR_CHOOSER"
-                                        value="{{ $PRIMARY_BG_TEXT_COLOR->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="PRIMARY_BG_TEXT_COLOR" name="PRIMARY_BG_TEXT_COLOR"
-                                        value="{{ $PRIMARY_BG_TEXT_COLOR->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="SECONDARY_COLOR" class="w-64 text-sm font-medium capitalize text-slate-700">Secondary Color:</label>
-                                    <input type="color" id="SECONDARY_COLOR_CHOOSER"
-                                        value="{{ $SECONDARY_COLOR->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="SECONDARY_COLOR" name="SECONDARY_COLOR"
-                                        value="{{ $SECONDARY_COLOR->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="OPTIONAL_COLOR" class="w-64 text-sm font-medium capitalize text-slate-700">Optional Color:</label>
-                                    <input type="color" id="OPTIONAL_COLOR_CHOOSER"
-                                        value="{{ $OPTIONAL_COLOR->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="OPTIONAL_COLOR" name="OPTIONAL_COLOR"
-                                        value="{{ $OPTIONAL_COLOR->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="OPTIONAL_BG_TEXT_COLOR" class="w-64 text-sm font-medium capitalize text-slate-700">Optional Background Text Color:</label>
-                                    <input type="color" id="OPTIONAL_BG_TEXT_COLOR_CHOOSER"
-                                        value="{{ $OPTIONAL_BG_TEXT_COLOR->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="OPTIONAL_BG_TEXT_COLOR" name="OPTIONAL_BG_TEXT_COLOR"
-                                        value="{{ $OPTIONAL_BG_TEXT_COLOR->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="MAIN_MENU_BG" class="w-64 text-sm font-medium capitalize text-slate-700">Main menu background:</label>
-                                    <input type="color" id="MAIN_MENU_BG_CHOOSER"
-                                        value="{{ $MAIN_MENU_BG->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="MAIN_MENU_BG" name="MAIN_MENU_BG"
-                                        value="{{ $MAIN_MENU_BG->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                                <li class="flex flex-wrap items-center gap-3">
-                                    <label for="MAIN_MENU_ul_li_color" class="w-64 text-sm font-medium capitalize text-slate-700">Main menu item color:</label>
-                                    <input type="color" id="MAIN_MENU_ul_li_color_CHOOSER"
-                                        value="{{ $MAIN_MENU_ul_li_color->value }}"
-                                        class="h-9 w-12 cursor-pointer rounded border border-slate-300 p-0.5">
-                                    <input type="text" id="MAIN_MENU_ul_li_color" name="MAIN_MENU_ul_li_color"
-                                        value="{{ $MAIN_MENU_ul_li_color->value }}"
-                                        class="w-32 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </li>
-                            </ul>
-
-                            <hr class="mt-4 border-slate-200">
-                        </div>
-
-                        <div class="border-t border-slate-200 px-4 py-3">
-                            <x-ui.button type="submit" variant="success">
-                                <i class="fas fa-arrow-circle-up"></i>
-                                Update
-                            </x-ui.button>
-                        </div>
-                    </form>
-                </div>
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Color Settings</h1>
+                <p class="mt-1 text-sm text-slate-500">Define the brand colors used across the storefront</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ route('admin.setting') }}" class="transition-colors hover:text-primary">Settings</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">Colors</li>
+                </ol>
             </div>
         </div>
-    </x-ui.card>
+    </section>
+
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+                    <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-semibold text-slate-900">Brand Colors</h2>
+                        <p class="text-xs text-slate-500">Pick a color or type a hex value &mdash; both fields stay in sync</p>
+                    </div>
+                </div>
+
+                <form id="color_form" action="{{ routeHelper('setting') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="type" value="4">
+
+                    @php
+                        $colorFields = [
+                            ['id' => 'PRIMARY_COLOR', 'label' => 'Primary Color', 'hint' => 'Main accent used for buttons and links', 'value' => $PRIMARY_COLOR->value],
+                            ['id' => 'PRIMARY_BG_TEXT_COLOR', 'label' => 'Primary Background Text Color', 'hint' => 'Text shown on primary-colored backgrounds', 'value' => $PRIMARY_BG_TEXT_COLOR->value],
+                            ['id' => 'SECONDARY_COLOR', 'label' => 'Secondary Color', 'hint' => 'Supporting accent color', 'value' => $SECONDARY_COLOR->value],
+                            ['id' => 'OPTIONAL_COLOR', 'label' => 'Optional Color', 'hint' => 'Extra accent for highlights', 'value' => $OPTIONAL_COLOR->value],
+                            ['id' => 'OPTIONAL_BG_TEXT_COLOR', 'label' => 'Optional Background Text Color', 'hint' => 'Text shown on optional-colored backgrounds', 'value' => $OPTIONAL_BG_TEXT_COLOR->value],
+                            ['id' => 'MAIN_MENU_BG', 'label' => 'Main Menu Background', 'hint' => 'Background of the main navigation bar', 'value' => $MAIN_MENU_BG->value],
+                            ['id' => 'MAIN_MENU_ul_li_color', 'label' => 'Main Menu Item Color', 'hint' => 'Color of the main navigation links', 'value' => $MAIN_MENU_ul_li_color->value],
+                        ];
+                    @endphp
+
+                    <div class="divide-y divide-slate-100 px-5">
+                        @foreach ($colorFields as $field)
+                            <div class="flex flex-wrap items-center justify-between gap-3 py-4">
+                                <div>
+                                    <label for="{{ $field['id'] }}" class="block text-sm font-medium text-slate-700">{{ $field['label'] }}</label>
+                                    <p class="mt-0.5 text-xs text-slate-500">{{ $field['hint'] }}</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="{{ $field['id'] }}_CHOOSER"
+                                        value="{{ $field['value'] }}"
+                                        class="h-10 w-14 cursor-pointer rounded-lg border border-slate-300 bg-white p-1 shadow-sm transition-shadow hover:shadow">
+                                    <input type="text" id="{{ $field['id'] }}" name="{{ $field['id'] }}"
+                                        value="{{ $field['value'] }}"
+                                        class="h-10 w-32 rounded-lg border border-slate-300 bg-white px-3 text-sm tabular-nums text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-5 py-4">
+                        <x-ui.button type="submit" variant="primary">
+                            <i class="fas fa-check text-xs"></i>
+                            Save Changes
+                        </x-ui.button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
 
 @endsection
 
@@ -165,8 +135,6 @@
             $("#MAIN_MENU_ul_li_color").on("keyup", function() {
                 $("#MAIN_MENU_ul_li_color_CHOOSER").val($(this).val());
             });
-
-
         });
     </script>
 @endpush
