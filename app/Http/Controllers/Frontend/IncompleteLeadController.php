@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Core\ShoppingCart\Facades\Cart;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\IncompleteLead;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
 
 class IncompleteLeadController extends Controller
 {
-    
-
-
- /**
+    /**
      * Display a listing of incomplete leads
      */
     public function index(Request $request)
@@ -25,9 +23,9 @@ class IncompleteLeadController extends Controller
         // Search by keyword (name or phone)
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
-            $query->where(function($q) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('phone', 'like', "%{$keyword}%");
+                    ->orWhere('phone', 'like', "%{$keyword}%");
             });
         }
 
@@ -56,14 +54,15 @@ class IncompleteLeadController extends Controller
             'total' => IncompleteLead::count(),
             'active' => IncompleteLead::where('converted', false)->count(),
             'converted' => IncompleteLead::where('converted', true)->count(),
-            'conversion_rate' => 0
+            'conversion_rate' => 0,
         ];
 
         if ($stats['total'] > 0) {
             $stats['conversion_rate'] = ($stats['converted'] / $stats['total']) * 100;
         }
-         return view('admin.e-commerce.order.incomplete_order', compact('leads', 'stats'));
-      
+
+        return view('admin.e-commerce.order.incomplete_order', compact('leads', 'stats'));
+
     }
 
     /**
@@ -76,9 +75,9 @@ class IncompleteLeadController extends Controller
         // Apply same filters as index
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
-            $query->where(function($q) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('phone', 'like', "%{$keyword}%");
+                    ->orWhere('phone', 'like', "%{$keyword}%");
             });
         }
 
@@ -96,19 +95,19 @@ class IncompleteLeadController extends Controller
 
         $leads = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'incomplete_leads_' . date('Y-m-d_His') . '.csv';
-        
+        $filename = 'incomplete_leads_'.date('Y-m-d_His').'.csv';
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        $callback = function() use ($leads) {
+        $callback = function () use ($leads) {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+
             // CSV Headers
             fputcsv($file, [
                 'ID',
@@ -122,7 +121,7 @@ class IncompleteLeadController extends Controller
                 'IP Address',
                 'Page URL',
                 'Created At',
-                'Last Activity'
+                'Last Activity',
             ]);
 
             // CSV Data
@@ -139,7 +138,7 @@ class IncompleteLeadController extends Controller
                     $lead->ip_address ?? 'N/A',
                     $lead->page_url ?? 'N/A',
                     $lead->created_at ? $lead->created_at->format('Y-m-d H:i:s') : 'N/A',
-                    $lead->last_activity ? $lead->last_activity->format('Y-m-d H:i:s') : 'N/A'
+                    $lead->last_activity ? $lead->last_activity->format('Y-m-d H:i:s') : 'N/A',
                 ]);
             }
 
@@ -159,9 +158,11 @@ class IncompleteLeadController extends Controller
             $lead->delete();
 
             notify()->success('Lead deleted successfully', 'Success');
+
             return redirect()->back();
         } catch (\Exception $e) {
-            notify()->error('Error deleting lead: ' . $e->getMessage(), 'Error');
+            notify()->error('Error deleting lead: '.$e->getMessage(), 'Error');
+
             return redirect()->back();
         }
     }
@@ -199,28 +200,28 @@ class IncompleteLeadController extends Controller
                 ->count(),
         ];
     }
-    
+
     public function store(Request $request)
     {
         try {
-           
+
             Log::info('Incomplete Lead Store Request:', [
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'page_type' => $request->page_type,
                 'session_id' => session()->getId(),
-                'has_cart_items' => !empty($request->cart_items)
+                'has_cart_items' => ! empty($request->cart_items),
             ]);
 
             // Minimum requirement check — save the lead if any one field is filled
             if (empty($request->name) && empty($request->phone) && empty($request->email) && empty($request->address)) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'At least one field is required'
+                    'message' => 'At least one field is required',
                 ], 400);
             }
 
-            // Session ID generate 
+            // Session ID generate
             $sessionId = session()->getId();
             if (empty($sessionId)) {
                 session()->regenerate();
@@ -229,7 +230,7 @@ class IncompleteLeadController extends Controller
 
             // Determine page type and prepare cart data accordingly
             $pageType = $request->page_type ?? 'buy_now';
-            
+
             if ($pageType === 'cart_checkout') {
                 // Cart checkout page data
                 $cartData = $this->prepareCartCheckoutData($request);
@@ -253,7 +254,7 @@ class IncompleteLeadController extends Controller
                     'subtotal' => $cartData['subtotal'],
                     'total_items' => $cartData['total_items'],
                     'last_activity' => now(),
-                    'converted' => false
+                    'converted' => false,
                 ]
             );
 
@@ -261,13 +262,13 @@ class IncompleteLeadController extends Controller
                 'lead_id' => $lead->id,
                 'session_id' => $sessionId,
                 'page_type' => $pageType,
-                'items_count' => count($cartData['items'])
+                'items_count' => count($cartData['items']),
             ]);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Lead saved successfully',
-                'lead_id' => $lead->id
+                'lead_id' => $lead->id,
             ]);
 
         } catch (\Exception $e) {
@@ -275,12 +276,12 @@ class IncompleteLeadController extends Controller
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'status' => false,
-                'message' => 'Error saving lead: ' . $e->getMessage()
+                'message' => 'Error saving lead: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -303,7 +304,7 @@ class IncompleteLeadController extends Controller
                     'product_url' => $item['product_url'] ?? '',
                     'image' => $item['image'] ?? '',
                     'total' => floatval($item['total'] ?? 0),
-                    'added_at' => $item['added_at'] ?? now()->toDateTimeString()
+                    'added_at' => $item['added_at'] ?? now()->toDateTimeString(),
                 ];
             }
         }
@@ -311,18 +312,18 @@ class IncompleteLeadController extends Controller
         // যদি frontend data না থাকে তাহলে session cart থেকে নিন
         if (empty($cartItems)) {
             try {
-                $cart = \Cart::content();
-                
+                $cart = Cart::content();
+
                 foreach ($cart as $item) {
                     $product = Product::find($item->id);
-                    
+
                     if ($product) {
                         // Price calculate করুন
                         $price = $item->price;
                         if ($item->qty >= 6 && $product->whole_price > 0) {
                             $price = $product->whole_price;
                         }
-                        
+
                         $itemTotal = $price * $item->qty;
                         $subtotal += $itemTotal;
                         $totalItems += $item->qty;
@@ -337,13 +338,13 @@ class IncompleteLeadController extends Controller
                             'total' => $itemTotal,
                             'size' => $item->options->attributes ?? null,
                             'color' => $item->options->color ?? null,
-                            'added_at' => now()->toDateTimeString()
+                            'added_at' => now()->toDateTimeString(),
                         ];
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Log::error('Cart Data Collection Error:', [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -351,7 +352,7 @@ class IncompleteLeadController extends Controller
         return [
             'items' => $cartItems,
             'subtotal' => $subtotal,
-            'total_items' => $totalItems
+            'total_items' => $totalItems,
         ];
     }
 
@@ -367,15 +368,15 @@ class IncompleteLeadController extends Controller
         if ($request->has('id') && $request->has('qty')) {
             try {
                 $product = Product::find($request->id);
-                
+
                 if ($product) {
                     $price = $request->dynamic_price ?? $product->price;
-                    
+
                     // Wholesale price check
                     if ($request->qty >= 6 && $product->whole_price > 0) {
                         $price = $product->whole_price;
                     }
-                    
+
                     $itemTotal = $price * $request->qty;
                     $subtotal += $itemTotal;
                     $totalItems += $request->qty;
@@ -390,13 +391,13 @@ class IncompleteLeadController extends Controller
                         'total' => $itemTotal,
                         'size' => $request->size ?? null,
                         'color' => $request->color ?? null,
-                        'added_at' => now()->toDateTimeString()
+                        'added_at' => now()->toDateTimeString(),
                     ];
                 }
             } catch (\Exception $e) {
                 Log::error('Buy Now Data Prepare Error:', [
                     'error' => $e->getMessage(),
-                    'product_id' => $request->id
+                    'product_id' => $request->id,
                 ]);
             }
         }
@@ -404,7 +405,7 @@ class IncompleteLeadController extends Controller
         return [
             'items' => $cartItems,
             'subtotal' => $subtotal,
-            'total_items' => $totalItems
+            'total_items' => $totalItems,
         ];
     }
 
@@ -415,7 +416,7 @@ class IncompleteLeadController extends Controller
     {
         try {
             $query = IncompleteLead::query();
-            
+
             if ($sessionId) {
                 $query->where('session_id', $sessionId);
             } elseif ($userId) {
@@ -424,29 +425,29 @@ class IncompleteLeadController extends Controller
                 $sessionId = session()->getId();
                 $query->where('session_id', $sessionId);
             }
-            
+
             $lead = $query->where('converted', false)->first();
-            
+
             if ($lead) {
                 $lead->update(['converted' => true]);
-                
+
                 Log::info('Lead Marked as Converted:', [
                     'lead_id' => $lead->id,
                     'session_id' => $lead->session_id,
-                    'user_id' => $lead->user_id
+                    'user_id' => $lead->user_id,
                 ]);
-                
+
                 return true;
             }
-            
+
             return false;
         } catch (\Exception $e) {
             Log::error('Mark Converted Error:', [
                 'error' => $e->getMessage(),
                 'session_id' => $sessionId,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]);
-            
+
             return false;
         }
     }

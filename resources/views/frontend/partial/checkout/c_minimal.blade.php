@@ -1122,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const img = productDiv.querySelector('img');
                 const link = productDiv.querySelector('a');
-                const priceSpan = productDiv.querySelector('span[style*="text-align: right"]');
+                const priceSpan = productDiv.querySelector('span');
                 
                 if (link && priceSpan) {
                     const productUrl = link.getAttribute('href');
