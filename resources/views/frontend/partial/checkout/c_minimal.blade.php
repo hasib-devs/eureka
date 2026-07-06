@@ -413,6 +413,18 @@
                                 @enderror
                             </div>
 
+                            @if(setting('sms_config_status') == 1)
+                            <div class="form-group col-md-12" id="otp_wrap">
+                                <label for="checkout_otp">OTP কোড <sup class="text-[red]">*</sup></label>
+                                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                    <input type="text" id="checkout_otp" class="form-control" placeholder="মোবাইলে পাঠানো OTP লিখুন" inputmode="numeric" autocomplete="one-time-code" style="flex:1; min-width:150px;">
+                                    <button type="button" id="checkout_otp_send" class="btn btn-secondary" style="white-space:nowrap;"
+                                        data-send-url="{{ route('checkout.otp.send') }}" data-verify-url="{{ route('checkout.otp.verify') }}">OTP পাঠান</button>
+                                    <button type="button" id="checkout_otp_verify" class="btn btn-primary" style="white-space:nowrap;" disabled>ভেরিফাই করুন</button>
+                                </div>
+                                <small id="checkout_otp_msg" class="form-text"></small>
+                            </div>
+                            @endif
 
                             <div class="form-group col-md-12" id="email_wrap">
                                 <label for="email">ইমেইল <span class="text-slate-400">(ঐচ্ছিক)</span></label>
@@ -811,7 +823,7 @@ $stotal = 0;
                             </h4>
                         </div>
                     </div>
-                    <input value="অর্ডার করুন" type="submit">
+                    <input value="অর্ডার করুন" type="submit" id="checkout_submit_btn" @if(setting('sms_config_status') == 1) disabled @endif>
                 </div>
             </div>
         </form>
@@ -821,6 +833,9 @@ $stotal = 0;
 
 @push('js')
 <script src="{{asset('/')}}assets/frontend/js/city.js"></script>
+@if(setting('sms_config_status') == 1)
+<script src="{{ asset('assets/frontend/js/checkout-otp.js') }}"></script>
+@endif
 
 <!-- Hidden input for lead URL -->
 <input type="hidden" id="lead_store_url" value="{{ route('incomplete.lead.store') }}">

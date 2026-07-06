@@ -14,8 +14,10 @@ use App\Models\Review;
 use App\Services\ProductPriceCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -456,8 +458,23 @@ class OrderController extends Controller
 
     // ─── Helpers ────────────────────────────────────────────────────────────
 
+    private function ensurePhoneVerified(?string $phone): void
+    {
+        if (setting('sms_config_status') != 1) {
+            return;
+        }
+
+        if (! $phone || ! Cache::pull('checkout_otp_verified_'.trim($phone))) {
+            throw ValidationException::withMessages([
+                'phone' => 'Please verify your phone number with the OTP before placing the order.',
+            ]);
+        }
+    }
+
     private function createOrder(Request $request, ?int $userId, string $cartType): Order
     {
+        $this->ensurePhoneVerified($request->phone);
+
         $cartItems = Cart::content();
         $stotal = 0;
         $sellerIds = [];
