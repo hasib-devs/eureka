@@ -1,134 +1,159 @@
 @extends('layouts.admin.app')
+
 @section('title', 'Settings')
 
 @section('content')
-    {{-- Page Header --}}
-    <section class="mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold text-slate-800">Setting - <small class="text-base font-normal text-slate-500">Credintial</small></h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li class="before:content-['/'] before:mx-1">SMS | Mail | Login | Register Configureation</li>
-            </ol>
+
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Courier Settings</h1>
+                <p class="mt-1 text-sm text-slate-500">Configure courier and fraud-checker API credentials</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ route('admin.setting') }}" class="transition-colors hover:text-primary">Settings</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">Courier</li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    {{-- COURIER Config --}}
-    <section>
-        <x-ui.card header="COURIER Configuration">
-            <div class="flex flex-col gap-6">
+    @php
+        $control = 'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+    @endphp
 
-                {{-- STEEDFAST --}}
-                <div class="mx-auto w-full max-w-2xl">
-                    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <div class="rounded-t-lg bg-success px-4 py-3 font-medium text-white">
-                            STEEDFAST Courier configuration
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl space-y-4">
+
+            {{-- Steadfast --}}
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-shipping-fast"></i>
                         </div>
-
-                        <form id="sms_config" action="{{ routeHelper('setting') }}" method="POST">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="p-4">
-                                <input type="hidden" name="type" value="12">
-                                <ul class="space-y-3">
-                                    <li>
-                                        <small class="text-red-500">Get api from: <a
-                                                href="https://www.steadfast.com.bd/" target="_blank"
-                                                rel="noopener noreferrer" class="underline hover:text-red-700">www.steadfast.com.bd</a></small>
-                                    </li>
-                                    <li>
-                                        <label for="STEEDFAST_STATUS" class="block text-sm font-medium text-slate-700 mb-1 capitalize">API V1 STATUS</label>
-                                        <select name="STEEDFAST_STATUS" id="STEEDFAST_STATUS"
-                                            class="m-2 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                            @if (setting('STEEDFAST_STATUS') ?? 0 == 1)
-                                                <option value="1">ON</option>
-                                                <option value="0">OFF</option>
-                                            @else
-                                                <option value="0">OFF</option>
-                                                <option value="1">ON</option>
-                                            @endif
-                                        </select>
-                                    </li>
-                                    <li>
-                                        <label for="STEEDFAST_API_KEY" class="block text-sm font-medium text-slate-700 mb-1 capitalize">API KEY</label>
-                                        <input type="text" name="STEEDFAST_API_KEY" id="STEEDFAST_API_KEY"
-                                            value="{{ setting('STEEDFAST_API_KEY') ?? '' }}"
-                                            class="mt-2 mr-2 rounded border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                    </li>
-                                    <li>
-                                        <label for="STEEDFAST_API_SECRET_KEY" class="block text-sm font-medium text-slate-700 mb-1 capitalize">API
-                                            SECRET</label>
-                                        <input type="text" name="STEEDFAST_API_SECRET_KEY"
-                                            id="STEEDFAST_API_SECRET_KEY"
-                                            value="{{ setting('STEEDFAST_API_SECRET_KEY') ?? '' }}"
-                                            class="mt-2 mr-2 rounded border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="border-t border-slate-200 px-4 py-3">
-                                <x-ui.button type="submit" variant="success">
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                </x-ui.button>
-                            </div>
-                        </form>
+                        <div>
+                            <h2 class="text-base font-semibold text-slate-900">Steadfast Courier</h2>
+                            <p class="text-xs text-slate-500">Send orders directly to the Steadfast courier network</p>
+                        </div>
                     </div>
+                    <a href="https://www.steadfast.com.bd/" target="_blank" rel="noopener noreferrer"
+                        class="text-xs font-medium text-primary hover:underline">
+                        Get API from steadfast.com.bd <i class="fas fa-external-link-alt text-[9px]"></i>
+                    </a>
                 </div>
 
-                {{-- BD Courier --}}
-                <div class="mx-auto w-full max-w-2xl">
-                    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <div class="rounded-t-lg bg-primary px-4 py-3 font-medium text-white">
-                            BD Courier Configuration (Fraud Checker)
+                <form id="sms_config" action="{{ routeHelper('setting') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="type" value="12">
+
+                    <div class="space-y-4 p-5">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50/60 px-4 py-3">
+                            <div>
+                                <label for="STEEDFAST_STATUS" class="block text-sm font-medium text-slate-700">API V1 Status</label>
+                                <p class="mt-0.5 text-xs text-slate-500">Enable or disable the Steadfast integration</p>
+                            </div>
+                            <select name="STEEDFAST_STATUS" id="STEEDFAST_STATUS"
+                                class="h-10 w-28 cursor-pointer rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                @if (setting('STEEDFAST_STATUS') ?? 0 == 1)
+                                    <option value="1">ON</option>
+                                    <option value="0">OFF</option>
+                                @else
+                                    <option value="0">OFF</option>
+                                    <option value="1">ON</option>
+                                @endif
+                            </select>
                         </div>
 
-                        <form id="bdcourier_config" action="{{ routeHelper('setting') }}" method="POST">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="p-4">
-                                <input type="hidden" name="type" value="12">
-                                <ul class="space-y-3">
-                                    <li>
-                                        <small class="text-red-500">Get api from: <a href="https://bdcourier.com/"
-                                                target="_blank" rel="noopener noreferrer" class="underline hover:text-red-700">bdcourier.com</a></small>
-                                    </li>
-                                    <li>
-                                        <label for="BDCOURIER_STATUS" class="block text-sm font-medium text-slate-700 mb-1 capitalize">STATUS</label>
-                                        <select name="BDCOURIER_STATUS" id="BDCOURIER_STATUS"
-                                            class="m-2 rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                            @if (setting('BDCOURIER_STATUS') ?? 0 == 1)
-                                                <option value="1">ON</option>
-                                                <option value="0">OFF</option>
-                                            @else
-                                                <option value="0">OFF</option>
-                                                <option value="1">ON</option>
-                                            @endif
-                                        </select>
-                                    </li>
-                                    <li>
-                                        <label for="BDCOURIER_API_KEY" class="block text-sm font-medium text-slate-700 mb-1 capitalize">API KEY (Bearer
-                                            Token)</label>
-                                        <input type="text" name="BDCOURIER_API_KEY" id="BDCOURIER_API_KEY"
-                                            value="{{ setting('BDCOURIER_API_KEY') ?? 'ZkEEfBAEBRxVkgcLpR3Z5e3sPHQ6dy0XViGTqYyg4clRjj06rRKmAs41Smp2' }}"
-                                            class="mt-2 mr-2 w-full rounded border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                    </li>
-                                </ul>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label for="STEEDFAST_API_KEY" class="mb-1 block text-sm font-medium text-slate-700">API Key</label>
+                                <input type="text" name="STEEDFAST_API_KEY" id="STEEDFAST_API_KEY"
+                                    value="{{ setting('STEEDFAST_API_KEY') ?? '' }}"
+                                    class="{{ $control }}">
                             </div>
-
-                            <div class="border-t border-slate-200 px-4 py-3">
-                                <x-ui.button type="submit" variant="primary">
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                </x-ui.button>
+                            <div>
+                                <label for="STEEDFAST_API_SECRET_KEY" class="mb-1 block text-sm font-medium text-slate-700">API Secret</label>
+                                <input type="text" name="STEEDFAST_API_SECRET_KEY" id="STEEDFAST_API_SECRET_KEY"
+                                    value="{{ setting('STEEDFAST_API_SECRET_KEY') ?? '' }}"
+                                    class="{{ $control }}">
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
 
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-5 py-4">
+                        <x-ui.button type="submit" variant="primary">
+                            <i class="fas fa-check text-xs"></i>
+                            Save Changes
+                        </x-ui.button>
+                    </div>
+                </form>
             </div>
-        </x-ui.card>
+
+            {{-- BD Courier --}}
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-semibold text-slate-900">BD Courier (Fraud Checker)</h2>
+                            <p class="text-xs text-slate-500">Check customer delivery history before confirming orders</p>
+                        </div>
+                    </div>
+                    <a href="https://bdcourier.com/" target="_blank" rel="noopener noreferrer"
+                        class="text-xs font-medium text-primary hover:underline">
+                        Get API from bdcourier.com <i class="fas fa-external-link-alt text-[9px]"></i>
+                    </a>
+                </div>
+
+                <form id="bdcourier_config" action="{{ routeHelper('setting') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="type" value="12">
+
+                    <div class="space-y-4 p-5">
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50/60 px-4 py-3">
+                            <div>
+                                <label for="BDCOURIER_STATUS" class="block text-sm font-medium text-slate-700">Status</label>
+                                <p class="mt-0.5 text-xs text-slate-500">Enable or disable the fraud checker</p>
+                            </div>
+                            <select name="BDCOURIER_STATUS" id="BDCOURIER_STATUS"
+                                class="h-10 w-28 cursor-pointer rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                @if (setting('BDCOURIER_STATUS') ?? 0 == 1)
+                                    <option value="1">ON</option>
+                                    <option value="0">OFF</option>
+                                @else
+                                    <option value="0">OFF</option>
+                                    <option value="1">ON</option>
+                                @endif
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="BDCOURIER_API_KEY" class="mb-1 block text-sm font-medium text-slate-700">API Key <span class="font-normal text-slate-400">(Bearer Token)</span></label>
+                            <input type="text" name="BDCOURIER_API_KEY" id="BDCOURIER_API_KEY"
+                                value="{{ setting('BDCOURIER_API_KEY') ?? 'ZkEEfBAEBRxVkgcLpR3Z5e3sPHQ6dy0XViGTqYyg4clRjj06rRKmAs41Smp2' }}"
+                                class="{{ $control }}">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-5 py-4">
+                        <x-ui.button type="submit" variant="primary">
+                            <i class="fas fa-check text-xs"></i>
+                            Save Changes
+                        </x-ui.button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
     </section>
+
 @endsection
