@@ -1,282 +1,210 @@
 @extends('layouts.admin.app')
 
-
 @section('title', 'Live Chat')
 
 @push('css')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css"
-        rel="stylesheet">
-
     <style>
-        .container {
-            max-width: 1170px;
-            margin: auto;
+        /* Styles for the chat markup rendered by the AJAX/polling JS below —
+           these class names are generated in JS and must stay in sync with it. */
+        .chat_list {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background-color .15s ease;
         }
 
-        img {
-            max-width: 100%;
+        .chat_list:hover {
+            background-color: #f8fafc;
         }
 
-        .inbox_people {
-            background: #f8f8f8 none repeat scroll 0 0;
-            float: left;
-            overflow: hidden;
-            width: 40%;
-            border-right: 1px solid #c4c4c4;
-        }
-
-        .inbox_msg {
-            border: 1px solid #c4c4c4;
-            clear: both;
-            overflow: hidden;
-        }
-
-        .top_spac {
-            margin: 20px 0 0;
-        }
-
-
-        .recent_heading {
-            float: left;
-            width: 40%;
-        }
-
-        .srch_bar {
-            display: inline-block;
-            text-align: right;
-            width: 60%;
-            padding:
-        }
-
-        .headind_srch {
-            padding: 10px 29px 10px 20px;
-            overflow: hidden;
-            border-bottom: 1px solid #c4c4c4;
-        }
-
-        .recent_heading h4 {
-            color: #05728f;
-            font-size: 21px;
-            margin: auto;
-        }
-
-        .srch_bar input {
-            border: 1px solid #cdcdcd;
-            border-width: 0 0 1px 0;
-            width: 80%;
-            padding: 2px 0 4px 6px;
-            background: none;
-        }
-
-        .srch_bar .input-group-addon button {
-            background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-            border: medium none;
-            padding: 0;
-            color: #707070;
-            font-size: 18px;
-        }
-
-        .srch_bar .input-group-addon {
-            margin: 0 0 0 -27px;
-        }
-
-        .chat_ib h5 {
-            font-size: 15px;
-            color: #464646;
-            margin: 0 0 8px 0;
-        }
-
-        .chat_ib h5 span {
-            font-size: 13px;
-            float: right;
-        }
-
-        .chat_ib p {
-            font-size: 14px;
-            color: #989898;
-            margin: auto;
-            white-space: nowrap;
-        }
-
-        .chat_img {
-            float: left;
-            width: 11%;
-        }
-
-        .chat_ib {
-            float: left;
-            padding: 0 0 0 15px;
-            width: 88%;
+        .chat_list.active_chat {
+            background-color: var(--color-primary-50);
+            box-shadow: inset 3px 0 0 var(--color-primary);
         }
 
         .chat_people {
-            overflow: hidden;
-            clear: both;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
         }
 
-        .chat_list {
-            border-bottom: 1px solid #c4c4c4;
+        .chat_img {
+            flex-shrink: 0;
+        }
+
+        .chat_img img {
+            height: 40px;
+            width: 40px;
+            border-radius: 9999px;
+            object-fit: cover;
+            box-shadow: 0 0 0 1px #e2e8f0;
+        }
+
+        .chat_ib {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat_ib h5 {
             margin: 0;
-            padding: 18px 16px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .inbox_chat {
-            height: 60vh;
-            overflow-y: scroll;
+        .chat_ib h5 span {
+            float: right;
+            font-size: 11px;
+            font-weight: 400;
+            color: #94a3b8;
         }
 
-        .active_chat {
-            background: #ebebeb;
+        .chat_ib p {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: #64748b;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .incoming_msg {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .incoming_msg_img {
-            display: inline-block;
-            width: 6%;
+            flex-shrink: 0;
+        }
+
+        .incoming_msg_img img {
+            height: 32px;
+            width: 32px;
+            border-radius: 9999px;
+            object-fit: cover;
+            box-shadow: 0 0 0 1px #e2e8f0;
         }
 
         .received_msg {
-            display: inline-block;
-            padding: 0 0 0 10px;
-            vertical-align: top;
-            width: 92%;
+            min-width: 0;
+            max-width: 70%;
         }
 
         .received_withd_msg p {
-            background: #ebebeb none repeat scroll 0 0;
-            border-radius: 3px;
-            color: #646464;
-            font-size: 14px;
+            display: inline-block;
             margin: 0;
-            padding: 5px 10px 5px 12px;
-            width: 100%;
-        }
-
-        .time_date {
-            color: #747474;
-            display: block;
-            font-size: 12px;
-        }
-
-        .received_withd_msg {
-            width: 57%;
-        }
-
-        .mesgs {
-            float: left;
-            padding: 30px 15px 0 25px;
-            width: 60%;
-        }
-
-        .sent_msg p {
-            background: #05728f none repeat scroll 0 0;
-            border-radius: 3px;
+            padding: 10px 14px;
+            background-color: #f1f5f9;
+            color: #334155;
             font-size: 14px;
-            margin: 0;
-            color: #fff;
-            padding: 5px 10px 5px 12px;
-            width: 100%;
+            line-height: 1.5;
+            border-radius: 16px 16px 16px 4px;
+            overflow-wrap: break-word;
+            max-width: 100%;
         }
 
         .outgoing_msg {
-            overflow: hidden;
-            margin: 10px 0 10px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
         }
 
         .sent_msg {
-            float: right;
-            width: 46%;
+            max-width: 70%;
+            text-align: right;
         }
 
-        .input_msg_write input {
-            background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-            border: medium none;
-            color: #4c4c4c;
-            font-size: 15px;
-            min-height: 48px;
-            width: 100%;
-        }
-
-        .type_msg {
-            border-top: 1px solid #c4c4c4;
-            position: relative;
-        }
-
-        .msg_send_btn {
-            background: #05728f none repeat scroll 0 0;
-            border: medium none;
-            border-radius: 50%;
+        .sent_msg p {
+            display: inline-block;
+            margin: 0;
+            padding: 10px 14px;
+            background-color: var(--color-primary);
             color: #fff;
-            cursor: pointer;
-            font-size: 17px;
-            height: 33px;
-            position: absolute;
-            right: 0;
-            top: 11px;
-            width: 33px;
+            font-size: 14px;
+            line-height: 1.5;
+            border-radius: 16px 16px 4px 16px;
+            text-align: left;
+            overflow-wrap: break-word;
+            max-width: 100%;
         }
 
-        .messaging {
-            padding: 0 0 50px 0;
-        }
-
-        .msg_history {
-            height: 60vh;
-            overflow-y: auto;
+        .time_date {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #94a3b8;
         }
     </style>
 @endpush
 
 @section('content')
 
-    <!-- Content Header (Page header) -->
-    <section class="mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold text-slate-800">Live Chat</h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ route('admin.dashboard') }}" class="hover:text-slate-700">Home</a></li>
-                <li class="before:content-['/'] before:mx-1">Live Chat</li>
-            </ol>
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Live Chat</h1>
+                <p class="mt-1 text-sm text-slate-500">Chat with customers in real time</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ route('admin.dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">Live Chat</li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    <!-- Main content -->
-    <section class="pb-4">
-        <div class="messaging">
-            <div class="inbox_msg">
-                <div class="inbox_people">
-                    <div class="headind_srch">
-                        <div class="recent_heading">
-                            <h4>Member List</h4>
-                        </div>
+    <section class="mb-6">
+        <div class="flex h-[calc(100vh-15rem)] min-h-[480px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 
-                    </div>
-                    <div class="inbox_chat">
-
-                    </div>
+            {{-- Conversation list --}}
+            <aside class="flex w-2/5 max-w-xs shrink-0 flex-col border-r border-slate-200 bg-slate-50/50">
+                <div class="flex items-center justify-between gap-2 border-b border-slate-200 bg-white px-5 py-4">
+                    <h2 class="text-base font-semibold text-slate-900">Conversations</h2>
+                    <span class="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary">
+                        <i class="fas fa-comments text-sm"></i>
+                    </span>
                 </div>
-                <div class="mesgs">
-                    <div class="msg_history">
+                <div class="inbox_chat flex-1 overflow-y-auto bg-white">
+                    {{-- populated by liveChatUserList() --}}
+                </div>
+            </aside>
 
-                    </div>
-                    <div class="type_msg">
-                        <form method="post">
-                            @csrf
-                            <div class="input_msg_write">
-                                <input type="text" name="message" class="write_msg"
-                                    placeholder="Type a message" />
-                                <input type="hidden" id="user_id" name="user_id">
-                                <button type="submit" class="msg_send_btn" id="submit_form"><i
-                                        class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
-                            </div>
-                        </form>
-                    </div>
+            {{-- Thread --}}
+            <div class="flex min-w-0 flex-1 flex-col">
+                <div class="msg_history flex-1 overflow-y-auto bg-slate-50/50 px-5 py-6">
+                    {{-- populated by showLiveChatMessage() --}}
+                </div>
+
+                {{-- Composer --}}
+                <div class="type_msg border-t border-slate-200 bg-white p-4">
+                    <form method="post">
+                        @csrf
+                        <div class="input_msg_write flex items-center gap-3">
+                            <input type="text" name="message" placeholder="Type a message"
+                                class="write_msg h-11 w-full flex-1 rounded-full border border-slate-300 bg-white px-4 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                            <input type="hidden" id="user_id" name="user_id">
+                            <button type="submit" id="submit_form" title="Send message"
+                                class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-sm transition-all hover:bg-primary-600 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[.98]">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
         </div>
-
     </section>
-    <!-- /.content -->
 
 @endsection
 

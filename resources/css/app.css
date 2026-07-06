@@ -70,3 +70,21 @@
 /* Keep laravel-notify toasts above the dashboard sidebar/overlay (preserves the old layout's inline z-index). */
 .notify,
 div.fixed.inset-0.flex.items-end.justify-center { z-index: 999999; }
+
+/* AdminLTE/Bootstrap ships identically-named color utilities (.bg-primary, .text-primary, …)
+   with !important, which hijacks the brand palette (primary rendered Bootstrap blue instead of
+   the theme orange). The 'reclaim' layer is declared first in the admin layout: for !important declarations layer priority reverses, so these beat AdminLTE's !important utilities. */
+@layer reclaim {
+.bg-primary   { background-color: var(--color-primary) !important; }
+.text-primary { color: var(--color-primary) !important; }
+.bg-secondary   { background-color: var(--color-secondary) !important; }
+.text-secondary { color: var(--color-secondary) !important; }
+.bg-success   { background-color: var(--color-success) !important; }
+.text-success { color: var(--color-success) !important; }
+.bg-danger    { background-color: var(--color-danger) !important; }
+.text-danger  { color: var(--color-danger) !important; }
+.bg-warning   { background-color: var(--color-warning) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.bg-info      { background-color: var(--color-info) !important; }
+.text-info    { color: var(--color-info) !important; }
+}

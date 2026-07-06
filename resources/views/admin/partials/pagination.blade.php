@@ -8,12 +8,12 @@
 
         <div class="flex items-center gap-1">
             @if ($paginator->onFirstPage())
-                <span class="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-300" aria-disabled="true">
+                <span class="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-300" aria-disabled="true">
                     <i class="fas fa-chevron-left text-xs"></i>
                 </span>
             @else
                 <a href="{{ $paginator->previousPageUrl() }}" rel="prev" title="Previous page"
-                    class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition-colors hover:border-primary hover:text-primary">
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-primary hover:text-primary">
                     <i class="fas fa-chevron-left text-xs"></i>
                 </a>
             @endif
@@ -27,12 +27,12 @@
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
                             <span aria-current="page"
-                                class="inline-flex h-8 min-w-8 items-center justify-center rounded-md bg-primary px-2 text-sm font-medium text-white">
+                                class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-primary px-2 text-sm font-medium text-white">
                                 {{ $page }}
                             </span>
                         @else
                             <a href="{{ $url }}"
-                                class="inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-sm text-slate-600 transition-colors hover:border-primary hover:text-primary">
+                                class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-600 transition-colors hover:border-primary hover:text-primary">
                                 {{ $page }}
                             </a>
                         @endif
@@ -42,11 +42,11 @@
 
             @if ($paginator->hasMorePages())
                 <a href="{{ $paginator->nextPageUrl() }}" rel="next" title="Next page"
-                    class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition-colors hover:border-primary hover:text-primary">
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-primary hover:text-primary">
                     <i class="fas fa-chevron-right text-xs"></i>
                 </a>
             @else
-                <span class="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-300" aria-disabled="true">
+                <span class="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-300" aria-disabled="true">
                     <i class="fas fa-chevron-right text-xs"></i>
                 </span>
             @endif

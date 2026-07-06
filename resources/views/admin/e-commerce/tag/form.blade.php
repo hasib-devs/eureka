@@ -9,71 +9,86 @@
 @endsection
 
 @section('content')
-    {{-- Page header --}}
-    <section class="mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold text-slate-800">
-                @isset($tag)
-                    Edit Tag
-                @else
-                    Add Tag
-                @endisset
-            </h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li class="before:mx-1 before:content-['/']">
+
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">
                     @isset($tag)
                         Edit Tag
                     @else
                         Add Tag
                     @endisset
-                </li>
-            </ol>
+                </h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    @isset($tag)
+                        Update the details of this tag
+                    @else
+                        Create a new product tag
+                    @endisset
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <x-ui.button variant="outline" :href="routeHelper('tag')">
+                    <i class="fas fa-long-arrow-alt-left text-xs"></i> Back to List
+                </x-ui.button>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ routeHelper('tag') }}" class="transition-colors hover:text-primary">Tags</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">
+                        @isset($tag)
+                            Edit
+                        @else
+                            Add
+                        @endisset
+                    </li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    {{-- Main content --}}
-    <section>
-        <div class="mx-auto max-w-3xl">
-            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                {{-- Card header --}}
-                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <h3 class="font-semibold text-slate-800">
-                        @isset($tag)
-                            Edit Tag
-                        @else
-                            Add New Tag
-                        @endisset
-                    </h3>
-                    <x-ui.button variant="danger" :href="routeHelper('tag')">
-                        <i class="fas fa-long-arrow-alt-left"></i>
-                        Back to List
-                    </x-ui.button>
-                </div>
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
+            <form action="{{ isset($tag) ? routeHelper('tag/' . $tag->id) : routeHelper('tag') }}" method="POST">
+                @csrf
+                @isset($tag)
+                    @method('PUT')
+                @endisset
 
-                {{-- Form (wraps body + footer, matching original structure) --}}
-                <form action="{{ isset($tag) ? routeHelper('tag/' . $tag->id) : routeHelper('tag') }}" method="POST">
-                    @csrf
-                    @isset($tag)
-                        @method('PUT')
-                    @endisset
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">
+                                @isset($tag)
+                                    Edit Tag Details
+                                @else
+                                    Add New Tag
+                                @endisset
+                            </h3>
+                            <p class="text-xs text-slate-500">Name, description and visibility</p>
+                        </div>
+                    </div>
 
-                    {{-- Card body --}}
-                    <div class="space-y-4 p-4">
+                    <div class="space-y-4 p-5">
                         <x-ui.input
                             name="name"
-                            label="Tag Name:"
-                            placeholder="Write size name"
-                            :value="$tag->name ?? old('name')"
+                            label="Tag Name"
+                            :value="$tag->name ?? null"
+                            placeholder="Write tag name"
                             required
                             autocomplete="off"
                         />
 
                         <x-ui.textarea
                             name="description"
-                            label="Description:"
+                            label="Description"
                             :rows="5"
-                            placeholder="Write size description"
+                            placeholder="Write tag description"
                         >{{ $tag->description ?? old('description') }}</x-ui.textarea>
 
                         <div>
@@ -83,7 +98,7 @@
                                     name="status"
                                     id="status"
                                     class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
-                                    @isset($size) {{ $size->status ? 'checked' : '' }} @else checked @endisset
+                                    @checked($tag->status ?? true)
                                 >
                                 <span class="text-sm font-medium text-slate-700">Status</span>
                             </label>
@@ -93,9 +108,11 @@
                         </div>
                     </div>
 
-                    {{-- Card footer --}}
-                    <div class="border-t border-slate-200 px-4 py-3">
-                        <x-ui.button variant="primary" type="submit">
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4">
+                        <x-ui.button variant="outline" :href="routeHelper('tag')">
+                            Cancel
+                        </x-ui.button>
+                        <x-ui.button type="submit" variant="primary">
                             @isset($tag)
                                 <i class="fas fa-arrow-circle-up"></i>
                                 Update
@@ -105,8 +122,8 @@
                             @endisset
                         </x-ui.button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </section>
 @endsection

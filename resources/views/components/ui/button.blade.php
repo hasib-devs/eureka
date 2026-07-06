@@ -6,16 +6,17 @@
 ])
 
 @php
-    $base = 'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 disabled:pointer-events-none';
+    $base = 'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none';
 
     $variants = [
-        'primary'   => 'bg-primary text-white hover:bg-primary-600',
-        'secondary' => 'bg-secondary text-white hover:bg-slate-700',
+        'primary'   => 'bg-primary text-white shadow-sm hover:bg-primary-600 hover:shadow',
+        'secondary' => 'bg-secondary text-white shadow-sm hover:bg-slate-700 hover:shadow',
         'ghost'     => 'bg-transparent text-primary hover:bg-primary-50',
-        'danger'    => 'bg-danger text-white hover:opacity-90',
-        'success'   => 'bg-success text-white hover:opacity-90',
-        'warning'   => 'bg-tile-warning text-black hover:opacity-90',
-        'info'      => 'bg-tile-info text-white hover:opacity-90',
+        'outline'   => 'border border-slate-300 bg-white text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50',
+        'danger'    => 'bg-danger text-white shadow-sm hover:opacity-90 hover:shadow',
+        'success'   => 'bg-success text-white shadow-sm hover:opacity-90 hover:shadow',
+        'warning'   => 'bg-tile-warning text-black shadow-sm hover:opacity-90 hover:shadow',
+        'info'      => 'bg-tile-info text-white shadow-sm hover:opacity-90 hover:shadow',
     ];
 
     $sizes = [

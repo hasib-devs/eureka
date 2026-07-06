@@ -29,7 +29,7 @@ it('renders a backdrop div that closes the modal on click', function () {
     $html = Blade::render('<x-ui.modal name="test">Body</x-ui.modal>');
 
     expect($html)
-        ->toContain('absolute inset-0 bg-black/50')
+        ->toContain('absolute inset-0 bg-slate-900/40')
         ->toContain('@click="open = false"');
 });
 
@@ -39,7 +39,7 @@ it('renders the panel with correct classes', function () {
     expect($html)
         ->toContain('relative z-10')
         ->toContain('w-full max-w-lg')
-        ->toContain('rounded-lg bg-white shadow-xl');
+        ->toContain('rounded-2xl bg-white shadow-2xl');
 });
 
 it('renders the title in the header', function () {

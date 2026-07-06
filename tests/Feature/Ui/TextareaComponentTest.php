@@ -7,7 +7,7 @@ it('renders a labelled textarea with the field name', function () {
 
     expect($html)->toContain('name="bio"')
         ->toContain('Biography')
-        ->toContain('rounded-md');
+        ->toContain('rounded-lg');
 });
 
 it('renders without a label when none is given', function () {

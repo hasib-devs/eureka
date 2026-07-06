@@ -1,13 +1,13 @@
-<div class="flex items-center justify-between bg-primary px-4 py-3 text-white">
-    <h5 class="text-base font-semibold">
+<div class="flex items-center justify-between bg-primary px-4 py-4 text-white">
+    <h5 class="flex items-center gap-2 text-base font-semibold tracking-tight">
         <i class="fas fa-shield-alt"></i> Fraud Checker Report
     </h5>
-    <button type="button" class="text-white opacity-75 hover:opacity-100" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
+    <button type="button" class="text-white/75 transition-colors hover:text-white" data-dismiss="modal" aria-label="Close">
+        <i class="fas fa-times text-lg" aria-hidden="true"></i>
     </button>
 </div>
 
-<div class="p-4 space-y-4">
+<div class="space-y-4 p-5">
     {{-- Customer Info --}}
     <x-ui.card>
         <x-slot:header>
@@ -32,24 +32,16 @@
         </div>
 
         <div class="mt-2">
-            <p class="text-sm text-slate-700">
+            <p class="flex items-center gap-1.5 text-sm text-slate-700">
                 <strong>Status:</strong>
                 @if($status == 'success')
-                    <x-ui.badge variant="success">
-                        <i class="fas fa-check-circle"></i> Verified Customer
-                    </x-ui.badge>
+                    <x-ui.badge variant="success" dot>Verified Customer</x-ui.badge>
                 @elseif($status == 'warning')
-                    <x-ui.badge variant="warning">
-                        <i class="fas fa-exclamation-triangle"></i> Caution Required
-                    </x-ui.badge>
+                    <x-ui.badge variant="warning" dot>Caution Required</x-ui.badge>
                 @elseif($status == 'danger')
-                    <x-ui.badge variant="danger">
-                        <i class="fas fa-times-circle"></i> High Risk Customer
-                    </x-ui.badge>
+                    <x-ui.badge variant="danger" dot>High Risk Customer</x-ui.badge>
                 @else
-                    <x-ui.badge variant="neutral">
-                        <i class="fas fa-info-circle"></i> {{ $status }}
-                    </x-ui.badge>
+                    <x-ui.badge variant="neutral" dot>{{ $status }}</x-ui.badge>
                 @endif
             </p>
         </div>
@@ -62,17 +54,17 @@
         </x-slot:header>
 
         <div class="grid grid-cols-3 gap-3 text-center">
-            <div class="min-h-[80px] rounded bg-slate-100 p-3">
-                <span class="block truncate text-sm text-slate-600">Total Parcels</span>
-                <span class="block text-2xl font-bold text-slate-800">{{ $total_parcel }}</span>
+            <div class="min-h-[80px] rounded-xl bg-slate-50 p-3 ring-1 ring-inset ring-slate-200">
+                <span class="block truncate text-xs font-medium uppercase tracking-wide text-slate-500">Total Parcels</span>
+                <span class="mt-1 block text-2xl font-bold tracking-tight text-slate-800">{{ $total_parcel }}</span>
             </div>
-            <div class="min-h-[80px] rounded bg-success p-3">
-                <span class="block truncate text-sm text-white">Success</span>
-                <span class="block text-2xl font-bold text-white">{{ $total_success }}</span>
+            <div class="min-h-[80px] rounded-xl bg-success/10 p-3 ring-1 ring-inset ring-success/20">
+                <span class="block truncate text-xs font-medium uppercase tracking-wide text-success">Success</span>
+                <span class="mt-1 block text-2xl font-bold tracking-tight text-success">{{ $total_success }}</span>
             </div>
-            <div class="min-h-[80px] rounded bg-danger p-3">
-                <span class="block truncate text-sm text-white">Cancelled</span>
-                <span class="block text-2xl font-bold text-white">{{ $total_cancel }}</span>
+            <div class="min-h-[80px] rounded-xl bg-danger/10 p-3 ring-1 ring-inset ring-danger/20">
+                <span class="block truncate text-xs font-medium uppercase tracking-wide text-danger">Cancelled</span>
+                <span class="mt-1 block text-2xl font-bold tracking-tight text-danger">{{ $total_cancel }}</span>
             </div>
         </div>
 
@@ -82,16 +74,16 @@
             $cancel_ratio = $total_parcel > 0 ? round(($total_cancel / $total_parcel) * 100, 2) : 0;
         @endphp
 
-        <div class="mt-3">
-            <h6 class="mb-1 text-sm font-semibold text-slate-700">Success Ratio: {{ $success_ratio }}%</h6>
-            <div class="flex h-[25px] w-full overflow-hidden rounded">
-                <div class="flex items-center justify-center bg-success text-xs font-medium text-white"
+        <div class="mt-4">
+            <h6 class="mb-1.5 text-sm font-semibold text-slate-700">Success Ratio: {{ $success_ratio }}%</h6>
+            <div class="flex h-6 w-full overflow-hidden rounded-full bg-slate-100 ring-1 ring-inset ring-slate-200">
+                <div class="flex items-center justify-center bg-success text-[11px] font-semibold text-white"
                      role="progressbar"
                      style="width: {{ $success_ratio }}%;"
                      aria-valuenow="{{ $success_ratio }}" aria-valuemin="0" aria-valuemax="100">
                     {{ $success_ratio }}% Success
                 </div>
-                <div class="flex items-center justify-center bg-danger text-xs font-medium text-white"
+                <div class="flex items-center justify-center bg-danger text-[11px] font-semibold text-white"
                      role="progressbar"
                      style="width: {{ $cancel_ratio }}%;"
                      aria-valuenow="{{ $cancel_ratio }}" aria-valuemin="0" aria-valuemax="100">
@@ -107,32 +99,32 @@
             <span class="text-sm font-semibold text-secondary"><i class="fas fa-shipping-fast"></i> Courier-wise Performance</span>
         </x-slot:header>
 
-        <div class="overflow-x-auto">
-            <table class="w-full border-collapse text-sm">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="border border-slate-200 px-3 py-2 text-left font-semibold text-slate-700">Courier</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center font-semibold text-slate-700">Total</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center font-semibold text-slate-700">Success</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center font-semibold text-slate-700">Cancelled</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center font-semibold text-slate-700">Success Rate</th>
+        <div class="overflow-x-auto rounded-lg ring-1 ring-slate-200">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 bg-slate-50/80 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                        <th class="px-4 py-3 text-left">Courier</th>
+                        <th class="px-4 py-3 text-center">Total</th>
+                        <th class="px-4 py-3 text-center">Success</th>
+                        <th class="px-4 py-3 text-center">Cancelled</th>
+                        <th class="px-4 py-3 text-center">Success Rate</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-slate-100">
                     {{-- Local Shop --}}
-                    <tr class="even:bg-slate-50">
-                        <td class="border border-slate-200 px-3 py-2">
+                    <tr class="transition-colors hover:bg-slate-50/80">
+                        <td class="px-4 py-3">
                             <i class="fas fa-store text-primary"></i>
                             <strong>Our Shop (Local)</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">{{ $local_shop_total ?? 0 }}</td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-success">
+                        <td class="px-4 py-3 text-center tabular-nums">{{ $local_shop_total ?? 0 }}</td>
+                        <td class="px-4 py-3 text-center tabular-nums text-success">
                             <strong>{{ $local_shop_success ?? 0 }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-danger">
+                        <td class="px-4 py-3 text-center tabular-nums text-danger">
                             <strong>{{ $local_shop_cancel ?? 0 }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">
+                        <td class="px-4 py-3 text-center">
                             @php
                                 $local_total = $local_shop_total ?? 0;
                                 $local_success = $local_shop_success ?? 0;
@@ -145,19 +137,19 @@
                     </tr>
 
                     {{-- Steadfast --}}
-                    <tr class="even:bg-slate-50">
-                        <td class="border border-slate-200 px-3 py-2">
+                    <tr class="transition-colors hover:bg-slate-50/80">
+                        <td class="px-4 py-3">
                             <i class="fas fa-truck text-primary"></i>
                             <strong>Steadfast</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">{{ $steadfast_total }}</td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-success">
+                        <td class="px-4 py-3 text-center tabular-nums">{{ $steadfast_total }}</td>
+                        <td class="px-4 py-3 text-center tabular-nums text-success">
                             <strong>{{ $steadfast_success }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-danger">
+                        <td class="px-4 py-3 text-center tabular-nums text-danger">
                             <strong>{{ $steadfast_cancel }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">
+                        <td class="px-4 py-3 text-center">
                             @php
                                 $steadfast_rate = $steadfast_total > 0 ? round(($steadfast_success / $steadfast_total) * 100, 1) : 0;
                             @endphp
@@ -168,19 +160,19 @@
                     </tr>
 
                     {{-- Pathao --}}
-                    <tr class="even:bg-slate-50">
-                        <td class="border border-slate-200 px-3 py-2">
+                    <tr class="transition-colors hover:bg-slate-50/80">
+                        <td class="px-4 py-3">
                             <i class="fas fa-truck text-info"></i>
                             <strong>Pathao</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">{{ $pathao_total }}</td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-success">
+                        <td class="px-4 py-3 text-center tabular-nums">{{ $pathao_total }}</td>
+                        <td class="px-4 py-3 text-center tabular-nums text-success">
                             <strong>{{ $pathao_success }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-danger">
+                        <td class="px-4 py-3 text-center tabular-nums text-danger">
                             <strong>{{ $pathao_cancel }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">
+                        <td class="px-4 py-3 text-center">
                             @php
                                 $pathao_rate = $pathao_total > 0 ? round(($pathao_success / $pathao_total) * 100, 1) : 0;
                             @endphp
@@ -191,19 +183,19 @@
                     </tr>
 
                     {{-- RedX --}}
-                    <tr class="even:bg-slate-50">
-                        <td class="border border-slate-200 px-3 py-2">
+                    <tr class="transition-colors hover:bg-slate-50/80">
+                        <td class="px-4 py-3">
                             <i class="fas fa-truck text-danger"></i>
                             <strong>RedX</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">{{ $redx_total }}</td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-success">
+                        <td class="px-4 py-3 text-center tabular-nums">{{ $redx_total }}</td>
+                        <td class="px-4 py-3 text-center tabular-nums text-success">
                             <strong>{{ $redx_success }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-danger">
+                        <td class="px-4 py-3 text-center tabular-nums text-danger">
                             <strong>{{ $redx_cancel }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">
+                        <td class="px-4 py-3 text-center">
                             @php
                                 $redx_rate = $redx_total > 0 ? round(($redx_success / $redx_total) * 100, 1) : 0;
                             @endphp
@@ -214,19 +206,19 @@
                     </tr>
 
                     {{-- Paperfly --}}
-                    <tr class="even:bg-slate-50">
-                        <td class="border border-slate-200 px-3 py-2">
+                    <tr class="transition-colors hover:bg-slate-50/80">
+                        <td class="px-4 py-3">
                             <i class="fas fa-truck text-success"></i>
                             <strong>Paperfly</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">{{ $paperfly_total }}</td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-success">
+                        <td class="px-4 py-3 text-center tabular-nums">{{ $paperfly_total }}</td>
+                        <td class="px-4 py-3 text-center tabular-nums text-success">
                             <strong>{{ $paperfly_success }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center text-danger">
+                        <td class="px-4 py-3 text-center tabular-nums text-danger">
                             <strong>{{ $paperfly_cancel }}</strong>
                         </td>
-                        <td class="border border-slate-200 px-3 py-2 text-center">
+                        <td class="px-4 py-3 text-center">
                             @php
                                 $paperfly_rate = $paperfly_total > 0 ? round(($paperfly_success / $paperfly_total) * 100, 1) : 0;
                             @endphp
@@ -236,13 +228,13 @@
                         </td>
                     </tr>
                 </tbody>
-                <tfoot class="bg-slate-50 font-semibold">
-                    <tr>
-                        <th class="border border-slate-200 px-3 py-2 text-left">Total</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center">{{ $total_parcel }}</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center text-success">{{ $total_success }}</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center text-danger">{{ $total_cancel }}</th>
-                        <th class="border border-slate-200 px-3 py-2 text-center">
+                <tfoot>
+                    <tr class="border-t border-slate-200 bg-slate-50/80 font-semibold">
+                        <th class="px-4 py-3 text-left">Total</th>
+                        <th class="px-4 py-3 text-center tabular-nums">{{ $total_parcel }}</th>
+                        <th class="px-4 py-3 text-center tabular-nums text-success">{{ $total_success }}</th>
+                        <th class="px-4 py-3 text-center tabular-nums text-danger">{{ $total_cancel }}</th>
+                        <th class="px-4 py-3 text-center">
                             <x-ui.badge variant="{{ $success_ratio >= 70 ? 'success' : ($success_ratio >= 50 ? 'warning' : 'danger') }}">
                                 {{ $success_ratio }}%
                             </x-ui.badge>
@@ -296,8 +288,8 @@
     </x-ui.card>
 </div>
 
-<div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-3 print:hidden">
-    <x-ui.button variant="secondary" data-dismiss="modal">
+<div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4 print:hidden">
+    <x-ui.button variant="outline" data-dismiss="modal">
         <i class="fas fa-times"></i> Close
     </x-ui.button>
     <x-ui.button variant="primary" onclick="window.print()">
