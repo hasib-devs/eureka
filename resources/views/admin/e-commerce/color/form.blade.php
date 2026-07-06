@@ -14,71 +14,83 @@
 @endpush
 
 @section('content')
-    {{-- Page header --}}
-    <div class="mb-4 flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-slate-800">
-            @isset($color)
-                Edit Color
-            @else
-                Add Color
-            @endisset
-        </h1>
-        <ol class="flex items-center gap-1 text-sm text-slate-500">
-            <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-            <li class="before:mr-1 before:content-['/']">
-                @isset($color)
-                    Edit Color
-                @else
-                    Add Color
-                @endisset
-            </li>
-        </ol>
-    </div>
 
-    {{-- Main content --}}
-    <div class="flex justify-center">
-        <div class="w-full max-w-2xl">
-            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                {{-- Card header --}}
-                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <h3 class="font-semibold text-slate-800">
-                        @isset($color)
-                            Edit Color
-                        @else
-                            Add New Color
-                        @endisset
-                    </h3>
-                    <x-ui.button variant="danger" :href="routeHelper('color')" size="sm">
-                        <i class="fas fa-long-arrow-alt-left"></i>
-                        Back to List
-                    </x-ui.button>
-                </div>
-
-                <form action="{{ isset($color) ? routeHelper('color/' . $color->id) : routeHelper('color') }}"
-                    method="POST">
-                    @csrf
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">
                     @isset($color)
-                        @method('PUT')
+                        Edit Color
+                    @else
+                        Add Color
                     @endisset
+                </h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    @isset($color)
+                        Update the details of this color
+                    @else
+                        Create a new color option for products
+                    @endisset
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <x-ui.button variant="outline" :href="routeHelper('color')">
+                    <i class="fas fa-long-arrow-alt-left text-xs"></i> Back to List
+                </x-ui.button>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ routeHelper('color') }}" class="transition-colors hover:text-primary">Colors</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">
+                        @isset($color)
+                            Edit
+                        @else
+                            Add
+                        @endisset
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </section>
 
-                    {{-- Card body --}}
-                    <div class="space-y-4 p-4">
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
+            <form action="{{ isset($color) ? routeHelper('color/' . $color->id) : routeHelper('color') }}"
+                method="POST">
+                @csrf
+                @isset($color)
+                    @method('PUT')
+                @endisset
+
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">Color details</h3>
+                            <p class="text-xs text-slate-500">Name, color code and description</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 p-5">
                         {{-- Name --}}
                         <div>
-                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name:</label>
+                            <label for="name" class="mb-1 block text-sm font-medium text-slate-700">Name</label>
                             <input type="text" name="name" id="name" placeholder="Write name"
-                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @else border-slate-300 @enderror"
+                                class="block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 @error('name') border-danger @else border-slate-300 @enderror"
                                 value="{{ $color->name ?? old('name') }}" required autocomplete="off">
                             @error('name')
                                 <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- Color picker --}}
+                        {{-- Color picker (bootstrap-colorpicker hooks #color) --}}
                         <div>
-                            <label for="color" class="block text-sm font-medium text-slate-700 mb-1">Choice Color:</label>
+                            <label for="color" class="mb-1 block text-sm font-medium text-slate-700">Choice Color</label>
                             <input type="text" name="color" id="color"
-                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('color') border-danger @else border-slate-300 @enderror"
+                                class="block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 @error('color') border-danger @else border-slate-300 @enderror"
                                 placeholder="Choice color to color picker" value="{{ $color->code ?? '' }}" required
                                 autocomplete="off">
                             @error('color')
@@ -88,10 +100,10 @@
 
                         {{-- Description --}}
                         <div>
-                            <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                            <label for="description" class="mb-1 block text-sm font-medium text-slate-700">Description</label>
                             <textarea name="description" id="description" cols="5" rows="4"
                                 placeholder="Write category description"
-                                class="block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('description') border-danger @else border-slate-300 @enderror">{{ $color->description ?? old('description') }}</textarea>
+                                class="block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 @error('description') border-danger @else border-slate-300 @enderror">{{ $color->description ?? old('description') }}</textarea>
                             @error('description')
                                 <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
@@ -99,20 +111,23 @@
 
                         {{-- Status toggle --}}
                         <div>
-                            <label class="inline-flex cursor-pointer items-center gap-2">
-                                <input type="checkbox" name="status" id="status"
-                                    class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
-                                    @isset($color) {{ $color->status ? 'checked' : '' }} @else checked @endisset>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="peer sr-only" name="status" id="status" @checked($color->status ?? true)>
+                                <label for="status"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
                                 <span class="text-sm font-medium text-slate-700">Status</span>
-                            </label>
+                            </div>
                             @error('status')
                                 <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    {{-- Card footer --}}
-                    <div class="border-t border-slate-200 px-4 py-3">
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4">
+                        <x-ui.button variant="outline" :href="routeHelper('color')">
+                            Cancel
+                        </x-ui.button>
                         <x-ui.button type="submit" variant="primary">
                             @isset($color)
                                 <i class="fas fa-arrow-circle-up"></i>
@@ -123,10 +138,10 @@
                             @endisset
                         </x-ui.button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
-    </div>
+    </section>
 @endsection
 
 @push('js')

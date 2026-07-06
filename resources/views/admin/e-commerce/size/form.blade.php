@@ -9,82 +9,97 @@
 @endsection
 
 @section('content')
-    <section class="mb-4">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-slate-800">
-                @isset($size)
-                    Edit Size
-                @else
-                    Add Size
-                @endisset
-            </h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li>/</li>
-                <li class="text-slate-700">
+
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">
                     @isset($size)
                         Edit Size
                     @else
                         Add Size
                     @endisset
-                </li>
-            </ol>
+                </h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    @isset($size)
+                        Update the details of this size
+                    @else
+                        Create a new size option for products
+                    @endisset
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <x-ui.button variant="outline" :href="routeHelper('size')">
+                    <i class="fas fa-long-arrow-alt-left text-xs"></i> Back to List
+                </x-ui.button>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ routeHelper('size') }}" class="transition-colors hover:text-primary">Sizes</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">
+                        @isset($size)
+                            Edit
+                        @else
+                            Add
+                        @endisset
+                    </li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    <section>
-        <div class="mx-auto max-w-2xl">
-            <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <h3 class="font-medium text-slate-900">
-                        @isset($size)
-                            Edit Size
-                        @else
-                            Add New Size
-                        @endisset
-                    </h3>
-                    <x-ui.button variant="danger" :href="routeHelper('size')">
-                        <i class="fas fa-long-arrow-alt-left"></i>
-                        Back to List
-                    </x-ui.button>
-                </div>
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
+            <form action="{{ isset($size) ? routeHelper('size/' . $size->id) : routeHelper('size') }}"
+                method="POST">
+                @csrf
+                @isset($size)
+                    @method('PUT')
+                @endisset
 
-                <form action="{{ isset($size) ? routeHelper('size/' . $size->id) : routeHelper('size') }}"
-                    method="POST">
-                    @csrf
-                    @isset($size)
-                        @method('PUT')
-                    @endisset
-
-                    <div class="p-4">
-                        <div class="mb-4">
-                            <x-ui.input
-                                name="name"
-                                label="Size Name:"
-                                placeholder="Write size name"
-                                :value="$size->name ?? old('name')"
-                                required
-                                autocomplete="off"
-                            />
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-ruler-combined"></i>
                         </div>
-
-                        <div class="mb-4">
-                            <x-ui.textarea name="description" label="Description:" :rows="5" placeholder="Write size description">{{ $size->description ?? old('description') }}</x-ui.textarea>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">Size details</h3>
+                            <p class="text-xs text-slate-500">Name, description and status</p>
                         </div>
+                    </div>
 
-                        <div class="mb-4">
-                            <label class="inline-flex cursor-pointer items-center gap-2">
-                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="status" id="status"
-                                    @isset($size) {{ $size->status ? 'checked' : '' }} @else checked @endisset>
+                    <div class="space-y-4 p-5">
+                        <x-ui.input
+                            name="name"
+                            label="Size Name"
+                            placeholder="Write size name"
+                            :value="$size->name ?? old('name')"
+                            required
+                            autocomplete="off"
+                        />
+
+                        <x-ui.textarea name="description" label="Description" :rows="5" placeholder="Write size description">{{ $size->description ?? old('description') }}</x-ui.textarea>
+
+                        {{-- Status toggle --}}
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="peer sr-only" name="status" id="status" @checked($size->status ?? true)>
+                                <label for="status"
+                                    class="relative inline-block h-6 w-11 cursor-pointer rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:bg-primary peer-checked:after:translate-x-5">
+                                </label>
                                 <span class="text-sm font-medium text-slate-700">Status</span>
-                            </label>
+                            </div>
                             @error('status')
                                 <p class="mt-1 text-sm text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="border-t border-slate-200 px-4 py-3">
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4">
+                        <x-ui.button variant="outline" :href="routeHelper('size')">
+                            Cancel
+                        </x-ui.button>
                         <x-ui.button type="submit" variant="primary">
                             @isset($size)
                                 <i class="fas fa-arrow-circle-up"></i>
@@ -95,8 +110,8 @@
                             @endisset
                         </x-ui.button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </section>
 @endsection
