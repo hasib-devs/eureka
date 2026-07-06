@@ -58,9 +58,9 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-group col-md-12 d-none" id="email_wrap">
-                                    <label for="email">Email Address <sup class="text-red-500">*</sup></label>
-                                    <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="text"  />
+                                <div class="form-group col-md-12" id="email_wrap">
+                                    <label for="email">ইমেইল <span class="text-slate-400">(ঐচ্ছিক)</span></label>
+                                    <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="email"  />
                                     @error('email')
                                         <small class="form-text text-danger">{{$message}}</small>
                                     @enderror
@@ -626,9 +626,8 @@
             });
 
 
-            // Email Off
+            // Email stays visible & optional; only drop the required flag when not needed
             function off_email(){
-                $('#email_wrap').addClass('d-none');
                 $('#email').removeAttr('required');
             }
             
@@ -682,33 +681,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('Incomplete lead JS loaded');
 
-    const nameInput  = document.getElementById('first_name');
-    const phoneInput = document.getElementById('phone');
-    const leadUrl    = document.getElementById('lead_store_url')?.value;
+    const nameInput    = document.getElementById('first_name');
+    const phoneInput   = document.getElementById('phone');
+    const emailInput   = document.getElementById('email');
+    const addressInput = document.getElementById('address');
+    const leadUrl      = document.getElementById('lead_store_url')?.value;
 
     if (!nameInput || !phoneInput || !leadUrl) {
         console.error('Incomplete lead elements missing');
         return;
     }
 
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
     let typingTimer;
     const delay = 800;
 
+    function collectFormData() {
+        return {
+            name: nameInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            email: emailInput?.value.trim() || '',
+            address: addressInput?.value.trim() || '',
+            page_type: 'buy_now',
+            id: document.querySelector('input[name="id"]')?.value || '',
+            qty: document.querySelector('input[name="qty"]')?.value || '',
+            dynamic_price: document.querySelector('input[name="dynamic_prices"]')?.value || '',
+            size: document.querySelector('input[name="size"]')?.value || '',
+            color: document.querySelector('input[name="color"]')?.value || ''
+        };
+    }
+
+    // Save when any one field is filled, even without submitting the form
+    function hasAnyData(d) {
+        return !!(d.name || d.phone || d.email || d.address);
+    }
+
     function saveIncompleteLead() {
-        console.log('Saving lead...', nameInput.value, phoneInput.value);
+        const formData = collectFormData();
+        if (!hasAnyData(formData)) return;
 
         fetch(leadUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document
-                    .querySelector('meta[name="csrf-token"]')
-                    .getAttribute('content')
+                'X-CSRF-TOKEN': csrfToken
             },
-            body: JSON.stringify({
-                name: nameInput.value,
-                phone: phoneInput.value
-            })
+            body: JSON.stringify(formData)
         })
         .then(res => res.json())
         .then(data => console.log('Saved:', data))
@@ -722,8 +741,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     nameInput.addEventListener('keyup', handleTyping);
     phoneInput.addEventListener('keyup', handleTyping);
+    if (emailInput) emailInput.addEventListener('keyup', handleTyping);
+    if (addressInput) addressInput.addEventListener('change', saveIncompleteLead);
 
-    window.addEventListener('beforeunload', saveIncompleteLead);
+    window.addEventListener('beforeunload', function () {
+        const formData = collectFormData();
+        if (!hasAnyData(formData)) return;
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', leadUrl, false);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+        try { xhr.send(JSON.stringify(formData)); } catch (e) {}
+    });
 });
 </script>
 
