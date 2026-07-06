@@ -366,12 +366,9 @@ details[open] summary::after {
     }
 
     .thumbnail-grid img,
-    .thumbnail-grid video {
+    .thumbnail-grid video,
+    .thumbnail-grid iframe {
         height: 150px;
-    }
-
-    .video-item {
-        height: 220px !important;
     }
 
     .specs-grid {
