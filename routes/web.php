@@ -21,6 +21,7 @@ use App\Http\Controllers\Frontend\AccountController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\CheckoutOtpController;
 use App\Http\Controllers\Frontend\wishlistController;
 use App\Http\Controllers\Frontend\IncompleteLeadController;
 use App\Http\Controllers\blogControler as ablogController;
@@ -135,6 +136,10 @@ Route::get('checkout', [CheckoutController::class, 'checkout'])->name('checkout'
 // Incomplete Lead Routes
 Route::post('/incomplete-lead/store', [IncompleteLeadController::class, 'store'])
     ->name('incomplete.lead.store');
+
+// Checkout Phone OTP Verification
+Route::post('checkout/send-otp', [CheckoutOtpController::class, 'sendOtp'])->name('checkout.otp.send');
+Route::post('checkout/verify-otp', [CheckoutOtpController::class, 'verifyOtp'])->name('checkout.otp.verify');
 
 Route::get('/render/superCat', [HomeController::class, 'superCat']);
 Route::get('/render/subCat', [HomeController::class, 'subCat']);
