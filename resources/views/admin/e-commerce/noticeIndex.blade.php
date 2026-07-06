@@ -1,126 +1,117 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Settings')
-
+@section('title', 'Notice & Header Code')
 
 @section('content')
 
-    {{-- Content Header --}}
-    <section class="mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold text-slate-800">Setting - <small class="text-base font-normal text-slate-500">Header</small></h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li class="before:content-['/'] before:mx-1">My Profile</li>
-            </ol>
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Notice &amp; Header Code</h1>
+                <p class="mt-1 text-sm text-slate-500">Manage the storefront notice bar and custom header HTML</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a target="_blank" href="https://getbootstrap.com/docs/4.5/components/alerts/"
+                    class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-400 hover:bg-slate-50 hover:shadow">
+                    <i class="fas fa-question-circle text-xs"></i> HTML Snippet Help
+                </a>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">Notice</li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    {{-- Main content --}}
-    <section>
-        <x-ui.card header="Application Settings">
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
+            <form action="{{ routeHelper('setting') }}" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="type" value="11">
 
-            <div class="flex justify-center">
-                <div class="w-full md:w-2/3 mx-auto">
+                <div class="space-y-4">
 
-                    {{-- Inner card: card-success → green header --}}
-                    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <div class="border-b border-slate-200 bg-success px-4 py-3 font-medium text-white">
-                            Setting - Custom Header Code
+                    {{-- Below Slider custom HTML --}}
+                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                            <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-semibold text-slate-900">Below Slider HTML Code</h3>
+                                <p class="text-xs text-slate-500">Custom HTML rendered right below the homepage slider</p>
+                            </div>
                         </div>
 
-                        {{-- Help link (sits between header and form in the original) --}}
-                        <div class="px-4 pt-3">
-                            <a target="_blank"
-                               class="inline-block rounded bg-yellow-400 px-2 py-1 text-sm font-medium text-slate-800 hover:bg-yellow-300"
-                               href="https://getbootstrap.com/docs/4.5/components/alerts/">
-                                Help for HTML snippet from Bootstrap V5.4.3
-                            </a>
+                        <div class="space-y-4 p-5">
+                            <div>
+                                <label for="BELOW_SLIDER_HTML_CODE_STATUS" class="mb-1 block text-sm font-medium text-slate-700">
+                                    Below Slider Custom HTML Code Status
+                                </label>
+                                <select name="BELOW_SLIDER_HTML_CODE_STATUS" id="BELOW_SLIDER_HTML_CODE_STATUS"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                    <option value="1" @selected($BELOW_SLIDER_HTML_CODE_STATUS->value == 1)>ON</option>
+                                    <option value="0" @selected($BELOW_SLIDER_HTML_CODE_STATUS->value != 1)>OFF</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="BELOW_SLIDER_HTML_CODE" class="mb-1 block text-sm font-medium text-slate-700">
+                                    Custom Html Code
+                                </label>
+                                <textarea name="BELOW_SLIDER_HTML_CODE" id="BELOW_SLIDER_HTML_CODE" rows="4"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">{{ $BELOW_SLIDER_HTML_CODE->value }}</textarea>
+                            </div>
                         </div>
-
-                        <form action="{{ routeHelper('setting') }}" method="POST">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="px-4 pb-4">
-
-                                {{-- Below Slider section --}}
-                                <div class="rounded border border-info py-2 px-4 mt-2 mb-4">
-                                    <div class="mb-4">
-                                        <label for="BELOW_SLIDER_HTML_CODE_STATUS"
-                                               class="block text-sm font-medium capitalize text-slate-700 mb-1">
-                                            Below Slider Custom HTML Code Status
-                                        </label>
-                                        <select name="BELOW_SLIDER_HTML_CODE_STATUS"
-                                                id="BELOW_SLIDER_HTML_CODE_STATUS"
-                                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
-                                            @if ($BELOW_SLIDER_HTML_CODE_STATUS->value == 1)
-                                                <option value="1">ON</option>
-                                                <option value="0">OFF</option>
-                                            @else
-                                                <option value="0">OFF</option>
-                                                <option value="1">ON</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="BELOW_SLIDER_HTML_CODE"
-                                               class="block text-sm font-medium capitalize text-slate-700 mb-1">
-                                            Custom Html Code
-                                        </label>
-                                        <textarea name="BELOW_SLIDER_HTML_CODE" id="BELOW_SLIDER_HTML_CODE" rows="4"
-                                                  class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">{{ $BELOW_SLIDER_HTML_CODE->value }}</textarea>
-                                    </div>
-                                </div>
-
-                                {{-- Notice section --}}
-                                <div class="rounded border border-info py-2 px-4 mt-2 mb-2">
-                                    <input type="hidden" name="type" value="11">
-                                    <div class="mb-4">
-                                        <label for="NOTICE_STATUS"
-                                               class="block text-sm font-medium capitalize text-slate-700 mb-1">
-                                            NOTICE STATUS
-                                        </label>
-                                        <select name="NOTICE_STATUS" id="NOTICE_STATUS"
-                                                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">
-                                            @if ($NOTICE_STATUS->value == 1)
-                                                <option value="1">ON</option>
-                                                <option value="0">OFF</option>
-                                            @else
-                                                <option value="0">OFF</option>
-                                                <option value="1">ON</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="CUSTOM_NOTICE"
-                                               class="block text-sm font-medium capitalize text-slate-700 mb-1">
-                                            CUSTOM NOTICE
-                                        </label>
-                                        <span class="inline-block rounded bg-yellow-400 px-1 py-0.5 text-xs text-slate-800 mb-1">It's under container of bootstrap</span>
-                                        <textarea name="CUSTOM_NOTICE" id="CUSTOM_NOTICE" rows="4"
-                                                  class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary">{{ $CUSTOM_NOTICE->value }}</textarea>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            {{-- Card footer: submit button inside form --}}
-                            <div class="border-t border-slate-200 px-4 py-3">
-                                <x-ui.button type="submit" variant="success">
-                                    <i class="fas fa-arrow-circle-up"></i>
-                                    Update
-                                </x-ui.button>
-                            </div>
-
-                        </form>
                     </div>
-                    {{-- /.inner card --}}
+
+                    {{-- Notice bar --}}
+                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                            <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-semibold text-slate-900">Notice</h3>
+                                <p class="text-xs text-slate-500">Announcement shown at the top of the storefront</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 p-5">
+                            <div>
+                                <label for="NOTICE_STATUS" class="mb-1 block text-sm font-medium text-slate-700">
+                                    Notice Status
+                                </label>
+                                <select name="NOTICE_STATUS" id="NOTICE_STATUS"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                    <option value="1" @selected($NOTICE_STATUS->value == 1)>ON</option>
+                                    <option value="0" @selected($NOTICE_STATUS->value != 1)>OFF</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="CUSTOM_NOTICE" class="mb-1 block text-sm font-medium text-slate-700">
+                                    Custom Notice
+                                </label>
+                                <p class="mb-1 text-xs text-slate-500">Rendered inside the storefront container</p>
+                                <textarea name="CUSTOM_NOTICE" id="CUSTOM_NOTICE" rows="4"
+                                    class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">{{ $CUSTOM_NOTICE->value }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4">
+                            <x-ui.button type="submit" variant="primary">
+                                <i class="fas fa-arrow-circle-up"></i>
+                                Update
+                            </x-ui.button>
+                        </div>
+                    </div>
 
                 </div>
-            </div>
-
-        </x-ui.card>
+            </form>
+        </div>
     </section>
 
 @endsection

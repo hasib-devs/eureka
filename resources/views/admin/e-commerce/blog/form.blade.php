@@ -9,8 +9,6 @@
 @endsection
 
 @push('css')
-    <link rel="stylesheet" href="/assets/plugins/select2/css/select2.min.css">
-    <link rel="stylesheet" href="/assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <link rel="stylesheet" href="/assets/plugins/summernote/summernote-bs4.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css"
         integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog=="
@@ -19,124 +17,151 @@
         .dropify-wrapper .dropify-message p {
             font-size: initial;
         }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            display: none !important
-        }
     </style>
 @endpush
 
 @section('content')
-    {{-- Page header --}}
-    <section class="mb-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold text-slate-800">
-                @isset($blog)
-                    Edit blog
-                @else
-                    Add blog
-                @endisset
-            </h1>
-            <ol class="flex items-center gap-1 text-sm text-slate-500">
-                <li><a href="{{ routeHelper('dashboard') }}" class="hover:text-primary">Home</a></li>
-                <li class="before:content-['/'] before:mx-1">
+
+    <section class="mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">
                     @isset($blog)
-                        Edit blog
+                        Edit Blog
                     @else
-                        Add blog
+                        Add Blog
                     @endisset
-                </li>
-            </ol>
+                </h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    @isset($blog)
+                        Update the details of this blog post
+                    @else
+                        Write a new blog post for your store
+                    @endisset
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <x-ui.button variant="outline" :href="routeHelper('blogs')">
+                    <i class="fas fa-long-arrow-alt-left text-xs"></i> Back to List
+                </x-ui.button>
+                <ol class="flex items-center gap-1 text-sm text-slate-400">
+                    <li><a href="{{ routeHelper('dashboard') }}" class="transition-colors hover:text-primary">Home</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li><a href="{{ routeHelper('blogs') }}" class="transition-colors hover:text-primary">Blogs</a></li>
+                    <li><i class="fas fa-chevron-right text-[9px]"></i></li>
+                    <li class="font-medium text-slate-600">
+                        @isset($blog)
+                            Edit
+                        @else
+                            Add
+                        @endisset
+                    </li>
+                </ol>
+            </div>
         </div>
     </section>
 
-    {{-- Main content --}}
-    <section>
-        <x-ui.card>
-            <x-slot:header>
-                @isset($blog)
-                    Edit blog Details
-                @else
-                    Add New Campaign
-                @endisset
-            </x-slot:header>
-
+    <section class="mb-6">
+        <div class="mx-auto w-full max-w-3xl">
             <form action="{{ isset($blog) ? route('admin.update_exit_blog') : route('admin.create_blog') }}"
                 method="POST" enctype="multipart/form-data">
-
                 @csrf
                 @if (isset($blog))
-                    <input type="hidden" value="{{ $blog->id }}" name="power" id="">
+                    <input type="hidden" value="{{ $blog->id }}" name="power">
                 @endif
 
-                {{-- Title --}}
-                <div class="mb-4">
-                    <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Title:</label>
-                    <input type="text" name="title" id="title" placeholder="Write blog Title"
-                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary @error('name') border-danger @enderror"
-                        value="{{ $blog->title ?? old('name') }}" required autocomplete="off">
-                    @error('name')
-                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                    @enderror
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+                        <div class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">
+                                @isset($blog)
+                                    Edit Blog Details
+                                @else
+                                    Add New Blog
+                                @endisset
+                            </h3>
+                            <p class="text-xs text-slate-500">Title, thumbnail, category and content</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 p-5">
+                        {{-- Title --}}
+                        <x-ui.input
+                            name="title"
+                            label="Title"
+                            type="text"
+                            placeholder="Write blog Title"
+                            :value="$blog->title ?? old('title')"
+                            required
+                            autocomplete="off"
+                        />
+
+                        {{-- Thumbnail (Dropify — keep raw input, JS hooks preserved) --}}
+                        <div>
+                            <label for="thumbnail" class="mb-1 block text-sm font-medium text-slate-700">Thumbnail</label>
+                            <input type="file" name="thumbnail" id="thumbnail" accept="image/*"
+                                class="block w-full @error('thumbnail') border border-danger rounded-lg @enderror"
+                                @isset($blog) data-default-file="{{ asset('uploads/blogs/' . $blog->thumbnail) }}" @endisset>
+                            @error('thumbnail')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Category --}}
+                        <x-ui.select name="category" label="Category">
+                            <option>Select One</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" @selected(isset($blog) && $blog->category_id == $category->id)>{{ $category->name }}</option>
+                            @endforeach
+                        </x-ui.select>
+
+                        {{-- Description (Summernote — keep raw textarea, JS hooks preserved) --}}
+                        <div>
+                            <label for="descripiton" class="mb-1 block text-sm font-medium text-slate-700">Description</label>
+                            <textarea name="descripiton" id="descripiton" rows="5"
+                                placeholder="Write blog description"
+                                class="block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 @error('descripiton') border-danger @else border-slate-300 @enderror"
+                                required>{{ $blog->description ?? old('descripiton') }}</textarea>
+                            @error('descripiton')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Status toggle --}}
+                        <div>
+                            <label class="inline-flex cursor-pointer items-center gap-3">
+                                <input type="checkbox" class="peer sr-only" name="status" id="status" @checked($blog->status ?? true)>
+                                <div class="peer relative h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:shadow after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-5 peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50"></div>
+                                <span class="text-sm font-medium text-slate-700">Status</span>
+                            </label>
+                            @error('status')
+                                <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-4 py-4">
+                        <x-ui.button variant="outline" :href="routeHelper('blogs')">
+                            Cancel
+                        </x-ui.button>
+                        <x-ui.button type="submit" variant="primary">
+                            @isset($blog)
+                                <i class="fas fa-arrow-circle-up"></i>
+                                Update
+                            @else
+                                <i class="fas fa-plus-circle"></i>
+                                Submit
+                            @endisset
+                        </x-ui.button>
+                    </div>
                 </div>
-
-                {{-- Thumbnail --}}
-                <div class="mb-4">
-                    <label for="thumbnail" class="block text-sm font-medium text-slate-700 mb-1">Thumbnail:</label>
-                    <input type="file" name="thumbnail" id="thumbnail" accept="image/*"
-                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm @error('thumbnail') border-danger @enderror"
-                        data-default-file="@isset($blog) {{ asset('/') }}/uploads/blogs/{{ $blog->thumbnail }}@enderror">
-                    @error('thumbnail')
-                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Category --}}
-                <x-ui.select name="category" label="Category">
-                    <option>Select One</option>
-                    @foreach ($categories as $category)
-                        <option ___inline_directive_________________________________________________________________________2___ value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </x-ui.select>
-
-                {{-- Description --}}
-                <div class="mb-4">
-                    <label for="descripiton" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
-                    <textarea name="descripiton" id="descripiton" rows="5"
-                        placeholder="Write product short description"
-                        class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-primary focus:ring-1 focus:ring-primary ___inline_directive___________________3___"
-                        required>{{ $blog->description ?? old('descripiton') }}</textarea>
-                    @error('descripiton')
-                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Status toggle --}}
-                <div class="mb-4">
-                    <label class="inline-flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" class="custom-control-input" name="status" id="status" ___inline_directive________________________________________________________________________4___>
-                        <span class="text-sm font-medium text-slate-700">Status</span>
-                    </label>
-                    @error('status')
-                        <p class="text-sm text-danger mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="border-t border-slate-200 px-4 py-3 -mx-4 -mb-4 mt-4">
-                    <x-ui.button type="submit" variant="primary">
-                        @isset($blog)
-                            <i class="fas fa-arrow-circle-up"></i>
-                            Update
-                        @else
-                            <i class="fas fa-plus-circle"></i>
-                            Submit
-                        @endisset
-                    </x-ui.button>
-                </div>
-
             </form>
-        </x-ui.card>
+        </div>
     </section>
+
 @endsection
 
 @push('js')
