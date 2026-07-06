@@ -38,10 +38,4 @@
     @if ($icon)
         <i class="{{ $icon }} pointer-events-none absolute right-3 top-3 text-5xl text-white/30 transition-transform duration-200 group-hover:scale-110"></i>
     @endif
-
-    @if ($isLink)
-        <span class="relative z-10 flex items-center justify-end gap-1 bg-black/10 px-4 py-1.5 text-xs font-medium text-white/90 transition-colors group-hover:bg-black/20">
-            View details <i class="fas fa-arrow-right transition-transform duration-200 group-hover:translate-x-0.5"></i>
-        </span>
-    @endif
 </div>

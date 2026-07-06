@@ -16,13 +16,14 @@ it('renders the danger variant color', function () {
     expect($html)->toContain('bg-tile-danger');
 });
 
-it('makes the whole tile a drill-down link with a View details affordance when href is given', function () {
+it('makes the whole tile a drill-down link when href is given (no visible footer text)', function () {
     $html = Blade::render('<x-ui.stat-tile variant="success" :value="30" label="Orders" icon="fas fa-cart" href="/vendor/order" />');
 
-    // The entire tile is now the clickable link (replaces the old redundant "More info" footer).
+    // The entire tile is the clickable link via a stretched-link overlay; there is no
+    // "View details" footer text.
     expect($html)->toContain('href="/vendor/order"')
-        ->toContain('View details')
-        ->toContain('<a');
+        ->toContain('<a')
+        ->not->toContain('View details');
 });
 
 it('renders a plain non-link tile when no href is given', function () {
