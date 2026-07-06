@@ -170,9 +170,7 @@
 
                 /* small UX touches */
                 .nav-categories>li:focus-within {
-                    outline: 2px solid var(--menu-accent);
-                    outline-offset: 2px;
-                    border-radius: 6px;
+                    outline: none;
                 }
 
                 /* Add subtle separator */
