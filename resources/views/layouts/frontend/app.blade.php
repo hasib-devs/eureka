@@ -364,6 +364,25 @@
                 if (res && res.count !== undefined) window.updateCartCount(res.count);
             });
         }
+
+        // Same net for fetch()-based pages (shop, category, filter, product page…):
+        // any successful add-to-cart response refreshes the badges immediately.
+        (function () {
+            var origFetch = window.fetch;
+            window.fetch = function () {
+                var input = arguments[0];
+                var url = typeof input === 'string' ? input : (input && input.url) || '';
+                var promise = origFetch.apply(window, arguments);
+                if (url.indexOf('add/cart') !== -1) {
+                    promise.then(function (response) {
+                        response.clone().json().then(function (data) {
+                            if (data && data.count !== undefined) window.updateCartCount(data.count);
+                        }).catch(function () {});
+                    }).catch(function () {});
+                }
+                return promise;
+            };
+        })();
     </script>
 
     @include('layouts.frontend.partials.mobile-sidebar')
