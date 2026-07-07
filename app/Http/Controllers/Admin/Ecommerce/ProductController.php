@@ -444,6 +444,7 @@ class ProductController extends Controller
             'image'             => $imageName,
             'status'            => $request->filled('status'),
             'is_aproved'        => $request->filled('status'),
+            'is_shown_on_homepage' => $request->filled('is_shown_on_homepage'),
             'type'              => $typen,
             'shipping_charge'   => $request->shipping_charge,
         ]);
@@ -732,6 +733,7 @@ if ($request->hasFile('images')) {
             'image'             => $imageName,
             'status'            => $request->filled('status'),
             'is_aproved'        => $request->filled('status'),
+            'is_shown_on_homepage' => $request->filled('is_shown_on_homepage'),
             'shipping_charge'   => $request->shipping_charge,
         ]);
 

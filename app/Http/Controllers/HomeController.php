@@ -17,7 +17,6 @@ use App\Models\Slider;
 use App\Models\Unproduct;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class HomeController extends Controller
@@ -64,8 +63,7 @@ class HomeController extends Controller
         $campaigns_product = Campaign::where('status', 1)->where('is_flash', '1')->get();
         $i = 1;
 
-        $productIds = DB::table('category_product')->where('category_id', '!=', ['13', '9'])->take(12)->get()->pluck('product_id');
-        $products = Product::with(['reviews', 'brand', 'colors', 'categories'])->whereIn('id', $productIds)->where('status', true)->latest('id')->take(12)->get();
+        $products = Product::with(['reviews', 'brand', 'colors', 'categories'])->where('is_shown_on_homepage', true)->where('status', true)->latest('id')->take(12)->get();
         $randomProducts = Product::with(['brand', 'reviews'])->where('status', true)->where('reach', '>', '0')->orderBy('reach', 'DESC')->take('6')->get();
 
         $unproducts = Unproduct::where('status', 1)->inRandomOrder()->take(6)->get();
@@ -73,7 +71,6 @@ class HomeController extends Controller
         $collections = Collection::where('status', true)->latest('id')->get();
 
         // Hridoy
-        $homepage_category_products = Category::with(['products.brand', 'products.reviews', 'products.colors'])->has('products')->where('is_shown_on_homepage', true)->where('status', true)->take(12)->get();
         $video = HomepageVideo::where('status', 1)->latest()->first();
 
         // var_dump($productIds); var_dump($products);var_dump($randomProducts);var_dump($unproducts); exit();
@@ -88,8 +85,6 @@ class HomeController extends Controller
             'video',
             'randomProducts',
             'campaigns_product',
-
-            'homepage_category_products',
             'banners', // Pass banners
             'popBanner', // Pass popup banner
             'pop' // Pass popup slider
