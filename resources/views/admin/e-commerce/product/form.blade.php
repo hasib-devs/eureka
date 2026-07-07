@@ -238,6 +238,18 @@
                             placeholder="Bulb, voltage, frame, cord — the technical accordion content"
                             class="{{ $control }} border-slate-300 summernote">{{ old('full_description', $product->full_description ?? '') }}</textarea>
                     </div>
+                    <div>
+                        <label for="shipping_concierge" class="{{ $label }}">Shipping &amp; Concierge</label>
+                        <textarea name="shipping_concierge" id="shipping_concierge" rows="4"
+                            placeholder="Delivery, packaging and concierge details — leave blank to use the global default"
+                            class="{{ $control }} border-slate-300 summernote">{{ old('shipping_concierge', $product->shipping_concierge ?? '') }}</textarea>
+                    </div>
+                    <div>
+                        <label for="warranty_returns" class="{{ $label }}">Warranty &amp; Returns</label>
+                        <textarea name="warranty_returns" id="warranty_returns" rows="4"
+                            placeholder="Warranty terms and return policy — leave blank to use the global default"
+                            class="{{ $control }} border-slate-300 summernote">{{ old('warranty_returns', $product->warranty_returns ?? '') }}</textarea>
+                    </div>
                 </div>
             </div>
 

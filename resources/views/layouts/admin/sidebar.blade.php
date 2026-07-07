@@ -87,6 +87,14 @@
                             onclick="window.location='{{ url('admin/product') }}'">
                             <i class="bx bx-package"></i> Products
                         </li>
+                        <li class="{{ $navActive('admin/variable-products*') }}"
+                            onclick="window.location='{{ url('admin/variable-products') }}'">
+                            <i class="bx bx-layer"></i> Variable Products
+                        </li>
+                        <li class="{{ $navActive('admin/related-products*') }}"
+                            onclick="window.location='{{ url('admin/related-products') }}'">
+                            <i class="bx bx-link"></i> Related Products
+                        </li>
                         <li class="{{ $navActive('admin/classic*') }}"
                             onclick="window.location='{{ url('admin/classic/list') }}'">
                             <i class="bx bx-star"></i> Classic Products

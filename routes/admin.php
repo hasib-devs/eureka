@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\Ecommerce\HomepageVideoController;
 use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
 use App\Http\Controllers\Admin\Ecommerce\OrderController;
 use App\Http\Controllers\Admin\Ecommerce\ProductController;
+use App\Http\Controllers\Admin\Ecommerce\RelatedProductController;
+use App\Http\Controllers\Admin\Ecommerce\VariableProductController;
 use App\Http\Controllers\Admin\Ecommerce\ProfileController;
 use App\Http\Controllers\Admin\Ecommerce\SettingController;
 use App\Http\Controllers\Admin\Ecommerce\SizeController;
@@ -164,6 +166,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('classic/{ads}/edit', [ClassicController::class, 'editC'])->name('ads.edit');
     Route::Post('/ads/create', [ClassicController::class, 'storeC'])->name('product.clasified.create');
     Route::Post('/ads/update', [ClassicController::class, 'update'])->name('product.clasified.update');
+
+    Route::get('related-products', [RelatedProductController::class, 'index'])->name('related.products.index');
+    Route::post('related-products', [RelatedProductController::class, 'update'])->name('related.products.update');
+
+    Route::resource('variable-products', VariableProductController::class)->except(['show']);
 
     Route::resource('product', ProductController::class);
 

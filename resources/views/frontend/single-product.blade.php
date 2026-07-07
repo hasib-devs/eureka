@@ -6,6 +6,28 @@
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->short_description ?? $product->full_description ?? $product->title), 150) }}">
 @endpush
 
+@push('css')
+    {{-- Related Products slider — mirrors the homepage "Cozy Lighting" section.
+         Scoped so it can never touch the rest of the product page. --}}
+    <style>
+        .related-products-section { width: 100%; background: #fff; padding: 0 0 66px; }
+        .related-products-section .lux-shop-header { padding: 72px 20px 52px; text-align: center; background: #fff; }
+        .related-products-section .lux-shop-header p { margin: 0 0 18px; color: #707070; font-size: 12px; letter-spacing: 7px; font-weight: 400; }
+        .related-products-section .lux-shop-header h1 {
+            margin: 0; color: #111; font-family: 'Cinzel Decorative', Georgia, serif;
+            font-size: 52px; font-weight: 700; line-height: 1; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .related-products-section .product-slider .slick-slide { padding: 0 10px; }
+        .related-products-section .product-slider .slick-list { margin: 0 -10px; }
+        @media (max-width: 768px) {
+            .related-products-section .lux-shop-header { padding: 50px 16px 38px; }
+            .related-products-section .lux-shop-header p { font-size: 11px; letter-spacing: 4px; }
+            .related-products-section .lux-shop-header h1 { font-size: 34px; }
+            .related-products-section { padding: 0 20px 50px; }
+        }
+    </style>
+@endpush
+
 @php
     use App\Http\Controllers\Frontend\ProductReviewController;
 
@@ -28,11 +50,22 @@
     $inStock = ($product->quantity ?? 0) > 0;
 
     // Colors: name + hex from color_product; glow ring uses the hex with alpha.
+    // For variable products each colour also carries its own image/price/stock.
     $swatches = collect($colors_product ?? [])->map(fn ($c) => [
         'slug' => $c->slug ?? $c->name,
         'name' => $c->name,
         'code' => $c->code ?? '#dddddd',
+        'img' => ! empty($c->image) ? asset('uploads/product/' . $c->image) : null,
+        'price' => isset($c->price) ? (float) $c->price : null,
+        'qty' => isset($c->qnty) ? (int) $c->qnty : null,
     ])->values();
+
+    $isVariable = (bool) ($product->is_variable ?? false);
+    // Variable products: the main image defaults to the first colour's image.
+    $firstSwatch = $swatches->first();
+    if ($isVariable && ! empty($firstSwatch['img'])) {
+        $mainImage = $firstSwatch['img'];
+    }
 
     // Reviews shaped for the client-side list (filter/sort/load-more).
     $reviewsData = $product->reviews->sortByDesc('created_at')->map(
@@ -53,8 +86,9 @@
     $titleLine1 = implode(' ', array_slice($titleWords, 0, $titleSplitAt));
     $titleLine2 = implode(' ', array_slice($titleWords, $titleSplitAt));
 
-    $shippingText = setting('PRODUCT_SHIPPING_TEXT');
-    $warrantyText = setting('PRODUCT_WARRANTY_TEXT');
+    // Per-product content wins; fall back to the global setting so existing products keep their text.
+    $shippingText = filled($product->shipping_concierge) ? $product->shipping_concierge : setting('PRODUCT_SHIPPING_TEXT');
+    $warrantyText = filled($product->warranty_returns) ? $product->warranty_returns : setting('PRODUCT_WARRANTY_TEXT');
     $specs = $product->specs;
 @endphp
 
@@ -448,14 +482,26 @@ body {
             <img id="featuredImg" src="{{ $mainImage }}" alt="{{ $product->title }}">
         </div>
         <div class="thumbnail-grid" id="thumbGrid">
-            <div class="thumb-box active" onclick="setFeatured(this, '{{ $mainImage }}')">
-                <img src="{{ $mainImage }}" alt="{{ $product->title }}">
-            </div>
-            @foreach ($galleryImages as $key => $image)
-                <div class="thumb-box" onclick="setFeatured(this, '{{ $image }}')">
-                    <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}">
+            @if ($isVariable)
+                {{-- Variable product: one thumbnail per colour; clicking it selects that colour. --}}
+                @foreach ($swatches as $key => $swatch)
+                    @if (!empty($swatch['img']))
+                        <div class="thumb-box {{ $key === 0 ? 'active' : '' }}" data-color="{{ $swatch['slug'] }}"
+                            onclick="selectColorBySlug('{{ $swatch['slug'] }}')">
+                            <img src="{{ $swatch['img'] }}" alt="{{ $product->title }} — {{ $swatch['name'] }}">
+                        </div>
+                    @endif
+                @endforeach
+            @else
+                <div class="thumb-box active" onclick="setFeatured(this, '{{ $mainImage }}')">
+                    <img src="{{ $mainImage }}" alt="{{ $product->title }}">
                 </div>
-            @endforeach
+                @foreach ($galleryImages as $key => $image)
+                    <div class="thumb-box" onclick="setFeatured(this, '{{ $image }}')">
+                        <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}">
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
 
@@ -468,15 +514,15 @@ body {
             <span id="headerRatingText">({{ $reviewsData->count() }} signatures)</span>
         </div>
 
-        <div class="price-tag">
+        <div class="price-tag" id="priceTag">
             @if ($product->discount_price)
                 <del>{{ $currency }} {{ number_format((float) $product->regular_price) }}</del>
             @endif
-            {{ $currency }} {{ number_format((float) $finalPrice) }}
+            {{ $currency }} <span data-price-value>{{ number_format((float) $finalPrice) }}</span>
         </div>
-        <div class="stock-note {{ $inStock ? 'in' : 'out' }}">
+        <div class="stock-note {{ $inStock ? 'in' : 'out' }}" id="stockNote">
             <span class="stock-dot"></span>
-            {{ $inStock ? 'In stock' : 'Out of stock' }}@if($inStock)<span class="stock-detail"> — ready to ship across {{ setting('COUNTRY_SERVE') ?? 'Bangladesh' }}.</span>@endif
+            <span id="stockLabel">{{ $inStock ? 'In stock' : 'Out of stock' }}</span>@if($inStock)<span class="stock-detail"> — ready to ship across {{ setting('COUNTRY_SERVE') ?? 'Bangladesh' }}.</span>@endif
         </div>
 
         @if (count($specs))
@@ -497,6 +543,7 @@ body {
                     @foreach ($swatches as $key => $swatch)
                         <div class="swatch-wrapper {{ $key === 0 ? 'active' : '' }}"
                             data-color="{{ $swatch['slug'] }}" data-name="{{ $swatch['name'] }}" data-code="{{ $swatch['code'] }}"
+                            data-img="{{ $swatch['img'] }}" data-price="{{ $swatch['price'] }}" data-qty="{{ $swatch['qty'] }}"
                             onclick="selectSwatch(this)">
                             <div class="color-swatch" style="background: {{ $swatch['code'] }}"></div>
                             <span class="swatch-name">{{ $swatch['name'] }}</span>
@@ -656,6 +703,23 @@ body {
     </div>
 </div>
 
+{{-- ===== RELATED PRODUCTS ===== --}}
+@if (isset($relatedProducts) && $relatedProducts->isNotEmpty())
+    <section class="related-products-section">
+        <div class="lux-shop-header">
+            <p>You May Also Love</p>
+            <h1>Related Products</h1>
+        </div>
+        <div class="px-4">
+            <div class="product-slider related-product-slider">
+                @foreach ($relatedProducts as $related)
+                    <x-lux-product-card :product="$related" />
+                @endforeach
+            </div>
+        </div>
+    </section>
+@endif
+
 {{-- ===== WRITE REVIEW MODAL ===== --}}
 <div class="modal-overlay" id="reviewModalOverlay">
     <div class="review-modal">
@@ -723,6 +787,10 @@ const UNIT_PRICE = {{ (float) $finalPrice }};
 const GIFT_WRAP_FEE = {{ (float) $giftWrapFee }};
 const CURRENCY = @json($currency);
 const MAX_QTY = {{ max(1, (int) ($product->quantity ?? 1)) }};
+const IS_VARIABLE = {{ $isVariable ? 'true' : 'false' }};
+// Live values — for variable products these follow the selected colour.
+let unitPrice = UNIT_PRICE;
+let currentMaxQty = MAX_QTY;
 const ADD_CART_URL = '{{ route('add.cart') }}';
 const BUY_NOW_URL = '{{ route('buy.product') }}';
 const REVIEW_STORE_URL = '{{ route('product.review.store', $product->id) }}';
@@ -731,11 +799,31 @@ let reviews = @json($reviewsData);
 const lifestyleImages = @json($lifestyleImages->pluck('url'));
 
 /* ---------- Gallery ---------- */
+// The image the stage rests on (set by thumbnail clicks, and by colour
+// swatches on variable products). Hover peeks the next image, then reverts here.
+let currentFeaturedSrc = document.getElementById('featuredImg').src;
 function setFeatured(el, src) {
     document.querySelectorAll('.thumb-box').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
+    currentFeaturedSrc = src;
     document.getElementById('featuredImg').src = src;
 }
+
+/* Hover the main image to instantly peek the next photo; leave to restore. */
+(function () {
+    const stage = document.getElementById('featuredStage');
+    const featured = document.getElementById('featuredImg');
+    if (!stage || !featured) return;
+    const srcList = Array.from(document.querySelectorAll('#thumbGrid .thumb-box img')).map(i => i.src);
+    if (srcList.length < 2) return;
+    stage.addEventListener('mouseenter', function () {
+        const idx = srcList.indexOf(currentFeaturedSrc);
+        featured.src = idx === -1 ? srcList[0] : srcList[(idx + 1) % srcList.length];
+    });
+    stage.addEventListener('mouseleave', function () {
+        featured.src = currentFeaturedSrc;
+    });
+})();
 
 /* ---------- Color swatches + glow ---------- */
 let selectedColor = @json($swatches->first()['slug'] ?? 'blank');
@@ -755,6 +843,61 @@ function selectSwatch(el) {
     if (name) name.textContent = el.dataset.name;
     const stage = document.getElementById('featuredStage');
     if (stage) stage.style.boxShadow = '0 0 0 4px #fff, 0 0 30px 6px ' + hexToGlow(el.dataset.code);
+
+    // Variable products: the colour also drives the image, price and stock.
+    if (IS_VARIABLE) applyVariation(el);
+}
+
+// Clicking a variable product's thumbnail selects the matching colour swatch.
+function selectColorBySlug(slug) {
+    const sw = document.querySelector('.swatch-wrapper[data-color="' + slug + '"]');
+    if (sw) selectSwatch(sw);
+}
+
+// Switch the main image / price / stock to the chosen colour (variable only).
+function applyVariation(el) {
+    const img = el.dataset.img;
+    if (img) {
+        currentFeaturedSrc = img;
+        const f = document.getElementById('featuredImg');
+        if (f) f.src = img;
+        document.querySelectorAll('#thumbGrid .thumb-box').forEach(t =>
+            t.classList.toggle('active', t.dataset.color === selectedColor));
+    }
+
+    const price = parseFloat(el.dataset.price);
+    if (!isNaN(price)) {
+        unitPrice = price;
+        document.querySelectorAll('[data-unit], [data-price-value]').forEach(s => s.textContent = formatMoney(price));
+    }
+
+    const qty = parseInt(el.dataset.qty, 10);
+    if (!isNaN(qty)) {
+        currentMaxQty = qty;
+        const qtyEl = document.getElementById('qtyVal');
+        let cur = parseInt(qtyEl.textContent, 10) || 1;
+        if (cur > qty) { qtyEl.textContent = Math.max(1, qty); }
+        updateStockUi(qty);
+    }
+
+    updateOrderSummary();
+}
+
+function updateStockUi(qty) {
+    const inStock = qty > 0;
+    const note = document.getElementById('stockNote');
+    if (note) {
+        note.classList.toggle('in', inStock);
+        note.classList.toggle('out', !inStock);
+        const label = document.getElementById('stockLabel');
+        if (label) label.textContent = inStock ? 'In stock' : 'Out of stock';
+        const detail = note.querySelector('.stock-detail');
+        if (detail) detail.style.display = inStock ? '' : 'none';
+    }
+    const addBtn = document.getElementById('addToCartBtn');
+    const buyBtn = document.getElementById('buyNowBtn');
+    if (addBtn) addBtn.disabled = !inStock;
+    if (buyBtn) buyBtn.disabled = !inStock;
 }
 
 /* ---------- Qty + gift wrap + live summary ---------- */
@@ -762,8 +905,8 @@ let giftWrapOn = false;
 function stepQty(delta) {
     const el = document.getElementById('qtyVal');
     let v = parseInt(el.textContent) + delta;
+    if (v > currentMaxQty) v = currentMaxQty;
     if (v < 1) v = 1;
-    if (v > MAX_QTY) v = MAX_QTY;
     el.textContent = v;
     updateOrderSummary();
 }
@@ -775,7 +918,7 @@ function toggleGiftWrap() {
 function formatMoney(n) { return n.toLocaleString('en-IN'); }
 function updateOrderSummary() {
     const qty = parseInt(document.getElementById('qtyVal').textContent) || 1;
-    const total = UNIT_PRICE * qty + (giftWrapOn ? GIFT_WRAP_FEE : 0);
+    const total = unitPrice * qty + (giftWrapOn ? GIFT_WRAP_FEE : 0);
     document.getElementById('sumQty').textContent = '× ' + qty;
     document.getElementById('sumGiftRow').style.display = giftWrapOn ? 'flex' : 'none';
     document.getElementById('sumTotal').textContent = CURRENCY + ' ' + formatMoney(total);
@@ -1142,3 +1285,31 @@ if (defaultSwatch) selectSwatch(defaultSwatch);
 </script>
 
 @endsection
+
+@push('js')
+    {{-- Related Products carousel — same Slick config as the homepage "Cozy Lighting" row.
+         Runs from the 'js' stack, which loads after jQuery + slick.js. --}}
+    <script>
+        $(document).ready(function () {
+            if ($('.related-product-slider').length) {
+                $('.related-product-slider').slick({
+                    slidesToShow: 4,
+                    slidesToScroll: 1,
+                    rows: 1,
+                    autoplay: true,
+                    autoplaySpeed: 2500,
+                    arrows: true,
+                    dots: false,
+                    speed: 600,
+                    infinite: true,
+                    cssEase: 'ease-in-out',
+                    responsive: [
+                        { breakpoint: 1200, settings: { slidesToShow: 4, rows: 1 } },
+                        { breakpoint: 992, settings: { slidesToShow: 3, rows: 1 } },
+                        { breakpoint: 768, settings: { slidesToShow: 1, rows: 1 } }
+                    ]
+                });
+            }
+        });
+    </script>
+@endpush

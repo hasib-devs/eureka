@@ -94,6 +94,21 @@ class CartController extends Controller
         } else {
             $op = $product->discount_price;
         }
+
+        // Variable products: the chosen colour carries the full price, so the
+        // cart charges that colour's price rather than the product base.
+        if ($product->is_variable && ! empty($request->color) && $request->color !== 'blank') {
+            $color = Color::where('slug', $request->color)->first();
+            if ($color) {
+                $colorRow = DB::table('color_product')
+                    ->where('product_id', $product->id)
+                    ->where('color_id', $color->id)
+                    ->first();
+                if ($colorRow && $colorRow->price > 0) {
+                    $op = $colorRow->price;
+                }
+            }
+        }
         $cart = Cart::add([
             'id' => $product->id,
             'name' => $product->title,

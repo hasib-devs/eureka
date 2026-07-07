@@ -30,7 +30,8 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with('brand', 'categories');
+        // Variable products are managed under their own "Variable Products" screen.
+        $query = Product::with('brand', 'categories')->where('is_variable', false);
 
         if ($request->filled('title')) {
             $query->where('title', 'like', '%'.$request->title.'%');
@@ -361,6 +362,8 @@ class ProductController extends Controller
             'sku' => 'nullable|string|max:255',
             'short_description' => 'nullable|string',
             'full_description' => 'nullable|string',
+            'shipping_concierge' => 'nullable|string',
+            'warranty_returns' => 'nullable|string',
             'regular_price' => 'required|numeric',
             'dis_type' => 'nullable',
             'discount_price' => 'nullable|numeric',
@@ -467,6 +470,8 @@ class ProductController extends Controller
             'video_thumb' => $videoTName ?? null,
             'yvideo' => $linky,
             'full_description' => $request->full_description,
+            'shipping_concierge' => $request->shipping_concierge,
+            'warranty_returns' => $request->warranty_returns,
             'buying_price' => $request->buying_price,
             'regular_price' => $request->regular_price,
             'discount_price' => $discount_price,
@@ -711,6 +716,8 @@ class ProductController extends Controller
             'title' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'full_description' => 'nullable|string',
+            'shipping_concierge' => 'nullable|string',
+            'warranty_returns' => 'nullable|string',
             'regular_price' => 'required|numeric',
             'discount_price' => 'nullable|numeric',
             'quantity' => 'required|integer',
@@ -834,6 +841,8 @@ class ProductController extends Controller
             'video_thumb' => $videoTName ?? null,
             'yvideo' => $linky ?? $request->yvideo,
             'full_description' => $request->full_description,
+            'shipping_concierge' => $request->shipping_concierge,
+            'warranty_returns' => $request->warranty_returns,
             'regular_price' => $request->regular_price,
             'discount_price' => $discount_price,
             'dis_type' => $request->dis_type,
