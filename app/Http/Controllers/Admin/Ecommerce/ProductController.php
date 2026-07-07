@@ -348,6 +348,8 @@ class ProductController extends Controller
             'tags.*'            => 'integer',
             'colors'            => 'array',
             'image'             => 'required|image',
+            'video'             => 'nullable|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v|max:512000',
+            'video_thumb'       => 'nullable|image',
             'shipping_charge'   => 'required|boolean',
             'images'            => 'nullable|array',
             'images.*'          => 'image',
@@ -634,6 +636,9 @@ if ($request->hasFile('images')) {
             'colors'            => 'array',
             'colors.*'          => 'integer',
             'image'             => 'nullable|image',
+            'video'             => 'nullable|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v|max:512000',
+            'video_thumb'       => 'nullable|image',
+            'remove_video'      => 'nullable|boolean',
             'shipping_charge'   => 'required|boolean',
         ], [
             'image.uploaded'    => 'The main image is too large to upload. Please use an image under 20MB.',
@@ -647,6 +652,12 @@ if ($request->hasFile('images')) {
                 mkdir('uploads/product/video', 0777, true);
             }
             $video->move(public_path('uploads/product/video'), $videoName);
+        }elseif($request->boolean('remove_video')){
+            // Admin explicitly cleared the video — drop the stored file and value.
+            if ($product->video && file_exists(public_path('uploads/product/video/'.$product->video))) {
+                unlink(public_path('uploads/product/video/'.$product->video));
+            }
+            $videoName=null;
         }else{
             $videoName=$product->video;
         }
@@ -658,6 +669,11 @@ if ($request->hasFile('images')) {
                 mkdir('uploads/product/video', 0777, true);
             }
             $video_thumb->move(public_path('uploads/product/video'), $videoTName);
+        }elseif($request->boolean('remove_video')){
+            if ($product->video_thumb && file_exists(public_path('uploads/product/video/'.$product->video_thumb))) {
+                unlink(public_path('uploads/product/video/'.$product->video_thumb));
+            }
+            $videoTName=null;
         }else{
             $videoTName=$product->video_thumb;
         }
