@@ -774,6 +774,13 @@ $stotal = 0;
                             <span>মোট</span>
                             <span><span id="sub-total">{{$stotal}}</span><strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
                         </div>
+                        @php $giftFee = Session::has('gift_wrap') ? (float) config('shop.gift_wrap_fee') : 0; @endphp
+                        @if ($giftFee > 0)
+                        <div class="rvinfo">
+                            <span>🎁 গিফট র‍্যাপিং</span>
+                            <span>+ {{ number_format($giftFee, 2, '.', ',') }}<strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                        </div>
+                        @endif
                         <!--<div class="rvinfo">-->
                         <!--    <span>-->
                         <!--        Shipping Charge @if ($stotal > setting('shipping_free_above'))(Free)@endif-->
@@ -810,14 +817,14 @@ $stotal = 0;
                                 $sub_total = $stotal;
                                 $discount = Session::get('coupon')['discount'];
                                 $rep_sub = str_replace(',', '', $sub_total);
-                                $total = number_format($rep_sub - $discount, 2, '.', ',');
+                                $total = number_format($rep_sub + $giftFee - $discount, 2, '.', ',');
                                 @endphp
                                 @endif
                                 <strong>
                                     @if ($stotal > setting('shipping_free_above'))
-                                        {{ $stotal }}
+                                        {{ $stotal + $giftFee }}
                                     @else
-                                        <span id="total">{{$total ?? $stotal}}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
+                                        <span id="total">{{$total ?? $stotal + $giftFee}}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
                                     @endif
                                 </strong>
                             </h4>

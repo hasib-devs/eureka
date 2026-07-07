@@ -419,6 +419,13 @@
                                 <span>মোট</span>
                                 <span><span id="sub-total"> {{ $sub_total }}</< /span> <strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
                             </div>
+                            @php $giftFee = Session::has('gift_wrap') ? (float) config('shop.gift_wrap_fee') : 0; @endphp
+                            @if ($giftFee > 0)
+                            <div class="rvinfo">
+                                <span>🎁 গিফট র‍্যাপিং</span>
+                                <span>+ {{ number_format($giftFee, 2, '.', ',') }}<strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                            </div>
+                            @endif
                             
                             
                             <!--<div class="rvinfo">-->
@@ -447,12 +454,12 @@
                                     @if (Session::has('coupon'))
                                         @php
                                             $discount = Session::get('coupon')['discount'];
-                                            $total = number_format($sub_total - $discount, 2, '.', ',');
+                                            $total = number_format($sub_total + $giftFee - $discount, 2, '.', ',');
                                         @endphp
                                     @endif
                                     <strong>
                                         <span id="total">
-                                            {{ $total ?? number_format($sub_total, 2, '.', ',') }}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
+                                            {{ $total ?? number_format($sub_total + $giftFee, 2, '.', ',') }}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
                                     </strong>
                                 </h4>
                             </div>

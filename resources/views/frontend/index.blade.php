@@ -1085,8 +1085,6 @@
         <div class="lux-newsletter-bottom-line"></div>
     </section>
 
-    {{-- Premium Light Footer (shared partial) --}}
-    @include('layouts.frontend.partials.lux-footer')
     <x-add-cart-modal />
     @include('components.cart-modal-attri')
 

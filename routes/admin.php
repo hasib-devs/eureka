@@ -149,6 +149,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('product/type', [ProductController::class, 'type'])->name('product.type');
     Route::get('product/inhouse', [ProductController::class, 'inhouseProduct'])->name('product.inhouse.index');
     Route::get('product/inhouse/create', [ProductController::class, 'inhouseCreate'])->name('product.inhouse.create');
+    Route::get('product/duplicate/{product}', [ProductController::class, 'duplicate'])->name('product.duplicate');
 
     Route::get('admin/product/color/{cc}/{pp}', [ProductController::class, 'nColorDelete'])->name('color.delete.n2');
     Route::get('admin/product/attr/{cc}', [ProductController::class, 'nattrDelete'])->name('attr.delete.n2');

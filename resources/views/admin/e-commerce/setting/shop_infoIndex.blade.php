@@ -157,6 +157,50 @@
                             <input class="{{ $control }}" type="text" name="instagram"
                                 id="instagram" value="{{ setting('instagram') ?? '' }}">
                         </div>
+
+                        <div>
+                            <label for="pinterest" class="mb-1 block text-sm font-medium text-slate-700">Pinterest</label>
+                            <input class="{{ $control }}" type="text" name="pinterest"
+                                id="pinterest" value="{{ setting('pinterest') ?? '' }}">
+                        </div>
+
+                        <div>
+                            <label for="tiktok" class="mb-1 block text-sm font-medium text-slate-700">TikTok</label>
+                            <input class="{{ $control }}" type="text" name="tiktok"
+                                id="tiktok" value="{{ setting('tiktok') ?? '' }}">
+                        </div>
+                    </div>
+
+                    {{-- Product page copy: accordion text + trust badges --}}
+                    <div class="border-t border-slate-200 px-5 py-4">
+                        <h3 class="mb-4 text-base font-semibold text-slate-900">Product Page Text</h3>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label for="PRODUCT_SHIPPING_TEXT" class="mb-1 block text-sm font-medium text-slate-700">Shipping &amp; Concierge (accordion)</label>
+                                <textarea class="{{ $control }}" name="PRODUCT_SHIPPING_TEXT" id="PRODUCT_SHIPPING_TEXT" rows="3">{{ setting('PRODUCT_SHIPPING_TEXT') ?? '' }}</textarea>
+                            </div>
+                            <div>
+                                <label for="PRODUCT_WARRANTY_TEXT" class="mb-1 block text-sm font-medium text-slate-700">Warranty &amp; Returns (accordion)</label>
+                                <textarea class="{{ $control }}" name="PRODUCT_WARRANTY_TEXT" id="PRODUCT_WARRANTY_TEXT" rows="3">{{ setting('PRODUCT_WARRANTY_TEXT') ?? '' }}</textarea>
+                            </div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div>
+                                <label for="TRUST_BADGE_1" class="mb-1 block text-sm font-medium text-slate-700">Trust Badge 1</label>
+                                <input class="{{ $control }}" type="text" name="TRUST_BADGE_1" id="TRUST_BADGE_1"
+                                    placeholder="e.g. Cash on Delivery" value="{{ setting('TRUST_BADGE_1') ?? '' }}">
+                            </div>
+                            <div>
+                                <label for="TRUST_BADGE_2" class="mb-1 block text-sm font-medium text-slate-700">Trust Badge 2</label>
+                                <input class="{{ $control }}" type="text" name="TRUST_BADGE_2" id="TRUST_BADGE_2"
+                                    placeholder="e.g. 2–3 Day Delivery" value="{{ setting('TRUST_BADGE_2') ?? '' }}">
+                            </div>
+                            <div>
+                                <label for="TRUST_BADGE_3" class="mb-1 block text-sm font-medium text-slate-700">Trust Badge 3</label>
+                                <input class="{{ $control }}" type="text" name="TRUST_BADGE_3" id="TRUST_BADGE_3"
+                                    placeholder="e.g. 30-Day Warranty" value="{{ setting('TRUST_BADGE_3') ?? '' }}">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-5 py-4">
