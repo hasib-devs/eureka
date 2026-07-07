@@ -293,7 +293,12 @@
                     </span>
                     <div>
                         <h3 class="text-base font-semibold text-slate-900">Colors</h3>
-                        <p class="text-xs text-slate-500">Shown as the color/essence swatches on the product page — glow uses each color's hex code</p>
+                        <p class="text-xs text-slate-500">
+                            Shown as the color/essence swatches on the product page — glow uses each color's hex code.
+                            Missing a color (e.g. Warm Glow)? Create it first in
+                            <a href="{{ routeHelper('color') }}" target="_blank" class="font-medium text-primary hover:underline">Colors</a>
+                            with its name and hex code, then it appears in this list.
+                        </p>
                     </div>
                 </div>
                 <div class="space-y-4 p-5">
@@ -464,19 +469,10 @@
     <script src="/assets/plugins/summernote/summernote-bs4.min.js"></script>
     <script>
         $(function() {
-            $('.dropify').dropify();
-            $('#category, #sub_category').select2();
-            $('.summernote').summernote({
-                height: 160,
-                toolbar: [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link']],
-                    ['view', ['codeview']],
-                ],
-            });
-
             // ── Specifications repeater ──────────────────────────────────
+            // Repeater/row handlers are registered FIRST and enhancements
+            // (dropify/select2/summernote) afterwards, each isolated — a
+            // broken or blocked plugin must never kill the form's buttons.
             $('#addSpecRow').on('click', function() {
                 $('#specRows').append(`
                     <div class="spec-row grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_auto]">
@@ -539,10 +535,26 @@
                         $.each(response, function(key, val) {
                             data += '<option value="' + val.id + '">' + val.name + '</option>';
                         });
-                        $('#sub_category').html(data).select2();
+                        $('#sub_category').html(data);
+                        try { $('#sub_category').select2(); } catch (e) { console.warn('select2 unavailable', e); }
                     }
                 });
             });
+
+            // ── UI enhancements — each isolated ──────────────────────────
+            try { $('.dropify').dropify(); } catch (e) { console.warn('dropify unavailable', e); }
+            try { $('#category, #sub_category').select2(); } catch (e) { console.warn('select2 unavailable', e); }
+            try {
+                $('.summernote').summernote({
+                    height: 160,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['insert', ['link']],
+                        ['view', ['codeview']],
+                    ],
+                });
+            } catch (e) { console.warn('summernote unavailable', e); }
         });
     </script>
 @endpush
