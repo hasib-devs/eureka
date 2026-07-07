@@ -208,11 +208,17 @@
         animation: none;
     }
 
-    /* ── RESPONSIVE THUMB HEIGHT ── */
+    /* ── RESPONSIVE — mirrors the homepage card exactly, so the card looks
+       identical on every page (shop, category, filter, search…) ── */
     @media (max-width: 900px)  { .lux-product-thumb { height: 360px; } }
-    @media (max-width: 768px)  { .lux-product-thumb { height: 300px; } }
-    @media (max-width: 540px)  { .lux-product-thumb { height: 260px; } }
-    @media (max-width: 420px)  { .lux-product-thumb { height: 220px; } }
+    @media (max-width: 768px)  {
+        .lux-product-thumb { height: 520px; }
+        .lux-product-name { max-width: 220px; font-size: 24px; }
+        .lux-rating { font-size: 18px; }
+        .lux-color { width: 22px; height: 22px; }
+        .lux-product-price { font-size: 22px; }
+        .lux-add-to-cart { padding: 11px 22px; font-size: 14px; }
+    }
 </style>
 @endPushOnce
 
