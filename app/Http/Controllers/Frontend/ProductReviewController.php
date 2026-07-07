@@ -53,7 +53,7 @@ class ProductReviewController extends Controller
 
         return response()->json([
             'alert' => 'success',
-            'message' => 'Thank you — your review has been posted.',
+            'message' => 'Thank you — your signature has been posted.',
             'review' => $this->presentReview($review),
         ]);
     }

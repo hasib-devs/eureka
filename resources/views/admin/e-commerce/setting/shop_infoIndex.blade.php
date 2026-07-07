@@ -173,7 +173,8 @@
 
                     {{-- Product page copy: accordion text + trust badges --}}
                     <div class="border-t border-slate-200 px-5 py-4">
-                        <h3 class="mb-4 text-base font-semibold text-slate-900">Product Page Text</h3>
+                        <h3 class="mb-1 text-base font-semibold text-slate-900">Product Page Text</h3>
+                        <p class="mb-4 text-xs text-slate-500">Shown on every product page — the "Shipping &amp; Concierge" and "Warranty &amp; Returns" accordion sections and the trust badges under the buy buttons. Leave a field empty to hide that section on the product page.</p>
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <label for="PRODUCT_SHIPPING_TEXT" class="mb-1 block text-sm font-medium text-slate-700">Shipping &amp; Concierge (accordion)</label>

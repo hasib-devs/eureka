@@ -45,6 +45,14 @@
         setting('TRUST_BADGE_3'),
     ]));
 
+    // Client requirement: the product name renders on two lines
+    // (e.g. "Aurora" / "Swirl Lamp"). Split at the word midpoint; the
+    // <br> collapses on mobile where the title sits beside the stock note.
+    $titleWords = preg_split('/\s+/', trim($product->title)) ?: [];
+    $titleSplitAt = count($titleWords) > 1 ? max(1, (int) floor(count($titleWords) / 2)) : count($titleWords);
+    $titleLine1 = implode(' ', array_slice($titleWords, 0, $titleSplitAt));
+    $titleLine2 = implode(' ', array_slice($titleWords, $titleSplitAt));
+
     $shippingText = setting('PRODUCT_SHIPPING_TEXT');
     $warrantyText = setting('PRODUCT_WARRANTY_TEXT');
     $specs = $product->specs;
@@ -95,8 +103,15 @@ body {
     background: var(--bg-light); aspect-ratio: 3/4; cursor: zoom-in;
     transition: box-shadow 0.5s var(--ease);
 }
-.featured-stage img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s var(--ease); }
-.featured-stage:hover img { transform: scale(1.03); }
+.featured-stage img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s var(--ease); animation: stageBreathe 12s ease-in-out infinite; }
+.featured-stage:hover img { animation: none; transform: scale(1.05); }
+@keyframes stageBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.035); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .featured-stage img { animation: none; }
+}
 .stage-badge {
     position: absolute; top: 18px; left: 18px; background: var(--deep-black); color: var(--accent-color);
     font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 8px 14px; z-index: 2;
@@ -139,8 +154,9 @@ body {
 .selection-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--soft-gray); margin-bottom: 15px; display: block; }
 .swatch-group { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
 .swatch-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-.color-swatch { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #e0e0e0; transition: var(--ease); background-clip: content-box; padding: 2px; }
-.swatch-wrapper.active .color-swatch { border-color: var(--deep-black); padding: 3px; transform: scale(1.1); }
+.color-swatch { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #c2c2c0; transition: var(--ease); background-clip: content-box; padding: 3px; background-color: #fff; }
+.swatch-wrapper:hover .color-swatch { border-color: #8a8a88; }
+.swatch-wrapper.active .color-swatch { border: 2px solid var(--deep-black); padding: 3px; transform: scale(1.12); }
 .swatch-name { font-size: 11px; color: var(--soft-gray); text-transform: capitalize; opacity: 0; transition: var(--ease); }
 .swatch-wrapper:hover .swatch-name, .swatch-wrapper.active .swatch-name { opacity: 1; }
 .color-live-readout { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--soft-gray); transition: var(--ease); }
@@ -223,8 +239,8 @@ body {
     position: relative; overflow: hidden; background: var(--deep-black); cursor: pointer;
     flex: 0 0 auto; width: 380px; aspect-ratio: 3/4; scroll-snap-align: start;
 }
-.lifestyle-tile img, .lifestyle-tile video, .lifestyle-tile iframe { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1s var(--ease), filter 1s var(--ease); filter: brightness(0.92); border: 0; }
-.lifestyle-tile:hover img, .lifestyle-tile:hover video { transform: scale(1.06); filter: brightness(1); }
+.lifestyle-tile img, .lifestyle-tile video, .lifestyle-tile iframe { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1s var(--ease), filter 1s var(--ease); filter: brightness(0.88); border: 0; }
+.lifestyle-tile:hover img, .lifestyle-tile:hover video { transform: scale(1.08); filter: brightness(1.05); }
 .lifestyle-caption {
     position: absolute; left: 0; right: 0; bottom: 0; padding: 20px;
     background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); color: #fff; pointer-events: none;
@@ -389,6 +405,7 @@ body {
        [qty | gift] -> buttons -> trust -> specs -> accordion */
     .category-label { order: 1; grid-column: 1 / -1; margin-bottom: 10px; }
     .brand-title { order: 2; grid-column: 1; font-size: 19px; line-height: 1.25; margin: 0; align-self: center; }
+    .brand-title br { display: none; }
     .stock-note { order: 3; grid-column: 2; margin: 0; justify-content: flex-end; text-align: right; align-self: center; }
     .stock-detail { display: none; }
     .price-tag { order: 4; grid-column: 1; font-size: 21px; margin: 0; align-self: center; }
@@ -444,11 +461,11 @@ body {
 
     <div class="info-column">
         <span class="category-label">{{ $firstCategory }}</span>
-        <h1 class="brand-title">{{ $product->title }}</h1>
+        <h1 class="brand-title">{{ $titleLine1 }}@if($titleLine2 !== '')<br>{{ $titleLine2 }}@endif</h1>
 
         <div class="rating-box" onclick="document.getElementById('reviewsSection').scrollIntoView({behavior:'smooth'})">
             <span class="star-gold" id="headerStars">★★★★★</span>
-            <span id="headerRatingText">({{ $reviewsData->count() }} reviews)</span>
+            <span id="headerRatingText">({{ $reviewsData->count() }} signatures)</span>
         </div>
 
         <div class="price-tag">
@@ -475,7 +492,7 @@ body {
 
         @if ($swatches->isNotEmpty())
             <div class="color-selection-container">
-                <span class="selection-label">Select Color</span>
+                <span class="selection-label">Select Illumination Essence</span>
                 <div class="swatch-group">
                     @foreach ($swatches as $key => $swatch)
                         <div class="swatch-wrapper {{ $key === 0 ? 'active' : '' }}"
@@ -488,7 +505,7 @@ body {
                 </div>
                 <div class="color-live-readout">
                     <span class="live-dot" id="liveDot" style="background: {{ $swatches->first()['code'] }};"></span>
-                    Selected color: <span class="live-name" id="liveName">{{ $swatches->first()['name'] }}</span>
+                    Selected essence: <span class="live-name" id="liveName">{{ $swatches->first()['name'] }}</span>
                 </div>
             </div>
         @endif
@@ -621,7 +638,7 @@ body {
     </div>
 
     <div class="reviews-toolbar">
-        <h3>Customer Reviews</h3>
+        <h3>Customer Signatures</h3>
         <div class="toolbar-controls">
             <div id="filterChips" style="display:flex; gap:8px;"></div>
             <select id="sortSelect" onchange="renderReviews()">
@@ -635,7 +652,7 @@ body {
 
     <div class="review-list" id="reviewList"></div>
     <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
-        <button type="button" class="btn-load-more" onclick="loadMore()">Load More Reviews</button>
+        <button type="button" class="btn-load-more" onclick="loadMore()">Load More Signatures</button>
     </div>
 </div>
 
@@ -643,8 +660,8 @@ body {
 <div class="modal-overlay" id="reviewModalOverlay">
     <div class="review-modal">
         <button type="button" class="modal-close" onclick="closeReviewModal()">&times;</button>
-        <h3>Write a Review</h3>
-        <p class="modal-sub">Tell others how {{ $product->title }} fits into your space.</p>
+        <h3>Share Your Signature</h3>
+        <p class="modal-sub">Tell fellow patrons how {{ $product->title }} fits into your space.</p>
 
         <div class="form-group">
             <label>Your Rating</label>
@@ -672,7 +689,7 @@ body {
             <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
             <div class="photo-preview-grid" id="photoPreviewGrid"></div>
         </div>
-        <button type="button" class="btn-submit-review" id="submitReviewBtn" onclick="submitReview()">Post Review</button>
+        <button type="button" class="btn-submit-review" id="submitReviewBtn" onclick="submitReview()">Post Signature</button>
         <div class="form-msg" id="formMsg"></div>
     </div>
 </div>
@@ -794,6 +811,25 @@ function scrollLifestyle(dir) {
     if (grid) grid.scrollBy({ left: dir * 400, behavior: 'smooth' });
 }
 
+/* Scroll hint: when the carousel first scrolls into view, glide it a little
+   to the left and back so visitors instantly know it swipes. Runs once. */
+(function () {
+    const grid = document.getElementById('lifestyleGrid');
+    if (!grid || !('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            obs.disconnect();
+            setTimeout(() => {
+                grid.scrollBy({ left: 150, behavior: 'smooth' });
+                setTimeout(() => grid.scrollTo({ left: 0, behavior: 'smooth' }), 800);
+            }, 350);
+        });
+    }, { threshold: 0.45 });
+    observer.observe(grid);
+})();
+
 /* ---------- Lightboxes ---------- */
 let lbImages = [], lbIndex = 0;
 function openLightbox(i) {
@@ -863,8 +899,8 @@ function renderSummary() {
     const { total, avg, counts } = computeSummary();
     document.getElementById('avgNum').textContent = total ? avg.toFixed(1) : '0.0';
     document.getElementById('avgStars').textContent = starsHtml(Math.round(avg));
-    document.getElementById('totalCount').textContent = 'Based on ' + total + ' review' + (total === 1 ? '' : 's');
-    document.getElementById('headerRatingText').textContent = '(' + total + ' review' + (total === 1 ? '' : 's') + ')';
+    document.getElementById('totalCount').textContent = 'Based on ' + total + ' signature' + (total === 1 ? '' : 's');
+    document.getElementById('headerRatingText').textContent = '(' + total + ' signature' + (total === 1 ? '' : 's') + ')';
     document.getElementById('headerStars').textContent = starsHtml(total ? Math.round(avg) : 5);
 
     const bars = document.getElementById('breakdownBars');
@@ -912,7 +948,7 @@ function renderReviews() {
 
     if (!list.length) {
         container.innerHTML = '<div class="no-reviews-msg">' +
-            (reviews.length ? 'No reviews match this filter yet.' : 'No reviews yet — be the first to review this product.') + '</div>';
+            (reviews.length ? 'No signatures match this filter yet.' : 'No signatures yet — be the first to share yours.') + '</div>';
         document.getElementById('loadMoreWrap').style.display = 'none';
         return;
     }
@@ -1079,7 +1115,7 @@ function submitReview() {
                 closeReviewModal();
                 renderReviews();
                 document.getElementById('reviewsSection').scrollIntoView({ behavior: 'smooth' });
-            }, 900);
+            }, 400);
         })
         .catch(err => {
             btn.disabled = false;
