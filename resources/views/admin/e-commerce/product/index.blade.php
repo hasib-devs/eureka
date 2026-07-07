@@ -213,6 +213,12 @@
                                             class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <a href="{{ routeHelper('product/duplicate/' . $product->id) }}"
+                                            onclick="return confirm('Duplicate this product? The copy will start disabled.')"
+                                            title="Duplicate product"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:-translate-y-px hover:border-primary hover:bg-primary-50 hover:text-primary hover:shadow">
+                                            <i class="fas fa-copy"></i>
+                                        </a>
                                         @if (auth()->user()->desig != 3)
                                             <a href="javascript:void(0)" data-id="{{ $product->id }}" id="deleteData"
                                                 title="Delete product"

@@ -6,16 +6,62 @@
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->short_description ?? $product->full_description ?? $product->title), 150) }}">
 @endpush
 
+@php
+    use App\Http\Controllers\Frontend\ProductReviewController;
+
+    $currency = setting('CURRENCY_CODE_MIN') ?? '৳';
+
+    $mainImage = $product->hero_image_url;
+    $galleryImages = $product->gallery_image_urls;
+    $lifestyleImages = $product->lifestyle_images;
+
+    $productVideoFile = $product->playable_video_url;
+    $productVideoYoutube = !empty($product->yvideo) ? $product->yvideo : null;
+    $productVideoThumb = !empty($product->video_thumb)
+        ? (str_starts_with($product->video_thumb, 'http') ? $product->video_thumb : asset('uploads/product/video/' . $product->video_thumb))
+        : null;
+
+    $finalPrice = $product->discount_price ?: $product->regular_price;
+    $giftWrapFee = (float) config('shop.gift_wrap_fee');
+
+    $firstCategory = optional($product->categories->first())->name ?? 'Premium Product';
+    $inStock = ($product->quantity ?? 0) > 0;
+
+    // Colors: name + hex from color_product; glow ring uses the hex with alpha.
+    $swatches = collect($colors_product ?? [])->map(fn ($c) => [
+        'slug' => $c->slug ?? $c->name,
+        'name' => $c->name,
+        'code' => $c->code ?? '#dddddd',
+    ])->values();
+
+    // Reviews shaped for the client-side list (filter/sort/load-more).
+    $reviewsData = $product->reviews->sortByDesc('created_at')->map(
+        fn ($review) => ProductReviewController::presentReview($review)
+    )->values();
+
+    $trustBadges = array_values(array_filter([
+        setting('TRUST_BADGE_1'),
+        setting('TRUST_BADGE_2'),
+        setting('TRUST_BADGE_3'),
+    ]));
+
+    $shippingText = setting('PRODUCT_SHIPPING_TEXT');
+    $warrantyText = setting('PRODUCT_WARRANTY_TEXT');
+    $specs = $product->specs;
+@endphp
+
 @section('content')
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     --accent-color: #FFCC00;
-    --deep-black: #000000;
+    --accent-deep: #C9A227;
+    --deep-black: #0a0a0a;
     --soft-gray: #707070;
-    --border-color: #e5e5e5;
+    --faint-gray: #999;
+    --border-color: #e8e8e6;
     --bg-light: #fafafa;
     --ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -24,585 +70,1028 @@
     display: flex;
     flex-wrap: wrap;
     max-width: 1200px;
-    margin: 40px auto;
+    margin: 50px auto;
     padding: 0 20px;
     gap: 80px;
     font-family: 'Inter', sans-serif;
     background: #fff;
 }
 
-.gallery-column {
-    flex: 1.2;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-width: 350px;
-}
-
+/* ===== GALLERY ===== */
+.gallery-column { flex: 1.2; display: flex; flex-direction: column; gap: 20px; min-width: 350px; }
 .featured-stage {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    border-radius: 2px;
-    background: #fafafa;
-    aspect-ratio: 1 / 1;
+    width: 100%; position: relative; overflow: hidden; border-radius: 2px;
+    background: var(--bg-light); aspect-ratio: 3/4; cursor: zoom-in;
+    transition: box-shadow 0.5s var(--ease);
+}
+.featured-stage img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s var(--ease); }
+.featured-stage:hover img { transform: scale(1.03); }
+.stage-badge {
+    position: absolute; top: 18px; left: 18px; background: var(--deep-black); color: var(--accent-color);
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 8px 14px; z-index: 2;
+}
+.thumbnail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.thumbnail-grid .thumb-box {
+    width: 100%; aspect-ratio: 3/4; background: var(--bg-light); overflow: hidden;
+    cursor: pointer; opacity: 0.75; transition: var(--ease); border: 1px solid transparent;
+}
+.thumbnail-grid .thumb-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumbnail-grid .thumb-box:hover, .thumbnail-grid .thumb-box.active {
+    opacity: 1; border-color: var(--accent-color); transform: translateY(-4px);
 }
 
-.featured-stage img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.8s var(--ease);
-}
-
-.featured-stage:hover img {
-    transform: scale(1.03);
-}
-
-.thumbnail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-.thumbnail-grid img,
-.thumbnail-grid video,
-.thumbnail-grid iframe {
-    width: 100%;
-    height: 280px;
-    object-fit: cover;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: var(--ease);
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-/* Video/YouTube tile: same-size frame as the image thumbnails. */
-.thumbnail-grid .thumb-video {
-    background: #000;
-    opacity: 1;
-    cursor: default;
-    border: none;
-    outline: none;
-}
-
-.thumbnail-grid img:hover,
-.thumbnail-grid img.active {
-    opacity: 1;
-    border-color: var(--accent-color);
-    transform: translateY(-5px);
-}
-
-.info-column {
-    flex: 1;
-    min-width: 350px;
-    display: flex;
-    flex-direction: column;
-}
-
-.category-label {
-    font-size: 11px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--soft-gray);
-    margin-bottom: 15px;
-}
-
+/* ===== INFO ===== */
+.info-column { flex: 1; min-width: 350px; display: flex; flex-direction: column; }
+.category-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--soft-gray); margin-bottom: 15px; }
 .brand-title {
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: 42px;
-    line-height: 1.2;
-    color: var(--deep-black);
-    margin: 0 0 20px 0;
-    letter-spacing: -1px;
+    font-family: 'Cinzel Decorative', cursive; font-size: 42px; line-height: 1.2;
+    color: var(--deep-black); margin: 0 0 20px 0; letter-spacing: -1px;
 }
-
-.rating-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 25px;
-    font-size: 13px;
-    color: var(--soft-gray);
-}
-
-.star-gold {
-    color: var(--accent-color);
-    font-size: 16px;
-}
-
-.price-tag {
-    font-size: 28px;
-    font-weight: 300;
-    color: var(--deep-black);
-    margin-bottom: 35px;
-}
-
-.price-tag del {
-    color: #999;
-    font-size: 20px;
-    margin-right: 10px;
-}
+.rating-box { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; font-size: 13px; color: var(--soft-gray); cursor: pointer; width: fit-content; }
+.rating-box:hover { color: var(--deep-black); }
+.star-gold { color: var(--accent-color); font-size: 16px; letter-spacing: 2px; }
+.price-tag { font-size: 28px; font-weight: 300; color: var(--deep-black); margin-bottom: 8px; }
+.price-tag del { color: #999; font-size: 20px; margin-right: 10px; }
+.stock-note { font-size: 12px; letter-spacing: 0.5px; margin-bottom: 30px; display: flex; align-items: center; gap: 6px; }
+.stock-note.in { color: #3a7d44; }
+.stock-note.out { color: #b23b3b; }
+.stock-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; background: currentColor; }
 
 .specs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 30px;
-    margin-bottom: 40px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+    border-top: 1px solid var(--border-color); padding-top: 30px; margin-bottom: 40px;
 }
+.spec-item label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--soft-gray); margin-bottom: 5px; }
+.spec-item span { font-size: 15px; color: var(--deep-black); font-weight: 500; }
 
-.spec-item label {
-    display: block;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--soft-gray);
-    margin-bottom: 5px;
+.color-selection-container { margin-bottom: 35px; }
+.selection-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--soft-gray); margin-bottom: 15px; display: block; }
+.swatch-group { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+.swatch-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+.color-swatch { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #e0e0e0; transition: var(--ease); background-clip: content-box; padding: 2px; }
+.swatch-wrapper.active .color-swatch { border-color: var(--deep-black); padding: 3px; transform: scale(1.1); }
+.swatch-name { font-size: 11px; color: var(--soft-gray); text-transform: capitalize; opacity: 0; transition: var(--ease); }
+.swatch-wrapper:hover .swatch-name, .swatch-wrapper.active .swatch-name { opacity: 1; }
+.color-live-readout { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--soft-gray); transition: var(--ease); }
+.color-live-readout .live-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); transition: var(--ease); }
+.color-live-readout .live-name { color: var(--deep-black); font-weight: 600; }
+
+/* ===== GIFT WRAP ===== */
+.gift-wrap-row { display: flex; align-items: center; gap: 14px; cursor: pointer; width: fit-content; }
+.gift-circle-btn {
+    position: relative; width: 54px; height: 54px; border-radius: 50%; background: #fff;
+    border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+    transition: var(--ease); flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
-
-.spec-item span {
-    font-size: 15px;
-    color: var(--deep-black);
-    font-weight: 500;
+.gift-circle-btn svg { width: 26px; height: 26px; stroke: var(--soft-gray); fill: none; transition: var(--ease); }
+.gift-wrap-row:hover .gift-circle-btn { border-color: var(--accent-color); }
+.gift-wrap-row.active .gift-circle-btn {
+    background: var(--accent-color); border-color: var(--accent-deep); transform: scale(1.08);
+    box-shadow: 0 0 0 5px rgba(255,204,0,0.22), 0 6px 16px rgba(201,162,39,0.35);
 }
-
-.color-selection-container {
-    margin: 30px 0;
-    border-top: 1px solid var(--border-color);
-    padding-top: 25px;
-}
-
-.selection-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--soft-gray);
-    margin-bottom: 15px;
-    display: block;
-}
-
-.swatch-group {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.swatch-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-}
-
-.color-swatch {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: 1px solid #e0e0e0;
-    position: relative;
-    transition: var(--ease);
-    background-clip: content-box;
-    padding: 2px;
-}
-
-.swatch-wrapper.active .color-swatch {
-    border-color: var(--deep-black);
-    padding: 3px;
-    transform: scale(1.1);
-}
-
-.swatch-name {
-    font-size: 11px;
-    color: var(--soft-gray);
-    text-transform: capitalize;
-    opacity: 0;
+.gift-wrap-row.active .gift-circle-btn svg { stroke: #000; }
+.gift-check-badge {
+    position: absolute; bottom: -2px; right: -2px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--deep-black); color: var(--accent-color); font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.4);
     transition: var(--ease);
 }
+.gift-wrap-row.active .gift-check-badge { opacity: 1; transform: scale(1); }
+.gift-wrap-text { display: flex; flex-direction: column; gap: 3px; }
+.gift-wrap-text .gift-title { font-size: 13px; font-weight: 600; color: var(--deep-black); }
+.gift-wrap-text .gift-sub { font-size: 11px; color: var(--soft-gray); }
 
-.swatch-wrapper:hover .swatch-name,
-.swatch-wrapper.active .swatch-name {
-    opacity: 1;
+.order-summary-box {
+    border-top: 1px solid var(--border-color); padding-top: 16px; margin-bottom: 22px;
+    display: flex; flex-direction: column; gap: 8px; font-size: 13px;
 }
+.order-summary-box .sum-row { display: flex; justify-content: space-between; color: var(--soft-gray); }
+.order-summary-box .sum-row.total { color: var(--deep-black); font-weight: 700; font-size: 16px; padding-top: 8px; border-top: 1px dashed var(--border-color); }
+.order-summary-box .sum-row span.gift-line { color: var(--accent-deep); }
 
-.action-group {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 50px;
-}
-
+.qty-gift-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+.qty-stepper { display: flex; align-items: center; border: 1px solid var(--deep-black); }
+.qty-stepper button { width: 42px; height: 58px; background: none; border: none; font-size: 16px; cursor: pointer; }
+.qty-stepper span { width: 40px; text-align: center; font-size: 14px; display: inline-block; }
+.action-group { display: flex; gap: 15px; margin-bottom: 18px; }
 .btn-lux {
-    flex: 1;
-    padding: 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: all 0.4s var(--ease);
-    text-align: center;
+    flex: 1; padding: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; transition: all 0.4s var(--ease); text-align: center;
+}
+.btn-dark { background: var(--deep-black); color: #fff; }
+.btn-gold { background: var(--accent-color); color: #000; }
+.btn-lux:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); opacity: 0.92; }
+.btn-lux:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.trust-row { display: flex; gap: 22px; margin-bottom: 45px; padding-top: 5px; flex-wrap: wrap; }
+.trust-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--soft-gray); letter-spacing: 0.5px; }
+.trust-item svg { width: 16px; height: 16px; stroke: var(--soft-gray); flex-shrink: 0; }
+
+.luxe-accordion { border-top: 1px solid var(--border-color); }
+.luxe-accordion details { border-bottom: 1px solid var(--border-color); }
+.luxe-accordion summary { list-style: none; padding: 25px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
+.luxe-accordion summary::-webkit-details-marker { display: none; }
+.luxe-accordion summary::after { content: '\002B'; font-size: 18px; font-weight: 300; }
+.luxe-accordion details[open] summary::after { content: '\2212'; }
+.details-content { padding-bottom: 30px; font-size: 15px; color: #555; line-height: 1.8; }
+
+/* ===== LIFESTYLE ===== */
+.lifestyle-section { max-width: 1200px; margin: 20px auto 100px; padding: 0 20px; font-family: 'Inter', sans-serif; }
+.section-heading { text-align: center; margin-bottom: 45px; }
+.section-heading .category-label { justify-content: center; display: flex; }
+.section-heading h2 { font-family: 'Cinzel Decorative', cursive; font-size: 30px; color: var(--deep-black); margin: 10px 0 0; }
+.lifestyle-scroll-wrap { position: relative; }
+.lifestyle-grid {
+    display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px;
+    scrollbar-width: thin; scrollbar-color: var(--accent-color) var(--bg-light); -webkit-overflow-scrolling: touch;
+}
+.lifestyle-grid::-webkit-scrollbar { height: 6px; }
+.lifestyle-grid::-webkit-scrollbar-thumb { background: var(--accent-color); }
+.lifestyle-grid::-webkit-scrollbar-track { background: var(--bg-light); }
+.lifestyle-tile {
+    position: relative; overflow: hidden; background: var(--deep-black); cursor: pointer;
+    flex: 0 0 auto; width: 380px; aspect-ratio: 3/4; scroll-snap-align: start;
+}
+.lifestyle-tile img, .lifestyle-tile video, .lifestyle-tile iframe { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1s var(--ease), filter 1s var(--ease); filter: brightness(0.92); border: 0; }
+.lifestyle-tile:hover img, .lifestyle-tile:hover video { transform: scale(1.06); filter: brightness(1); }
+.lifestyle-caption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 20px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); color: #fff; pointer-events: none;
+}
+.lifestyle-caption .tag { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-color); display: block; margin-bottom: 6px; }
+.lifestyle-caption .cap-title { font-size: 16px; font-weight: 500; }
+.video-tile .play-button {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 58px; height: 58px; border-radius: 50%; background: rgba(255,204,0,0.92);
+    display: flex; align-items: center; justify-content: center; transition: var(--ease); opacity: 1;
+}
+.video-tile:hover .play-button { transform: translate(-50%, -50%) scale(1.1); }
+.video-tile .play-button svg { width: 20px; height: 20px; fill: #000; margin-left: 3px; }
+.video-tile.is-playing .play-button { opacity: 0; pointer-events: none; }
+.scroll-hint-arrows { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+.scroll-arrow-btn {
+    width: 40px; height: 40px; border: 1px solid var(--border-color); background: #fff; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; justify-content: center; transition: var(--ease);
+}
+.scroll-arrow-btn:hover { background: var(--deep-black); color: #fff; border-color: var(--deep-black); }
+@media (min-width: 901px) {
+    .lifestyle-tile { width: 560px; }
 }
 
-.btn-dark {
-    background: var(--deep-black);
-    color: #fff;
+/* ===== REVIEWS ===== */
+.reviews-section { max-width: 1200px; margin: 0 auto 120px; padding: 0 20px; font-family: 'Inter', sans-serif; }
+.reviews-header {
+    display: flex; gap: 70px; flex-wrap: wrap; justify-content: center;
+    border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+    padding: 55px 0; margin-bottom: 50px;
 }
-
-.btn-gold {
-    background: var(--accent-color);
-    color: #000;
+.reviews-summary { flex: 0 0 260px; text-align: center; }
+.reviews-summary .avg-num { font-family: 'Cinzel Decorative', cursive; font-size: 56px; color: var(--deep-black); line-height: 1; }
+.reviews-summary .star-gold { font-size: 20px; display: block; margin: 12px 0 8px; }
+.reviews-summary .total-count { font-size: 12px; color: var(--soft-gray); letter-spacing: 1px; text-transform: uppercase; }
+.btn-write-review {
+    margin-top: 24px; width: 100%; padding: 16px; background: var(--deep-black); color: #fff; border: none;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: var(--ease);
 }
-
-.btn-lux:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    opacity: 0.9;
+.btn-write-review:hover { background: var(--accent-deep); color: #000; }
+.reviews-breakdown { flex: 0 0 auto; width: 34%; min-width: 240px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 48px 1fr 28px; align-items: center; gap: 10px; font-size: 11px; color: var(--soft-gray); cursor: pointer; }
+.bar-row:hover { color: var(--deep-black); }
+.bar-track { height: 8px; border-radius: 4px; background: var(--border-color); position: relative; overflow: hidden; }
+.bar-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--accent-color); transition: width 0.6s var(--ease); }
+.reviews-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 16px; }
+.reviews-toolbar h3 { font-family: 'Cinzel Decorative', cursive; font-size: 22px; margin: 0; }
+.toolbar-controls { display: flex; gap: 12px; align-items: center; font-size: 12px; }
+.toolbar-controls select { padding: 10px 14px; border: 1px solid var(--border-color); background: #fff; font-family: inherit; font-size: 12px; letter-spacing: 0.5px; cursor: pointer; }
+.filter-chip { padding: 8px 14px; border: 1px solid var(--border-color); background: #fff; font-size: 11px; cursor: pointer; letter-spacing: 0.5px; transition: var(--ease); }
+.filter-chip.active { background: var(--deep-black); color: #fff; border-color: var(--deep-black); }
+.review-list { display: flex; flex-direction: column; }
+.review-card { padding: 34px 0; border-bottom: 1px solid var(--border-color); display: flex; gap: 22px; }
+.review-avatar {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--deep-black); color: var(--accent-color);
+    display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; flex-shrink: 0;
 }
-
-.luxe-accordion {
-    border-top: 1px solid var(--border-color);
+.review-body { flex: 1; }
+.review-top-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.reviewer-name-row { display: flex; align-items: center; gap: 8px; }
+.reviewer-name { font-size: 14px; font-weight: 600; color: var(--deep-black); }
+.verified-badge { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #3a7d44; background: #eaf5ec; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px; }
+.review-date { font-size: 11px; color: var(--faint-gray); }
+.review-stars { font-size: 13px; color: var(--accent-color); margin-bottom: 10px; letter-spacing: 1px; }
+.review-title { font-size: 15px; font-weight: 600; color: var(--deep-black); margin: 0 0 8px; }
+.review-text { font-size: 14px; color: #444; line-height: 1.75; margin: 0 0 16px; }
+.review-photos { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.review-photos img { width: 72px; height: 72px; object-fit: cover; cursor: pointer; transition: var(--ease); border: 1px solid var(--border-color); }
+.review-photos img:hover { transform: translateY(-3px); border-color: var(--accent-color); }
+.review-actions { display: flex; align-items: center; gap: 18px; }
+.helpful-btn {
+    background: none; border: 1px solid var(--border-color); padding: 8px 14px; font-size: 11px;
+    letter-spacing: 0.5px; color: var(--soft-gray); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: var(--ease);
 }
-
-details {
-    border-bottom: 1px solid var(--border-color);
+.helpful-btn:hover, .helpful-btn.voted { border-color: var(--deep-black); color: var(--deep-black); }
+.helpful-btn svg { width: 13px; height: 13px; }
+.load-more-wrap { text-align: center; margin-top: 40px; }
+.btn-load-more {
+    padding: 16px 40px; background: none; border: 1px solid var(--deep-black); font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: var(--ease);
 }
+.btn-load-more:hover { background: var(--deep-black); color: #fff; }
+.no-reviews-msg { text-align: center; padding: 60px 20px; color: var(--soft-gray); font-size: 14px; }
 
-summary {
-    list-style: none;
-    padding: 25px 0;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+/* ===== REVIEW MODAL ===== */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,10,10,0.6); z-index: 1000;
+    display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px);
 }
-
-summary::-webkit-details-marker {
-    display: none;
+.modal-overlay.open { display: flex; }
+.review-modal {
+    background: #fff; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;
+    padding: 45px; position: relative; animation: modalIn 0.35s var(--ease); font-family: 'Inter', sans-serif;
 }
-
-summary::after {
-    content: '\002B';
-    font-size: 18px;
-    font-weight: 300;
+@keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--soft-gray); line-height: 1; }
+.modal-close:hover { color: var(--deep-black); }
+.review-modal h3 { font-family: 'Cinzel Decorative', cursive; font-size: 24px; margin: 0 0 6px; }
+.modal-sub { font-size: 13px; color: var(--soft-gray); margin-bottom: 30px; }
+.form-group { margin-bottom: 22px; }
+.form-group label { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--soft-gray); margin-bottom: 10px; }
+.star-input { display: flex; gap: 6px; font-size: 26px; }
+.star-input span { cursor: pointer; color: #ddd; transition: var(--ease); }
+.star-input span.filled { color: var(--accent-color); }
+.form-group input[type="text"], .form-group textarea {
+    width: 100%; border: 1px solid var(--border-color); padding: 14px; font-family: 'Inter', sans-serif; font-size: 14px; resize: vertical;
 }
-
-details[open] summary::after {
-    content: '\2212';
+.form-group input[type="text"]:focus, .form-group textarea:focus { outline: none; border-color: var(--deep-black); }
+.photo-upload-zone {
+    border: 1.5px dashed var(--border-color); padding: 24px; text-align: center; cursor: pointer;
+    font-size: 12px; color: var(--soft-gray); transition: var(--ease);
 }
-
-.details-content {
-    padding-bottom: 30px;
-    font-size: 15px;
-    color: #555;
-    line-height: 1.8;
+.photo-upload-zone:hover, .photo-upload-zone.dragover { border-color: var(--accent-color); color: var(--deep-black); background: #fffdf5; }
+.photo-preview-grid { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.photo-preview-item { position: relative; width: 64px; height: 64px; }
+.photo-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+.photo-preview-item .remove-x {
+    position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--deep-black); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1;
 }
+.btn-submit-review {
+    width: 100%; padding: 18px; background: var(--deep-black); color: #fff; border: none;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: var(--ease);
+}
+.btn-submit-review:hover { background: var(--accent-deep); color: #000; }
+.btn-submit-review:disabled { opacity: 0.4; cursor: not-allowed; }
+.form-msg { font-size: 12px; margin-top: 12px; text-align: center; display: none; }
+.form-msg.ok { color: #3a7d44; }
+.form-msg.err { color: #b23b3b; }
 
-/* ===== Tablet ===== */
-@media (max-width: 991px) {
+/* ===== LIGHTBOX ===== */
+.lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1100; display: none; align-items: center; justify-content: center; }
+.lightbox-overlay.open { display: flex; }
+.lightbox-overlay img { max-width: 90vw; max-height: 85vh; object-fit: contain; }
+.lightbox-close { position: absolute; top: 24px; right: 32px; color: #fff; font-size: 30px; cursor: pointer; background: none; border: none; z-index: 2; }
+.lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 34px; cursor: pointer; background: none; border: none; padding: 10px 18px; }
+.lightbox-prev { left: 10px; } .lightbox-next { right: 10px; }
+
+/* ===== BACK TO TOP ===== */
+.back-to-top {
+    position: fixed; right: 24px; bottom: 24px; width: 46px; height: 46px; border-radius: 50%;
+    background: var(--deep-black); color: var(--accent-color); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 500;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3); opacity: 0; pointer-events: none; transition: var(--ease);
+}
+.back-to-top.visible { opacity: 1; pointer-events: auto; }
+.back-to-top:hover { background: var(--accent-color); color: #000; }
+
+/* ===== MOBILE (client-specified reorder) ===== */
+@media (max-width: 900px) {
     .boutique-wrapper {
-        gap: 40px;
-        padding: 24px 18px;
-        margin: 10px auto;
+        display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; row-gap: 10px;
+        padding: 32px 20px; margin: 20px auto;
     }
 
-    .gallery-column,
-    .info-column {
-        min-width: 100%;
-        flex: 1 1 100%;
-    }
+    /* Dissolve the two columns so every element becomes a direct,
+       freely reorderable grid item. */
+    .gallery-column, .info-column { display: contents; }
 
-    .brand-title {
-        font-size: 32px;
-    }
+    /* Mobile sequence: category -> [title | stock] -> [price | stars] ->
+       main photo -> thumbnails (1 row of 3, swipe) -> colors -> summary ->
+       [qty | gift] -> buttons -> trust -> specs -> accordion */
+    .category-label { order: 1; grid-column: 1 / -1; margin-bottom: 10px; }
+    .brand-title { order: 2; grid-column: 1; font-size: 19px; line-height: 1.25; margin: 0; align-self: center; }
+    .stock-note { order: 3; grid-column: 2; margin: 0; justify-content: flex-end; text-align: right; align-self: center; }
+    .stock-detail { display: none; }
+    .price-tag { order: 4; grid-column: 1; font-size: 21px; margin: 0; align-self: center; }
+    .price-tag del { font-size: 15px; }
+    .rating-box { order: 5; grid-column: 2; margin: 0; justify-content: flex-end; text-align: right; width: auto; align-self: center; }
+    .rating-box #headerRatingText { order: 1; }
+    .rating-box #headerStars { order: 2; }
 
-    .thumbnail-grid img,
-    .thumbnail-grid video {
-        height: 200px;
-    }
-}
+    .featured-stage { order: 6; grid-column: 1 / -1; }
+    .thumbnail-grid { order: 7; grid-column: 1 / -1; }
+    .color-selection-container { order: 8; grid-column: 1 / -1; margin-bottom: 0; }
+    .order-summary-box { order: 9; grid-column: 1 / -1; }
+    .qty-gift-row { order: 10; grid-column: 1 / -1; }
+    .action-group { order: 11; grid-column: 1 / -1; flex-direction: column; }
+    .trust-row { order: 12; grid-column: 1 / -1; }
+    .specs-grid { order: 13; grid-column: 1 / -1; }
+    .luxe-accordion { order: 14; grid-column: 1 / -1; }
 
-/* ===== Mobile ===== */
-@media (max-width: 600px) {
-    .boutique-wrapper {
-        gap: 26px;
-        padding: 16px 14px;
-        margin: 0 auto;
-    }
-
-    .brand-title {
-        font-size: 24px;
-        letter-spacing: -0.5px;
-    }
-
-    .category-label {
-        letter-spacing: 3px;
-        margin-bottom: 10px;
-    }
-
-    .price-tag {
-        font-size: 22px;
-        margin-bottom: 24px;
-    }
-
-    .price-tag del {
-        font-size: 16px;
-    }
-
-    .rating-box {
-        margin-bottom: 18px;
-    }
-
+    /* 1 row, 3 columns of thumbnails — swipe sideways for the rest */
     .thumbnail-grid {
-        gap: 10px;
+        display: flex; overflow-x: auto; gap: 10px; scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
     }
+    .thumbnail-grid .thumb-box { flex: 0 0 30%; scroll-snap-align: start; }
 
-    .thumbnail-grid img,
-    .thumbnail-grid video,
-    .thumbnail-grid iframe {
-        height: 150px;
-    }
-
-    .specs-grid {
-        gap: 18px;
-        padding-top: 22px;
-        margin-bottom: 28px;
-    }
-
-    .spec-item span {
-        font-size: 14px;
-    }
-
-    .color-selection-container {
-        margin: 22px 0;
-        padding-top: 20px;
-    }
-
-    .swatch-name {
-        opacity: 1;
-    }
-
-    .action-group {
-        flex-direction: column;
-        gap: 12px;
-        margin-bottom: 34px;
-    }
-
-    .btn-lux {
-        padding: 16px;
-    }
-
-    summary {
-        padding: 20px 0;
-        font-size: 12px;
-    }
-
-    .details-content {
-        font-size: 14px;
-        line-height: 1.7;
-    }
+    .lifestyle-tile { width: 85vw; }
+    .scroll-hint-arrows { display: none; }
+    .reviews-header { padding: 40px 0; gap: 35px; }
+    .reviews-summary { flex: 1 1 100%; }
+    .reviews-breakdown { width: 100%; }
+    .review-card { flex-direction: column; }
+    .back-to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
 }
 </style>
 
-@php
-    // Hero image shown large; the thumbnail strip holds only the selected gallery
-    // images (the hero is never repeated there). See Product model accessors.
-    $mainImage = $product->hero_image_url;
-    $galleryImages = $product->gallery_image_urls;
-
-    // Video: an uploaded file (rendered only when it is really a video file) and/or
-    // a YouTube embed URL. Each renders independently, so YouTube-only stays clean.
-    $productVideoFile = $product->playable_video_url;
-    $productVideoYoutube = !empty($product->yvideo) ? $product->yvideo : null;
-    $productVideoThumb = !empty($product->video_thumb)
-        ? (str_starts_with($product->video_thumb, 'http') ? $product->video_thumb : asset('uploads/product/video/' . $product->video_thumb))
-        : null;
-
-    $finalPrice = $product->discount_price ?: $product->regular_price;
-    $reviewCount = $product->reviews ? $product->reviews->count() : 0;
-    $firstCategory = optional($product->categories->first())->name ?? 'Premium Product';
-@endphp
-
 <div class="boutique-wrapper">
     <div class="gallery-column">
-        <div class="featured-stage">
-            <img id="featuredProductImage" src="{{ $mainImage }}" alt="{{ $product->title }}">
+        <div class="featured-stage" id="featuredStage" onclick="openLightboxSrc(document.getElementById('featuredImg').src)">
+            <span class="stage-badge">{{ $product->is_shown_on_homepage ? 'Bestseller' : $firstCategory }}</span>
+            <img id="featuredImg" src="{{ $mainImage }}" alt="{{ $product->title }}">
         </div>
-
-        <div class="thumbnail-grid">
-            @forelse($galleryImages as $key => $image)
-                <img
-                    src="{{ $image }}"
-                    alt="{{ $product->title }} image {{ $key + 1 }}"
-                    onclick="changeProductImage(this)"
-                >
-            @empty
-                <img src="{{ $mainImage }}" alt="{{ $product->title }}" class="active" onclick="changeProductImage(this)">
-            @endforelse
-            @if(!empty($productVideoFile))
-                <video class="thumb-video" controls muted loop playsinline
-                    @if(!empty($productVideoThumb)) poster="{{ $productVideoThumb }}" @endif>
-                    <source src="{{ $productVideoFile }}" type="video/mp4">
-                </video>
-            @endif
-            @if(!empty($productVideoYoutube))
-                <iframe class="thumb-video" src="{{ $productVideoYoutube }}"
-                    title="{{ $product->title }} video"
-                    loading="lazy" allowfullscreen
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-            @endif
+        <div class="thumbnail-grid" id="thumbGrid">
+            <div class="thumb-box active" onclick="setFeatured(this, '{{ $mainImage }}')">
+                <img src="{{ $mainImage }}" alt="{{ $product->title }}">
+            </div>
+            @foreach ($galleryImages as $key => $image)
+                <div class="thumb-box" onclick="setFeatured(this, '{{ $image }}')">
+                    <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}">
+                </div>
+            @endforeach
         </div>
     </div>
 
     <div class="info-column">
         <span class="category-label">{{ $firstCategory }}</span>
-
         <h1 class="brand-title">{{ $product->title }}</h1>
 
-        <div class="rating-box">
-            <span class="star-gold">★★★★★</span>
-            <span>({{ $reviewCount }} VERIFIED REVIEWS)</span>
+        <div class="rating-box" onclick="document.getElementById('reviewsSection').scrollIntoView({behavior:'smooth'})">
+            <span class="star-gold" id="headerStars">★★★★★</span>
+            <span id="headerRatingText">({{ $reviewsData->count() }} reviews)</span>
         </div>
 
         <div class="price-tag">
-            @if($product->discount_price)
-                <del>{{ setting('CURRENCY_CODE_MIN') ?? '৳' }} {{ $product->regular_price }}</del>
-                {{ setting('CURRENCY_CODE_MIN') ?? '৳' }} {{ $product->discount_price }}
-            @else
-                {{ setting('CURRENCY_CODE_MIN') ?? '৳' }} {{ $product->regular_price }}
+            @if ($product->discount_price)
+                <del>{{ $currency }} {{ number_format((float) $product->regular_price) }}</del>
             @endif
+            {{ $currency }} {{ number_format((float) $finalPrice) }}
+        </div>
+        <div class="stock-note {{ $inStock ? 'in' : 'out' }}">
+            <span class="stock-dot"></span>
+            {{ $inStock ? 'In stock' : 'Out of stock' }}@if($inStock)<span class="stock-detail"> — ready to ship across {{ setting('COUNTRY_SERVE') ?? 'Bangladesh' }}.</span>@endif
         </div>
 
-        <div class="specs-grid">
-            <div class="spec-item">
-                <label>Product Code</label>
-                <span>{{ $product->sku ?? $product->id }}</span>
+        @if (count($specs))
+            <div class="specs-grid">
+                @foreach ($specs as $spec)
+                    <div class="spec-item">
+                        <label>{{ $spec['label'] }}</label>
+                        <span>{{ $spec['value'] }}</span>
+                    </div>
+                @endforeach
             </div>
-            <div class="spec-item">
-                <label>Stock</label>
-                <span>{{ ($product->quantity ?? 0) > 0 ? 'Available' : 'Out of Stock' }}</span>
-            </div>
-            <div class="spec-item">
-                <label>Delivery</label>
-                <span>Cash on Delivery</span>
-            </div>
-            <div class="spec-item">
-                <label>Origin</label>
-                <span>Bangladesh</span>
-            </div>
-        </div>
+        @endif
 
-        @if(isset($colors_product) && $colors_product->count() > 0)
+        @if ($swatches->isNotEmpty())
             <div class="color-selection-container">
                 <span class="selection-label">Select Color</span>
-
                 <div class="swatch-group">
-                    @foreach($colors_product as $key => $color)
-                        <div class="swatch-wrapper {{ $key === 0 ? 'active' : '' }}" data-color="{{ $color->slug ?? $color->name }}">
-                            <div class="color-swatch" style="background: {{ $color->code ?? $color->color_code ?? '#ddd' }}"></div>
-                            <span class="swatch-name">{{ $color->name }}</span>
+                    @foreach ($swatches as $key => $swatch)
+                        <div class="swatch-wrapper {{ $key === 0 ? 'active' : '' }}"
+                            data-color="{{ $swatch['slug'] }}" data-name="{{ $swatch['name'] }}" data-code="{{ $swatch['code'] }}"
+                            onclick="selectSwatch(this)">
+                            <div class="color-swatch" style="background: {{ $swatch['code'] }}"></div>
+                            <span class="swatch-name">{{ $swatch['name'] }}</span>
                         </div>
                     @endforeach
+                </div>
+                <div class="color-live-readout">
+                    <span class="live-dot" id="liveDot" style="background: {{ $swatches->first()['code'] }};"></span>
+                    Selected color: <span class="live-name" id="liveName">{{ $swatches->first()['name'] }}</span>
                 </div>
             </div>
         @endif
 
-        <form id="luxProductForm" action="{{ route('add.cart') }}" method="POST">
-            @csrf
-            <input type="hidden" name="id" value="{{ $product->id }}">
-            <input type="hidden" name="qty" value="1">
-            <input type="hidden" name="color" id="selectedColor" value="{{ isset($colors_product) && $colors_product->count() > 0 ? ($colors_product->first()->slug ?? $colors_product->first()->name) : 'blank' }}">
-            <input type="hidden" name="size" value="blank">
-            <input type="hidden" name="dynamic_prices" value="{{ $finalPrice }}">
+        <div class="order-summary-box">
+            <div class="sum-row"><span>Unit price</span><span id="sumUnitPrice">{{ $currency }} <span data-unit>{{ number_format((float) $finalPrice) }}</span></span></div>
+            <div class="sum-row"><span>Quantity</span><span id="sumQty">× 1</span></div>
+            <div class="sum-row" id="sumGiftRow" style="display:none;"><span>Gift wrapping</span><span class="gift-line">+ {{ $currency }} {{ number_format($giftWrapFee) }}</span></div>
+            <div class="sum-row total"><span>Total</span><span id="sumTotal">{{ $currency }} {{ number_format((float) $finalPrice) }}</span></div>
+        </div>
 
-            @if(isset($attributeGroups) && $attributeGroups->count() > 0)
-                @foreach($attributeGroups as $attributeId => $values)
-                    @php $attribute = optional($values->first())->attributes; @endphp
-                    @if($attribute)
-                        <input type="hidden" name="{{ $attribute->slug }}" value="{{ optional($values->first())->id ?? 'blank' }}">
-                    @endif
-                @endforeach
-            @endif
-
-            <div class="action-group">
-                <button type="submit" class="btn-lux btn-dark" onclick="setAddToCartMode()">Add To Cart</button>
-                <button type="button" class="btn-lux btn-gold" onclick="buyNowProduct()">Buy It Now</button>
+        <div class="qty-gift-row">
+            <div class="qty-stepper">
+                <button type="button" onclick="stepQty(-1)">−</button>
+                <span id="qtyVal">1</span>
+                <button type="button" onclick="stepQty(1)">+</button>
             </div>
-        </form>
+            <div class="gift-wrap-row" id="giftWrapRow" onclick="toggleGiftWrap()">
+                <div class="gift-circle-btn">
+                    <svg viewBox="0 0 24 24" stroke-width="1.7"><path d="M20 12v9H4v-9M2 7h20v5H2V7zm10 0V4a2 2 0 10-2 2h2zm0 0V4a2 2 0 112 2h-2zm0 5v9"/></svg>
+                    <span class="gift-check-badge">✓</span>
+                </div>
+                <div class="gift-wrap-text">
+                    <span class="gift-title">Add Gift Wrapping</span>
+                    <span class="gift-sub">Premium Wrapping — {{ $currency }}{{ number_format($giftWrapFee) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-group">
+            <button type="button" class="btn-lux btn-dark" id="addToCartBtn" onclick="addToCart()" {{ $inStock ? '' : 'disabled' }}>Add To Cart</button>
+            <button type="button" class="btn-lux btn-gold" id="buyNowBtn" onclick="buyNow()" {{ $inStock ? '' : 'disabled' }}>Buy It Now</button>
+        </div>
+
+        @if (count($trustBadges))
+            <div class="trust-row">
+                @foreach ($trustBadges as $badge)
+                    <div class="trust-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
+                        {{ $badge }}
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
         <div class="luxe-accordion">
-            <details open>
-                <summary>The Design Story</summary>
-                <div class="details-content">
-                    {!! $product->short_description ?? $product->full_description ?? 'Premium quality product with modern finishing and reliable performance.' !!}
-                </div>
-            </details>
-
-            <details>
-                <summary>Technical Details</summary>
-                <div class="details-content">
-                    {!! $product->full_description ?? $product->short_description ?? 'Product details will be updated soon.' !!}
-                </div>
-            </details>
-
-            <details>
-                <summary>Shipping & Concierge</summary>
-                <div class="details-content">
-                    Delivered via courier. Cash on Delivery available across Bangladesh.
-                </div>
-            </details>
-
-            <details>
-                <summary>Warranty & Returns</summary>
-                <div class="details-content">
-                    Warranty and return policy depends on product condition and seller policy.
-                </div>
-            </details>
+            @if (!empty($product->short_description))
+                <details open>
+                    <summary>The Design Story</summary>
+                    <div class="details-content">{!! $product->short_description !!}</div>
+                </details>
+            @endif
+            @if (!empty($product->full_description))
+                <details {{ empty($product->short_description) ? 'open' : '' }}>
+                    <summary>Technical Details</summary>
+                    <div class="details-content">{!! $product->full_description !!}</div>
+                </details>
+            @endif
+            @if (!empty($shippingText))
+                <details>
+                    <summary>Shipping &amp; Concierge</summary>
+                    <div class="details-content">{!! $shippingText !!}</div>
+                </details>
+            @endif
+            @if (!empty($warrantyText))
+                <details>
+                    <summary>Warranty &amp; Returns</summary>
+                    <div class="details-content">{!! $warrantyText !!}</div>
+                </details>
+            @endif
         </div>
     </div>
 </div>
 
-<script>
-function changeProductImage(el) {
-    const featured = document.getElementById('featuredProductImage');
-    featured.src = el.src;
+{{-- ===== LIFESTYLE / "STYLED BY LIGHT" ===== --}}
+@if ($lifestyleImages->isNotEmpty() || $productVideoFile || $productVideoYoutube)
+    <div class="lifestyle-section">
+        <div class="section-heading">
+            <span class="category-label">In Every Room</span>
+            <h2>Styled By Light</h2>
+        </div>
+        <div class="lifestyle-scroll-wrap">
+            <div class="lifestyle-grid" id="lifestyleGrid">
+                @if ($productVideoFile)
+                    <div class="lifestyle-tile video-tile" onclick="openVideoLightbox()">
+                        <video autoplay loop muted playsinline @if($productVideoThumb) poster="{{ $productVideoThumb }}" @endif>
+                            <source src="{{ $productVideoFile }}" type="video/mp4">
+                        </video>
+                        <div class="play-button">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <div class="lifestyle-caption"><span class="tag">Watch</span><span class="cap-title">{{ $product->title }} In Motion</span></div>
+                    </div>
+                @elseif ($productVideoYoutube)
+                    <div class="lifestyle-tile video-tile">
+                        <iframe src="{{ $productVideoYoutube }}" title="{{ $product->title }} video" loading="lazy" allowfullscreen
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                    </div>
+                @endif
+                @foreach ($lifestyleImages as $key => $tile)
+                    <div class="lifestyle-tile" onclick="openLightbox({{ $key }})">
+                        <img src="{{ $tile->url }}" alt="{{ $tile->caption ?? $product->title }}">
+                        @if ($tile->tag || $tile->caption)
+                            <div class="lifestyle-caption">
+                                @if ($tile->tag)<span class="tag">{{ $tile->tag }}</span>@endif
+                                @if ($tile->caption)<span class="cap-title">{{ $tile->caption }}</span>@endif
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+            <div class="scroll-hint-arrows">
+                <button type="button" class="scroll-arrow-btn" onclick="scrollLifestyle(-1)">‹</button>
+                <button type="button" class="scroll-arrow-btn" onclick="scrollLifestyle(1)">›</button>
+            </div>
+        </div>
+    </div>
+@endif
 
-    document.querySelectorAll('.thumbnail-grid img').forEach(img => img.classList.remove('active'));
+{{-- ===== REVIEWS ===== --}}
+<div class="reviews-section" id="reviewsSection">
+    <div class="reviews-header">
+        <div class="reviews-summary">
+            <div class="avg-num" id="avgNum">0.0</div>
+            <span class="star-gold" id="avgStars">★★★★★</span>
+            <div class="total-count" id="totalCount"></div>
+            <button type="button" class="btn-write-review" onclick="openReviewModal()">Write a Review</button>
+        </div>
+        <div class="reviews-breakdown" id="breakdownBars"></div>
+    </div>
+
+    <div class="reviews-toolbar">
+        <h3>Customer Reviews</h3>
+        <div class="toolbar-controls">
+            <div id="filterChips" style="display:flex; gap:8px;"></div>
+            <select id="sortSelect" onchange="renderReviews()">
+                <option value="newest">Newest First</option>
+                <option value="highest">Highest Rated</option>
+                <option value="lowest">Lowest Rated</option>
+                <option value="helpful">Most Helpful</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="review-list" id="reviewList"></div>
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+        <button type="button" class="btn-load-more" onclick="loadMore()">Load More Reviews</button>
+    </div>
+</div>
+
+{{-- ===== WRITE REVIEW MODAL ===== --}}
+<div class="modal-overlay" id="reviewModalOverlay">
+    <div class="review-modal">
+        <button type="button" class="modal-close" onclick="closeReviewModal()">&times;</button>
+        <h3>Write a Review</h3>
+        <p class="modal-sub">Tell others how {{ $product->title }} fits into your space.</p>
+
+        <div class="form-group">
+            <label>Your Rating</label>
+            <div class="star-input" id="starInput">
+                <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="reviewerNameInput" placeholder="e.g. Farhana R." value="{{ auth()->user()->name ?? '' }}">
+        </div>
+        <div class="form-group">
+            <label>Review Title</label>
+            <input type="text" id="reviewTitleInput" placeholder="Sum it up in a few words">
+        </div>
+        <div class="form-group">
+            <label>Your Review</label>
+            <textarea id="reviewTextInput" rows="4" placeholder="What did you like or dislike? How does it look in your room?"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Add Photos <span style="text-transform:none; letter-spacing:0;">(optional, up to 5)</span></label>
+            <div class="photo-upload-zone" id="uploadZone" onclick="document.getElementById('photoInput').click()">
+                Click or drag photos here — show us the product in its new home
+            </div>
+            <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
+            <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+        </div>
+        <button type="button" class="btn-submit-review" id="submitReviewBtn" onclick="submitReview()">Post Review</button>
+        <div class="form-msg" id="formMsg"></div>
+    </div>
+</div>
+
+{{-- ===== LIGHTBOXES ===== --}}
+<div class="lightbox-overlay" id="lightboxOverlay">
+    <button type="button" class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <button type="button" class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)">‹</button>
+    <img id="lightboxImg" src="" alt="Enlarged view">
+    <button type="button" class="lightbox-nav lightbox-next" onclick="navLightbox(1)">›</button>
+</div>
+
+@if ($productVideoFile)
+    <div class="lightbox-overlay" id="videoLightboxOverlay">
+        <button type="button" class="lightbox-close" onclick="closeVideoLightbox()">&times;</button>
+        <video id="lightboxVideo" controls loop playsinline style="max-width:90vw; max-height:85vh;"
+            @if($productVideoThumb) poster="{{ $productVideoThumb }}" @endif>
+            <source src="{{ $productVideoFile }}" type="video/mp4">
+            Your browser does not support embedded video.
+        </video>
+    </div>
+@endif
+
+<button type="button" class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Back to top">↑</button>
+
+<script>
+/* ---------- Data from the server ---------- */
+const CSRF_TOKEN = '{{ csrf_token() }}';
+const PRODUCT_ID = {{ (int) $product->id }};
+const UNIT_PRICE = {{ (float) $finalPrice }};
+const GIFT_WRAP_FEE = {{ (float) $giftWrapFee }};
+const CURRENCY = @json($currency);
+const MAX_QTY = {{ max(1, (int) ($product->quantity ?? 1)) }};
+const ADD_CART_URL = '{{ route('add.cart') }}';
+const BUY_NOW_URL = '{{ route('buy.product') }}';
+const REVIEW_STORE_URL = '{{ route('product.review.store', $product->id) }}';
+const HELPFUL_URL_TEMPLATE = '{{ route('product.review.helpful', ':id') }}';
+let reviews = @json($reviewsData);
+const lifestyleImages = @json($lifestyleImages->pluck('url'));
+
+/* ---------- Gallery ---------- */
+function setFeatured(el, src) {
+    document.querySelectorAll('.thumb-box').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
+    document.getElementById('featuredImg').src = src;
 }
 
-document.querySelectorAll('.swatch-wrapper').forEach(function (swatch) {
-    swatch.addEventListener('click', function () {
-        document.querySelectorAll('.swatch-wrapper').forEach(item => item.classList.remove('active'));
-        this.classList.add('active');
+/* ---------- Color swatches + glow ---------- */
+let selectedColor = @json($swatches->first()['slug'] ?? 'blank');
+function hexToGlow(hex) {
+    const h = (hex || '').replace('#', '');
+    if (h.length !== 6) return 'rgba(255,204,0,0.45)';
+    const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},0.5)`;
+}
+function selectSwatch(el) {
+    document.querySelectorAll('.swatch-wrapper').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    selectedColor = el.dataset.color || 'blank';
+    const dot = document.getElementById('liveDot');
+    const name = document.getElementById('liveName');
+    if (dot) dot.style.background = el.dataset.code;
+    if (name) name.textContent = el.dataset.name;
+    const stage = document.getElementById('featuredStage');
+    if (stage) stage.style.boxShadow = '0 0 0 4px #fff, 0 0 30px 6px ' + hexToGlow(el.dataset.code);
+}
 
-        const selectedColor = document.getElementById('selectedColor');
-        if (selectedColor) {
-            selectedColor.value = this.dataset.color || 'blank';
-        }
+/* ---------- Qty + gift wrap + live summary ---------- */
+let giftWrapOn = false;
+function stepQty(delta) {
+    const el = document.getElementById('qtyVal');
+    let v = parseInt(el.textContent) + delta;
+    if (v < 1) v = 1;
+    if (v > MAX_QTY) v = MAX_QTY;
+    el.textContent = v;
+    updateOrderSummary();
+}
+function toggleGiftWrap() {
+    giftWrapOn = !giftWrapOn;
+    document.getElementById('giftWrapRow').classList.toggle('active', giftWrapOn);
+    updateOrderSummary();
+}
+function formatMoney(n) { return n.toLocaleString('en-IN'); }
+function updateOrderSummary() {
+    const qty = parseInt(document.getElementById('qtyVal').textContent) || 1;
+    const total = UNIT_PRICE * qty + (giftWrapOn ? GIFT_WRAP_FEE : 0);
+    document.getElementById('sumQty').textContent = '× ' + qty;
+    document.getElementById('sumGiftRow').style.display = giftWrapOn ? 'flex' : 'none';
+    document.getElementById('sumTotal').textContent = CURRENCY + ' ' + formatMoney(total);
+}
+
+/* ---------- Add to cart / Buy now (real cart endpoints) ---------- */
+function cartPayload() {
+    const qty = parseInt(document.getElementById('qtyVal').textContent) || 1;
+    return { id: PRODUCT_ID, qty: qty, color: selectedColor, size: 'blank', gift_wrap: giftWrapOn ? 1 : 0 };
+}
+function addToCart() {
+    const btn = document.getElementById('addToCartBtn');
+    btn.disabled = true;
+    const body = new FormData();
+    body.append('_token', CSRF_TOKEN);
+    Object.entries(cartPayload()).forEach(([k, v]) => body.append(k, v));
+    fetch(ADD_CART_URL, { method: 'POST', body })
+        .then(r => r.json())
+        .then(() => {
+            btn.disabled = false;
+            if (typeof loadCartOnCanvas === 'function') loadCartOnCanvas(true);
+        })
+        .catch(() => { btn.disabled = false; alert('Could not add to cart. Please try again.'); });
+}
+function buyNow() {
+    const params = new URLSearchParams(cartPayload());
+    window.location.href = BUY_NOW_URL + '?' + params.toString();
+}
+
+/* ---------- Lifestyle carousel ---------- */
+function scrollLifestyle(dir) {
+    const grid = document.getElementById('lifestyleGrid');
+    if (grid) grid.scrollBy({ left: dir * 400, behavior: 'smooth' });
+}
+
+/* ---------- Lightboxes ---------- */
+let lbImages = [], lbIndex = 0;
+function openLightbox(i) {
+    lbImages = lifestyleImages; lbIndex = i;
+    showLightbox(lbImages[i]);
+}
+function openLightboxSrc(src) {
+    lbImages = []; lbIndex = 0;
+    showLightbox(src);
+}
+function openPhotoLightbox(photos, i) {
+    lbImages = photos; lbIndex = i;
+    showLightbox(photos[i]);
+}
+function showLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxOverlay').classList.add('open');
+}
+function navLightbox(dir) {
+    if (lbImages.length < 2) return;
+    lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+    document.getElementById('lightboxImg').src = lbImages[lbIndex];
+}
+function closeLightbox() { document.getElementById('lightboxOverlay').classList.remove('open'); }
+document.getElementById('lightboxOverlay').addEventListener('click', e => { if (e.target.id === 'lightboxOverlay') closeLightbox(); });
+
+@if ($productVideoFile)
+function openVideoLightbox() {
+    document.getElementById('videoLightboxOverlay').classList.add('open');
+    const vid = document.getElementById('lightboxVideo');
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+}
+function closeVideoLightbox() {
+    document.getElementById('lightboxVideo').pause();
+    document.getElementById('videoLightboxOverlay').classList.remove('open');
+}
+document.getElementById('videoLightboxOverlay').addEventListener('click', e => { if (e.target.id === 'videoLightboxOverlay') closeVideoLightbox(); });
+@endif
+
+/* ---------- Back to top ---------- */
+window.addEventListener('scroll', () => {
+    document.getElementById('backToTopBtn').classList.toggle('visible', window.scrollY > 600);
+});
+
+/* ---------- Reviews (server data, client-side filter/sort) ---------- */
+let activeFilter = 0; // 0 = all, 'photo', or 1..5
+let visibleCount = 4;
+const votedReviews = new Set();
+
+function starsHtml(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+function initials(name) { return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(); }
+function formatDate(d) { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function computeSummary() {
+    const total = reviews.length;
+    const avg = total ? reviews.reduce((a, r) => a + r.rating, 0) / total : 0;
+    const counts = [0, 0, 0, 0, 0];
+    reviews.forEach(r => counts[r.rating - 1]++);
+    return { total, avg, counts };
+}
+
+function renderSummary() {
+    const { total, avg, counts } = computeSummary();
+    document.getElementById('avgNum').textContent = total ? avg.toFixed(1) : '0.0';
+    document.getElementById('avgStars').textContent = starsHtml(Math.round(avg));
+    document.getElementById('totalCount').textContent = 'Based on ' + total + ' review' + (total === 1 ? '' : 's');
+    document.getElementById('headerRatingText').textContent = '(' + total + ' review' + (total === 1 ? '' : 's') + ')';
+    document.getElementById('headerStars').textContent = starsHtml(total ? Math.round(avg) : 5);
+
+    const bars = document.getElementById('breakdownBars');
+    bars.innerHTML = '';
+    for (let star = 5; star >= 1; star--) {
+        const c = counts[star - 1];
+        const pct = total ? Math.round((c / total) * 100) : 0;
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.onclick = () => { activeFilter = (activeFilter === star) ? 0 : star; visibleCount = 4; renderReviews(); };
+        row.innerHTML = `<span>${star} star</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><span>${c}</span>`;
+        bars.appendChild(row);
+    }
+
+    const chips = document.getElementById('filterChips');
+    chips.innerHTML = '';
+    [['All', 0], ['With Photos', 'photo']].forEach(([labelText, key]) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'filter-chip' + (activeFilter === key ? ' active' : '');
+        chip.textContent = labelText;
+        chip.onclick = () => { activeFilter = (activeFilter === key) ? 0 : key; visibleCount = 4; renderReviews(); };
+        chips.appendChild(chip);
+    });
+}
+
+function getFiltered() {
+    let list = reviews.slice();
+    if (activeFilter === 'photo') list = list.filter(r => r.photos && r.photos.length);
+    else if (activeFilter) list = list.filter(r => r.rating === activeFilter);
+
+    const sortBy = document.getElementById('sortSelect').value;
+    if (sortBy === 'newest') list.sort((a, b) => new Date(b.date) - new Date(a.date));
+    else if (sortBy === 'highest') list.sort((a, b) => b.rating - a.rating);
+    else if (sortBy === 'lowest') list.sort((a, b) => a.rating - b.rating);
+    else if (sortBy === 'helpful') list.sort((a, b) => b.helpful - a.helpful);
+    return list;
+}
+
+function renderReviews() {
+    renderSummary();
+    const list = getFiltered();
+    const container = document.getElementById('reviewList');
+    container.innerHTML = '';
+
+    if (!list.length) {
+        container.innerHTML = '<div class="no-reviews-msg">' +
+            (reviews.length ? 'No reviews match this filter yet.' : 'No reviews yet — be the first to review this product.') + '</div>';
+        document.getElementById('loadMoreWrap').style.display = 'none';
+        return;
+    }
+
+    list.slice(0, visibleCount).forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        const photosHtml = (r.photos && r.photos.length)
+            ? '<div class="review-photos">' + r.photos.map((p, i) =>
+                `<img src="${p}" alt="Customer photo" data-review="${r.id}" data-index="${i}">`).join('') + '</div>'
+            : '';
+        card.innerHTML = `
+            <div class="review-avatar">${escapeHtml(initials(r.name))}</div>
+            <div class="review-body">
+                <div class="review-top-row">
+                    <div class="reviewer-name-row">
+                        <span class="reviewer-name">${escapeHtml(r.name)}</span>
+                        ${r.verified ? '<span class="verified-badge">✓ Verified Buyer</span>' : ''}
+                    </div>
+                    <span class="review-date">${formatDate(r.date)}</span>
+                </div>
+                <div class="review-stars">${starsHtml(r.rating)}</div>
+                ${r.title ? `<div class="review-title">${escapeHtml(r.title)}</div>` : ''}
+                <p class="review-text">${escapeHtml(r.text)}</p>
+                ${photosHtml}
+                <div class="review-actions">
+                    <button type="button" class="helpful-btn ${votedReviews.has(r.id) ? 'voted' : ''}" data-helpful="${r.id}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 22V11m0 11H4a1 1 0 01-1-1v-9a1 1 0 011-1h3m3 11h8.5a2 2 0 002-1.6L22 12a2 2 0 00-2-2.4h-5V5a2 2 0 00-2-2l-1 1-1.5 5.5V22"/></svg>
+                        Helpful (${r.helpful})
+                    </button>
+                </div>
+            </div>`;
+        container.appendChild(card);
+    });
+
+    container.querySelectorAll('[data-helpful]').forEach(btn => {
+        btn.addEventListener('click', () => markHelpful(parseInt(btn.dataset.helpful), btn));
+    });
+    container.querySelectorAll('.review-photos img').forEach(img => {
+        img.addEventListener('click', () => {
+            const r = reviews.find(x => x.id === parseInt(img.dataset.review));
+            if (r) openPhotoLightbox(r.photos, parseInt(img.dataset.index));
+        });
+    });
+
+    document.getElementById('loadMoreWrap').style.display = (visibleCount < list.length) ? 'block' : 'none';
+}
+
+function loadMore() { visibleCount += 4; renderReviews(); }
+
+function markHelpful(id, btn) {
+    if (votedReviews.has(id)) return;
+    votedReviews.add(id);
+    fetch(HELPFUL_URL_TEMPLATE.replace(':id', id), {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+    })
+        .then(r => r.json())
+        .then(data => {
+            const review = reviews.find(x => x.id === id);
+            if (review && typeof data.helpful_count === 'number') review.helpful = data.helpful_count;
+            renderReviews();
+        })
+        .catch(() => votedReviews.delete(id));
+}
+
+/* ---------- Write review modal ---------- */
+let selectedRating = 0;
+let pendingPhotos = [];
+
+function openReviewModal() { document.getElementById('reviewModalOverlay').classList.add('open'); }
+function closeReviewModal() { document.getElementById('reviewModalOverlay').classList.remove('open'); resetReviewForm(); }
+document.getElementById('reviewModalOverlay').addEventListener('click', e => { if (e.target.id === 'reviewModalOverlay') closeReviewModal(); });
+
+document.querySelectorAll('#starInput span').forEach(star => {
+    star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.v);
+        document.querySelectorAll('#starInput span').forEach(s => {
+            s.classList.toggle('filled', parseInt(s.dataset.v) <= selectedRating);
+        });
     });
 });
 
-function setAddToCartMode() {
-    setTimeout(function () {
-        window.location.href = "{{ route('cart') }}";
-    }, 500);
+const photoInput = document.getElementById('photoInput');
+const uploadZone = document.getElementById('uploadZone');
+photoInput.addEventListener('change', e => handleFiles(e.target.files));
+['dragover', 'dragenter'].forEach(evt => uploadZone.addEventListener(evt, e => { e.preventDefault(); uploadZone.classList.add('dragover'); }));
+['dragleave', 'drop'].forEach(evt => uploadZone.addEventListener(evt, e => { e.preventDefault(); uploadZone.classList.remove('dragover'); }));
+uploadZone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
+
+function handleFiles(files) {
+    Array.from(files).slice(0, 5 - pendingPhotos.length).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            pendingPhotos.push({ file, preview: e.target.result });
+            renderPhotoPreview();
+        };
+        reader.readAsDataURL(file);
+    });
+}
+function renderPhotoPreview() {
+    const grid = document.getElementById('photoPreviewGrid');
+    grid.innerHTML = '';
+    pendingPhotos.forEach((p, i) => {
+        const item = document.createElement('div');
+        item.className = 'photo-preview-item';
+        item.innerHTML = `<img src="${p.preview}" alt=""><span class="remove-x" data-i="${i}">&times;</span>`;
+        item.querySelector('.remove-x').addEventListener('click', () => { pendingPhotos.splice(i, 1); renderPhotoPreview(); });
+        grid.appendChild(item);
+    });
 }
 
-function buyNowProduct() {
-    const form = document.getElementById('luxProductForm');
-    form.action = "{{ route('buy.product') }}";
-    form.method = "GET";
-    form.submit();
+function resetReviewForm() {
+    selectedRating = 0;
+    pendingPhotos = [];
+    document.querySelectorAll('#starInput span').forEach(s => s.classList.remove('filled'));
+    document.getElementById('reviewTitleInput').value = '';
+    document.getElementById('reviewTextInput').value = '';
+    renderPhotoPreview();
+    const msg = document.getElementById('formMsg');
+    msg.style.display = 'none';
+    msg.className = 'form-msg';
 }
+
+function submitReview() {
+    const name = document.getElementById('reviewerNameInput').value.trim();
+    const title = document.getElementById('reviewTitleInput').value.trim();
+    const text = document.getElementById('reviewTextInput').value.trim();
+    const msg = document.getElementById('formMsg');
+
+    if (!selectedRating) { alert('Please select a star rating.'); return; }
+    if (!name) { alert('Please enter your name.'); return; }
+    if (!text) { alert('Please write a short review.'); return; }
+
+    const btn = document.getElementById('submitReviewBtn');
+    btn.disabled = true;
+
+    const body = new FormData();
+    body.append('_token', CSRF_TOKEN);
+    body.append('rating', selectedRating);
+    body.append('reviewer_name', name);
+    body.append('title', title);
+    body.append('review', text);
+    pendingPhotos.forEach(p => body.append('photos[]', p.file));
+
+    fetch(REVIEW_STORE_URL, { method: 'POST', body, headers: { 'Accept': 'application/json' } })
+        .then(async r => {
+            if (!r.ok) {
+                const err = await r.json().catch(() => ({}));
+                throw new Error(err.message || 'Could not post your review.');
+            }
+            return r.json();
+        })
+        .then(data => {
+            reviews.unshift(data.review);
+            activeFilter = 0;
+            visibleCount = 4;
+            msg.textContent = data.message;
+            msg.className = 'form-msg ok';
+            msg.style.display = 'block';
+            setTimeout(() => {
+                btn.disabled = false;
+                closeReviewModal();
+                renderReviews();
+                document.getElementById('reviewsSection').scrollIntoView({ behavior: 'smooth' });
+            }, 900);
+        })
+        .catch(err => {
+            btn.disabled = false;
+            msg.textContent = err.message;
+            msg.className = 'form-msg err';
+            msg.style.display = 'block';
+        });
+}
+
+/* ---------- Inline lifestyle video: hide play button while playing ---------- */
+const inlineVideoTile = document.querySelector('.video-tile');
+const inlineVideo = inlineVideoTile ? inlineVideoTile.querySelector('video') : null;
+if (inlineVideo && inlineVideoTile) {
+    ['play', 'playing'].forEach(evt => inlineVideo.addEventListener(evt, () => inlineVideoTile.classList.add('is-playing')));
+    ['pause', 'waiting'].forEach(evt => inlineVideo.addEventListener(evt, () => inlineVideoTile.classList.remove('is-playing')));
+    if (!inlineVideo.paused) inlineVideoTile.classList.add('is-playing');
+}
+
+/* ---------- Init ---------- */
+renderReviews();
+updateOrderSummary();
+const defaultSwatch = document.querySelector('.swatch-wrapper.active');
+if (defaultSwatch) selectSwatch(defaultSwatch);
 </script>
 
 @endsection

@@ -32,6 +32,12 @@ class OrderController extends Controller
 
         $product = Product::findOrFail($request->id);
         $qty = $request->qty ?? 1;
+
+        // Per-order premium gift wrapping opt-in from the product page.
+        if ($request->boolean('gift_wrap')) {
+            Session::put('gift_wrap', true);
+        }
+
         // Recompute the price server-side from the selected attributes/colour.
         // Never trust a client-supplied price (was $request->dynamic_price).
         $price = $pricing->unitPrice($request, $product);
@@ -516,7 +522,10 @@ class OrderController extends Controller
             $couponCode = $coupon['code'] ?? null;
         }
 
-        $total = max(0.0, $stotal + $shippingCharge - $discount);
+        $giftWrap = (bool) Session::get('gift_wrap', false);
+        $giftWrapFee = $giftWrap ? (float) config('shop.gift_wrap_fee') : 0.0;
+
+        $total = max(0.0, $stotal + $shippingCharge + $giftWrapFee - $discount);
         $orderId = 'ORD-'.strtoupper(Str::random(8));
         $invoice = 'INV-'.strtoupper(Str::random(6)).'-'.time();
 
@@ -541,6 +550,8 @@ class OrderController extends Controller
             'discount' => $discount,
             'shipping_charge' => $shippingCharge,
             'single_charge' => $singleCharge,
+            'gift_wrap' => $giftWrap,
+            'gift_wrap_fee' => $giftWrapFee,
             'total' => $total,
             'cart_type' => $cartType,
             'status' => 0,
@@ -568,6 +579,8 @@ class OrderController extends Controller
                 'g_total' => $total,
             ]);
         }
+
+        Session::forget('gift_wrap');
 
         return $order->load('orderDetails');
     }

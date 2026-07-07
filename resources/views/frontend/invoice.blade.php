@@ -349,6 +349,12 @@ footer {
                             <td colspan="2">Shipping Charge</td>
                             <td>+{{number_format($order->shipping_charge, 2, '.', ',')}}</td>
                         </tr>
+                        @if ($order->gift_wrap)
+                        <tr>
+                            <td colspan="2">Gift Wrapping</td>
+                            <td>+{{number_format($order->gift_wrap_fee, 2, '.', ',')}}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <td colspan="2">Coupon ({{$order->coupon_code}}) </td>
                             <td>-{{number_format($order->discount, 2, '.', ',')}}</td>

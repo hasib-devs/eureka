@@ -22,7 +22,15 @@
     <section class="mb-6">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Order Details</h1>
+                <h1 class="flex flex-wrap items-center gap-3 text-2xl font-bold tracking-tight text-slate-900">
+                    Order Details
+                    @if ($order->gift_wrap)
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
+                            <i class="fas fa-gift"></i>
+                            Gift Wrapping — {{ $order->gift_wrap_fee + 0 }} {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
+                        </span>
+                    @endif
+                </h1>
                 <p class="mt-1 text-sm text-slate-500">Invoice {{ $order->invoice }}</p>
             </div>
             <div class="flex items-center gap-3">
@@ -339,6 +347,19 @@
                             <dd class="text-right font-medium tabular-nums text-slate-800">{{ $order->discount }} <strong>{{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></dd>
                         </div>
                         <div class="flex justify-between gap-4 py-2">
+                            <dt class="text-slate-500">Gift Wrapping</dt>
+                            <dd class="text-right">
+                                @if ($order->gift_wrap)
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
+                                        <i class="fas fa-gift"></i>
+                                        Yes — {{ $order->gift_wrap_fee + 0 }} {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
+                                    </span>
+                                @else
+                                    <span class="text-sm text-slate-400">No</span>
+                                @endif
+                            </dd>
+                        </div>
+                        <div class="flex justify-between gap-4 py-2">
                             <dt class="text-slate-500">Payment Status</dt>
                             <dd class="text-right">
                                 @if ($order->pay_staus == 1)
@@ -529,11 +550,21 @@
                                                 }
                                             }
                                             ?></td>
-                                            <td class="px-4 py-4 text-slate-600"><?php
-                                            if ($item->color != 'blank') {
-                                                echo $item->color;
-                                            }
-                                            ?></td>
+                                            <td class="px-4 py-4 text-slate-600">
+                                                @php
+                                                    $colorRow = $item->color && $item->color != 'blank'
+                                                        ? DB::table('colors')->where('slug', $item->color)->orWhere('name', $item->color)->first()
+                                                        : null;
+                                                @endphp
+                                                @if ($colorRow)
+                                                    <span class="inline-flex items-center gap-2">
+                                                        <span class="inline-block h-4 w-4 rounded-full ring-1 ring-slate-300" style="background: {{ $colorRow->code ?? '#ddd' }}"></span>
+                                                        {{ $colorRow->name }}
+                                                    </span>
+                                                @elseif ($item->color != 'blank')
+                                                    {{ $item->color }}
+                                                @endif
+                                            </td>
                                             <td class="px-4 py-4 text-right tabular-nums text-slate-600">{{ $item->qty }}</td>
                                             <td class="px-4 py-4 text-right tabular-nums text-slate-500">{{ $item->price }}</td>
                                             <td class="px-4 py-4 text-right font-semibold tabular-nums text-slate-800">{{ $item->total_price }}</td>
@@ -579,7 +610,21 @@
                                                 <span class="font-semibold text-slate-800">{{ $item->title }}</span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-4 text-slate-600">{{ $item->color != 'blank' ? $item->color : '' }}</td>
+                                        <td class="px-4 py-4 text-slate-600">
+                                            @php
+                                                $colorRow = $item->color && $item->color != 'blank'
+                                                    ? DB::table('colors')->where('slug', $item->color)->orWhere('name', $item->color)->first()
+                                                    : null;
+                                            @endphp
+                                            @if ($colorRow)
+                                                <span class="inline-flex items-center gap-2">
+                                                    <span class="inline-block h-4 w-4 rounded-full ring-1 ring-slate-300" style="background: {{ $colorRow->code ?? '#ddd' }}"></span>
+                                                    {{ $colorRow->name }}
+                                                </span>
+                                            @elseif ($item->color != 'blank')
+                                                {{ $item->color }}
+                                            @endif
+                                        </td>
                                         <td class="px-4 py-4 text-right tabular-nums text-slate-600">{{ $item->qty }}</td>
                                         <td class="px-4 py-4 text-right tabular-nums text-slate-500">{{ $item->price }}</td>
                                         <td class="px-4 py-4 text-right font-semibold tabular-nums text-slate-800">{{ $item->total_price }}</td>

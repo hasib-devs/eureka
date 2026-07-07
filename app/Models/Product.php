@@ -95,12 +95,41 @@ class Product extends Model
         }
 
         foreach ($this->images as $img) {
-            if (! empty($img->name)) {
+            if (! empty($img->name) && ($img->section ?? 'gallery') === 'gallery') {
                 $urls->push(asset('uploads/product/'.$img->name));
             }
         }
 
         return $urls->reject(fn ($url) => $url === $hero)->unique()->values();
+    }
+
+    /**
+     * Lifestyle/banner images with their carousel captions, in upload order.
+     */
+    public function getLifestyleImagesAttribute(): Collection
+    {
+        return $this->images
+            ->where('section', 'lifestyle')
+            ->filter(fn ($img) => ! empty($img->name))
+            ->map(fn ($img) => (object) [
+                'url' => asset('uploads/product/'.$img->name),
+                'tag' => $img->tag,
+                'caption' => $img->caption,
+            ])
+            ->values();
+    }
+
+    /**
+     * Structured specifications (label/value pairs) stored as JSON in `spec`.
+     */
+    public function getSpecsAttribute(): array
+    {
+        $specs = json_decode((string) $this->spec, true);
+        if (! is_array($specs)) {
+            return [];
+        }
+
+        return array_values(array_filter($specs, fn ($row) => is_array($row) && ! empty($row['label']) && ! empty($row['value'])));
     }
 
     /**

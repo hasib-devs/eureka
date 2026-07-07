@@ -20,6 +20,7 @@ use App\Http\Controllers\Frontend\VendorController;
 use App\Http\Controllers\Frontend\AccountController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Frontend\ProductReviewController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\CheckoutOtpController;
 use App\Http\Controllers\Frontend\wishlistController;
@@ -101,6 +102,8 @@ Route::get('product/search', [ProductController::class, 'productSearch'])->name(
 Route::POst('product/advance-search/', [ProductController::class, 'advanceSearch'])->name('product.advance-search');
 
 Route::get('product/{slug}', [ProductController::class, 'productDetails'])->name('product.details');
+Route::post('product/{product}/review', [ProductReviewController::class, 'store'])->name('product.review.store');
+Route::post('product-review/{review}/helpful', [ProductReviewController::class, 'helpful'])->name('product.review.helpful');
 Route::get('campaing/product/{slug}', [ProductController::class, 'productDetails1'])->name('product.cam.details');
 Route::get('/blogs', [ablogController::class, 'getAllBlogs'])->name('blogs');
 Route::get('/blog/ceo', [ablogController::class, 'getAllCeoBlogs'])->name('blog.ceo');
