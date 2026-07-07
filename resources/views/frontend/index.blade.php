@@ -661,6 +661,8 @@
             max-width: 100vw !important;
             margin-left: calc(50% - 50vw) !important;
             margin-right: calc(50% - 50vw) !important;
+            margin-top: 64px !important;
+            margin-bottom: 64px !important;
         }
         /* warm amber glow at centre */
         .lux-newsletter-section::before {
@@ -806,7 +808,7 @@
             .lux-banner-buttons { flex-direction: column; max-width: 220px; }
             .lux-banner-buttons button { width: 100%; text-align: center; }
             /* Newsletter */
-            .lux-newsletter-section { padding: 72px 20px; }
+            .lux-newsletter-section { padding: 72px 20px; margin-top: 36px !important; margin-bottom: 36px !important; }
             .lux-newsletter-inner h2 { font-size: 28px; }
             .lux-newsletter-form { flex-direction: column; border-radius: 8px; }
             .lux-newsletter-submit { padding: 14px; border-radius: 0 0 8px 8px; }
