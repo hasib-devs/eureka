@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Laravel\Scout\Searchable;
 
 class Product extends Model
@@ -49,6 +50,80 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    /**
+     * Normalise the main-image column into a plain list of filenames.
+     * Current records store a single filename; older ones may hold a JSON array.
+     */
+    private function normalizedImageList(): array
+    {
+        $images = is_array($this->image) ? $this->image : json_decode((string) $this->image, true);
+        if (! is_array($images)) {
+            $images = ! empty($this->image) ? [$this->image] : [];
+        }
+
+        return array_values(array_filter($images, fn ($i) => ! empty($i)));
+    }
+
+    /**
+     * The single hero/featured image shown large at the top of the gallery.
+     */
+    public function getHeroImageUrlAttribute(): string
+    {
+        $images = $this->normalizedImageList();
+
+        return ! empty($images[0])
+            ? asset('uploads/product/'.$images[0])
+            : asset('frontend/images/placeholder.png');
+    }
+
+    /**
+     * Thumbnail-strip images: the gallery images the admin selected
+     * (product_images), plus any extra main-image entries from legacy records.
+     * The hero image is excluded so it never appears twice.
+     */
+    public function getGalleryImageUrlsAttribute(): Collection
+    {
+        $hero = $this->hero_image_url;
+        $urls = collect();
+
+        foreach (array_slice($this->normalizedImageList(), 1) as $img) {
+            if (! empty($img)) {
+                $urls->push(asset('uploads/product/'.$img));
+            }
+        }
+
+        foreach ($this->images as $img) {
+            if (! empty($img->name)) {
+                $urls->push(asset('uploads/product/'.$img->name));
+            }
+        }
+
+        return $urls->reject(fn ($url) => $url === $hero)->unique()->values();
+    }
+
+    /**
+     * The uploaded product video URL, but ONLY when the stored file is actually
+     * a video. A stray non-video file (e.g. an image mistakenly saved to the
+     * video column) returns null so the frontend never renders a broken player.
+     */
+    public function getPlayableVideoUrlAttribute(): ?string
+    {
+        $video = $this->video;
+        if (empty($video)) {
+            return null;
+        }
+
+        $path = parse_url($video, PHP_URL_PATH) ?: $video;
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if (! in_array($ext, ['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v'], true)) {
+            return null;
+        }
+
+        return str_starts_with($video, 'http')
+            ? $video
+            : asset('uploads/product/video/'.$video);
     }
 
     /**

@@ -413,36 +413,14 @@ details[open] summary::after {
 </style>
 
 @php
-    $galleryImages = collect();
+    // Hero image shown large; the thumbnail strip holds only the selected gallery
+    // images (the hero is never repeated there). See Product model accessors.
+    $mainImage = $product->hero_image_url;
+    $galleryImages = $product->gallery_image_urls;
 
-    // Main image is stored as a single filename in products.image
-    // (older records may hold a JSON array, so handle both).
-    $productImages = is_array($product->image) ? $product->image : json_decode($product->image, true);
-    if (!is_array($productImages)) {
-        $productImages = !empty($product->image) ? [$product->image] : [];
-    }
-    foreach ($productImages as $img) {
-        if (!empty($img)) {
-            $galleryImages->push(asset('uploads/product/' . $img));
-        }
-    }
-
-    // Extra gallery images live in the product_images table (images() relation).
-    foreach ($product->images as $img) {
-        if (!empty($img->name)) {
-            $galleryImages->push(asset('uploads/product/' . $img->name));
-        }
-    }
-
-    $galleryImages = $galleryImages->unique()->values();
-    $mainImage = $galleryImages->first() ?? asset('frontend/images/placeholder.png');
-
-    // A product video can be either an uploaded MP4 (products.video) or a
-    // YouTube embed URL (products.yvideo). Handle both so the gallery shows
-    // whichever the admin added.
-    $productVideoFile = !empty($product->video)
-        ? (str_starts_with($product->video, 'http') ? $product->video : asset('uploads/product/video/' . $product->video))
-        : null;
+    // Video: an uploaded file (rendered only when it is really a video file) and/or
+    // a YouTube embed URL. Each renders independently, so YouTube-only stays clean.
+    $productVideoFile = $product->playable_video_url;
     $productVideoYoutube = !empty($product->yvideo) ? $product->yvideo : null;
     $productVideoThumb = !empty($product->video_thumb)
         ? (str_starts_with($product->video_thumb, 'http') ? $product->video_thumb : asset('uploads/product/video/' . $product->video_thumb))
@@ -464,7 +442,6 @@ details[open] summary::after {
                 <img
                     src="{{ $image }}"
                     alt="{{ $product->title }} image {{ $key + 1 }}"
-                    class="{{ $key === 0 ? 'active' : '' }}"
                     onclick="changeProductImage(this)"
                 >
             @empty

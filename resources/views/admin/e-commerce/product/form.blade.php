@@ -483,20 +483,31 @@
 
                         <div class="rounded-xl border-2 border-dashed border-slate-200 px-4 py-5 transition-colors hover:border-primary/50 hover:bg-primary-50/30">
                             @isset($product)
-                                <div class="mb-3 flex flex-wrap gap-4 text-sm">
-                                    <a target="_blank"
-                                        href="{{ asset('uploads/product/video/' . $product->video) }}"
-                                        class="text-primary hover:underline"><i class="fas fa-play-circle mr-1"></i>Click View Video</a>
-                                    <a target="_blank"
-                                        href="{{ asset('uploads/product/video/' . $product->video_thumb) }}"
-                                        class="text-primary hover:underline"><i class="fas fa-image mr-1"></i>Click View Video Thumbnail</a>
-                                </div>
+                                @if($product->video || $product->video_thumb)
+                                    <div class="mb-3 flex flex-wrap items-center gap-4 text-sm">
+                                        @if($product->video)
+                                            <a target="_blank"
+                                                href="{{ asset('uploads/product/video/' . $product->video) }}"
+                                                class="text-primary hover:underline"><i class="fas fa-play-circle mr-1"></i>Click View Video</a>
+                                        @endif
+                                        @if($product->video_thumb)
+                                            <a target="_blank"
+                                                href="{{ asset('uploads/product/video/' . $product->video_thumb) }}"
+                                                class="text-primary hover:underline"><i class="fas fa-image mr-1"></i>Click View Video Thumbnail</a>
+                                        @endif
+                                        <label class="inline-flex items-center gap-2 text-danger">
+                                            <input type="checkbox" name="remove_video" value="1" class="rounded border-slate-300">
+                                            Remove current video
+                                        </label>
+                                    </div>
+                                @endif
                             @endisset
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                                 <div>
                                     <label for="video" class="{{ $label }}">Product Video</label>
-                                    <input type="file" name="video"
+                                    <input type="file" name="video" accept="video/*"
                                         class="block w-full text-sm text-slate-600 @error('video') border-danger @enderror">
+                                    <p class="mt-1 text-xs text-slate-400">Video files only (MP4, WebM, MOV).</p>
                                 </div>
                                 <div>
                                     <label for="yvideo" class="{{ $label }}">OR Youtube Video</label>
