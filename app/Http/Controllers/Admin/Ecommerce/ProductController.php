@@ -351,6 +351,9 @@ class ProductController extends Controller
             'shipping_charge'   => 'required|boolean',
             'images'            => 'nullable|array',
             'images.*'          => 'image',
+        ], [
+            'image.uploaded'    => 'The main image is too large to upload. Please use an image under 20MB.',
+            'images.*.uploaded' => 'One of the gallery images is too large to upload. Please use images under 20MB.',
         ]);
 
         $video = $request->file('video');
@@ -632,6 +635,8 @@ if ($request->hasFile('images')) {
             'colors.*'          => 'integer',
             'image'             => 'nullable|image',
             'shipping_charge'   => 'required|boolean',
+        ], [
+            'image.uploaded'    => 'The main image is too large to upload. Please use an image under 20MB.',
         ]);
 
         $video = $request->file('video');
