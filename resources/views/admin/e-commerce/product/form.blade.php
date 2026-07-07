@@ -351,7 +351,7 @@
                     {{-- Main image --}}
                     <div>
                         <label class="{{ $label }}">Main Image @empty($product)<span class="text-danger">*</span>@endempty</label>
-                        <p class="mb-2 text-xs text-slate-400">The big featured photo. 3:4 portrait, 1200×1600px recommended, under 20MB.</p>
+                        <p class="mb-2 text-xs text-slate-400">The big featured photo. 3:4 portrait, 1200×1600px recommended.</p>
                         <input type="file" name="image" class="dropify" accept="image/*"
                             @isset($product) data-default-file="{{ asset('uploads/product/' . $product->image) }}" @endisset>
                         @error('image')
@@ -421,7 +421,7 @@
                     {{-- Video --}}
                     <div class="border-t border-slate-100 pt-5">
                         <label class="{{ $label }}">Product Video</label>
-                        <p class="mb-2 text-xs text-slate-400">First tile of the carousel — plays automatically (muted), full playback with sound on click. MP4, 3:4 portrait, keep under 30MB for fast loading.</p>
+                        <p class="mb-2 text-xs text-slate-400">First tile of the carousel — plays automatically (muted), full playback with sound on click. MP4, 3:4 portrait. Any size works; smaller files simply load faster for visitors.</p>
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <input type="file" name="video" accept="video/*" class="{{ $control }} border-slate-300">
