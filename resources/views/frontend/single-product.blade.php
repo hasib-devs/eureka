@@ -66,6 +66,17 @@
     --ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* The client's design sits on a plain white page — kill the theme's gray
+   body backdrop and the layout's extra side padding so nothing reads as a
+   boxed container. Scoped: this style block only ships with this page. */
+body {
+    background: #fff !important;
+}
+.site-inner {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 .boutique-wrapper {
     display: flex;
     flex-wrap: wrap;
