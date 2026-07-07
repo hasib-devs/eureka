@@ -1017,25 +1017,6 @@
         </section>
     @endif
 
-    <!--Hridoy-->
-    @if (!empty($homepage_category_products))
-        @foreach ($homepage_category_products as $homepage_category)
-            <div class="products">
-                <div class="">
-                    <h3 class="title"><span>{{ $homepage_category->name }}</span> <a
-                            href="{{ url('category/' . $homepage_category->slug) }}">View All</a></h3>
-                    <div class="lux-product-grid">
-                        @forelse ($homepage_category->products->take(6) as $product)
-                            <x-lux-product-card :product="$product" :category="$homepage_category->name" />
-                        @empty
-                            <x-product-empty-component />
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    @endif
-
     @if (!empty($video))
         <section class="lux-video-section">
             <div class="lux-video-wrap">

@@ -519,14 +519,25 @@
                 {{-- Publish --}}
                 <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-3 p-5">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="status"
-                                id="status"
-                                @isset($product) {{ $product->status ? 'checked' : '' }} @else checked @endisset>
-                            <label class="text-sm font-medium text-slate-700" for="status">Status</label>
-                            @error('status')
-                                <p class="text-sm text-danger">{{ $message }}</p>
-                            @enderror
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="status"
+                                    id="status"
+                                    @isset($product) {{ $product->status ? 'checked' : '' }} @else checked @endisset>
+                                <label class="text-sm font-medium text-slate-700" for="status">Status</label>
+                                @error('status')
+                                    <p class="text-sm text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" name="is_shown_on_homepage"
+                                    id="is_shown_on_homepage"
+                                    @isset($product) {{ $product->is_shown_on_homepage ? 'checked' : '' }} @endisset>
+                                <label class="text-sm font-medium text-slate-700" for="is_shown_on_homepage">Show on homepage</label>
+                                @error('is_shown_on_homepage')
+                                    <p class="text-sm text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
                         <div class="flex items-center gap-2">
                             <a href="{{ routeHelper('product') }}"
