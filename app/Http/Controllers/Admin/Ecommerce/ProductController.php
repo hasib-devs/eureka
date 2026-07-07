@@ -373,7 +373,7 @@ class ProductController extends Controller
             'spec_labels' => 'nullable|array',
             'spec_values' => 'nullable|array',
             'image' => 'required|image',
-            'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v|max:512000',
+            'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v',
             'video_thumb' => 'nullable|image',
             'shipping_charge' => 'required|boolean',
             'images' => 'nullable|array',
@@ -383,9 +383,9 @@ class ProductController extends Controller
             'lifestyle_tags' => 'nullable|array',
             'lifestyle_captions' => 'nullable|array',
         ], [
-            'image.uploaded' => 'The main image is too large to upload. Please use an image under 20MB.',
-            'images.*.uploaded' => 'One of the gallery images is too large to upload. Please use images under 20MB.',
-            'lifestyle_images.*.uploaded' => 'One of the lifestyle images is too large to upload. Please use images under 20MB.',
+            'image.uploaded' => 'The main image failed to upload — please try again with a smaller file.',
+            'images.*.uploaded' => 'One of the gallery images failed to upload — please try again with a smaller file.',
+            'lifestyle_images.*.uploaded' => 'One of the lifestyle images failed to upload — please try again with a smaller file.',
         ]);
 
         $video = $request->file('video');
@@ -722,7 +722,7 @@ class ProductController extends Controller
             'spec_labels' => 'nullable|array',
             'spec_values' => 'nullable|array',
             'image' => 'nullable|image',
-            'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v|max:512000',
+            'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v',
             'video_thumb' => 'nullable|image',
             'remove_video' => 'nullable|boolean',
             'shipping_charge' => 'required|boolean',
@@ -734,9 +734,9 @@ class ProductController extends Controller
             'lifestyle_captions' => 'nullable|array',
             'existing_lifestyle' => 'nullable|array',
         ], [
-            'image.uploaded' => 'The main image is too large to upload. Please use an image under 20MB.',
-            'images.*.uploaded' => 'One of the gallery images is too large to upload. Please use images under 20MB.',
-            'lifestyle_images.*.uploaded' => 'One of the lifestyle images is too large to upload. Please use images under 20MB.',
+            'image.uploaded' => 'The main image failed to upload — please try again with a smaller file.',
+            'images.*.uploaded' => 'One of the gallery images failed to upload — please try again with a smaller file.',
+            'lifestyle_images.*.uploaded' => 'One of the lifestyle images failed to upload — please try again with a smaller file.',
         ]);
 
         $video = $request->file('video');
