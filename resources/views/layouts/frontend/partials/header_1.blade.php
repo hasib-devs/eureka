@@ -714,8 +714,8 @@
         }
 
         .main-header:not(.is-sticky) .logo-link img {
-            height: 68px !important;
-            max-height: 72px !important;
+            height: 88px !important;
+            max-height: 92px !important;
         }
 
         /* Sticky: slightly tighter */
@@ -724,8 +724,8 @@
         }
 
         .main-header.is-sticky .logo-link img {
-            height: 58px !important;
-            max-height: 62px !important;
+            height: 74px !important;
+            max-height: 78px !important;
         }
 
         /* Mobile */
@@ -737,13 +737,13 @@
             }
 
             .main-header:not(.is-sticky) .logo-link img {
-                height: 40px !important;
-                max-height: 42px !important;
+                height: 50px !important;
+                max-height: 52px !important;
             }
 
             .main-header.is-sticky .logo-link img {
-                height: 36px !important;
-                max-height: 38px !important;
+                height: 46px !important;
+                max-height: 48px !important;
             }
         }
 
