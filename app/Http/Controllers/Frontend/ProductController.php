@@ -498,15 +498,15 @@ class ProductController extends Controller
         $attributeGroups = $product->attributes_values
             ->groupBy('attribute.id');
 
+        // Related Products: the exact set an admin marked under "Related Products",
+        // excluding the current product.
         $relatedProducts = Product::query()
-            ->whereHas('categories', function ($query) use ($product) {
-                $query->whereIn('categories.id', $product->categories->pluck('id'));
-            })
+            ->where('is_related', true)
             ->whereNot('id', $product->id)
             ->where('status', true)
-            ->inRandomOrder()
-            ->with('reviews')
-            ->take(5)
+            ->with(['reviews', 'colors', 'categories'])
+            ->latest('id')
+            ->take(12)
             ->get();
 
         $categoryBestProducts = Product::query()

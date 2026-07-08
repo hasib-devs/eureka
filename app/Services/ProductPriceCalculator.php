@@ -56,6 +56,15 @@ class ProductPriceCalculator
                 ->first();
         }
 
+        // Variable products: the chosen colour carries the FULL price (not a
+        // surcharge on top of a base). Fall back to regular_price, which is the
+        // first colour's price, when no colour is resolved.
+        if ($product->is_variable) {
+            return (float) (! empty($colorRow) && $colorRow->price > 0
+                ? $colorRow->price
+                : $product->regular_price);
+        }
+
         if (isset($request->camp) && ($camp = CampaingProduct::find($request->camp))) {
             $base = $camp->price;
         } elseif (empty($product->discount_price)) {
