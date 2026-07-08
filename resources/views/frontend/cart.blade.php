@@ -99,11 +99,14 @@
 .qty-btn {
     border:none;
     background:#fff;
+    color:#111;
     width:28px;
     height:28px;
     cursor:pointer;
     border-radius:50%;
     font-weight:bold;
+    font-size:16px;
+    line-height:1;
     display:flex;
     align-items:center;
     justify-content:center;

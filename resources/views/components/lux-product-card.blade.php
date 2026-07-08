@@ -65,9 +65,18 @@
         object-fit: cover;
         display: block;
         transition: transform 0.45s ease;
+        animation: lux-card-breathe 9s ease-in-out infinite; /* gentle always-on movement */
+    }
+    @keyframes lux-card-breathe {
+        0%, 100% { transform: scale(1); }
+        50%      { transform: scale(1.05); }
     }
     .lux-product-card:hover .lux-product-thumb img {
-        transform: scale(1.04);
+        animation: none; /* pause the drift; give a clean hover zoom instead */
+        transform: scale(1.05);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lux-product-thumb img { animation: none; }
     }
 
     /* ── INFO AREA ── */
@@ -163,6 +172,9 @@
         display: inline-block;
         border-radius: 50%;
         border: 2px solid #eee;
+        padding: 2px;                 /* thin white ring between border and colour */
+        background-clip: content-box; /* colour fills only the inner circle */
+        box-sizing: border-box;       /* keep the swatch a fixed 19px */
         flex-shrink: 0;
     }
     /* Colours that carry a variation image are clickable and switch the card photo. */
@@ -174,8 +186,7 @@
         transform: scale(1.15);
     }
     .lux-color.is-active {
-        border-color: #111;
-        box-shadow: 0 0 0 2px #111;
+        border-color: #C9A227;
     }
 
     /* ── PURCHASE ROW ── */

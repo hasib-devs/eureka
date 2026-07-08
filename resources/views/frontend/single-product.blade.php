@@ -187,11 +187,11 @@ body {
 .color-selection-container { margin-bottom: 35px; }
 .selection-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--soft-gray); margin-bottom: 15px; display: block; }
 .swatch-group { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-.swatch-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-.color-swatch { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #c2c2c0; transition: var(--ease); background-clip: content-box; padding: 3px; background-color: #fff; }
+.swatch-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; width: 38px; }
+.color-swatch { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #c2c2c0; transition: var(--ease); background-clip: content-box; padding: 2px; background-color: #fff; }
 .swatch-wrapper:hover .color-swatch { border-color: #8a8a88; }
-.swatch-wrapper.active .color-swatch { border: 2px solid var(--deep-black); padding: 3px; transform: scale(1.12); }
-.swatch-name { font-size: 11px; color: var(--soft-gray); text-transform: capitalize; opacity: 0; transition: var(--ease); }
+.swatch-wrapper.active .color-swatch { border: 1.5px solid var(--accent-deep); padding: 2px; transform: scale(1.12); }
+.swatch-name { font-size: 11px; color: var(--soft-gray); text-transform: capitalize; opacity: 0; transition: var(--ease); white-space: nowrap; }
 .swatch-wrapper:hover .swatch-name, .swatch-wrapper.active .swatch-name { opacity: 1; }
 .color-live-readout { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; color: var(--soft-gray); transition: var(--ease); }
 .color-live-readout .live-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); transition: var(--ease); }
@@ -414,14 +414,8 @@ body {
 .lightbox-prev { left: 10px; } .lightbox-next { right: 10px; }
 
 /* ===== BACK TO TOP ===== */
-.back-to-top {
-    position: fixed; right: 24px; bottom: 24px; width: 46px; height: 46px; border-radius: 50%;
-    background: var(--deep-black); color: var(--accent-color); border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 500;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.3); opacity: 0; pointer-events: none; transition: var(--ease);
-}
-.back-to-top.visible { opacity: 1; pointer-events: auto; }
-.back-to-top:hover { background: var(--accent-color); color: #000; }
+/* Scroll-to-top now lives globally in the footer partial (site-wide, right side,
+   stacked above the WhatsApp button). */
 
 /* ===== MOBILE (client-specified reorder) ===== */
 @media (max-width: 900px) {
@@ -471,7 +465,6 @@ body {
     .reviews-summary { flex: 1 1 100%; }
     .reviews-breakdown { width: 100%; }
     .review-card { flex-direction: column; }
-    .back-to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
 }
 </style>
 
@@ -777,7 +770,6 @@ body {
     </div>
 @endif
 
-<button type="button" class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Back to top">↑</button>
 
 <script>
 /* ---------- Data from the server ---------- */
@@ -1013,10 +1005,6 @@ function closeVideoLightbox() {
 document.getElementById('videoLightboxOverlay').addEventListener('click', e => { if (e.target.id === 'videoLightboxOverlay') closeVideoLightbox(); });
 @endif
 
-/* ---------- Back to top ---------- */
-window.addEventListener('scroll', () => {
-    document.getElementById('backToTopBtn').classList.toggle('visible', window.scrollY > 600);
-});
 
 /* ---------- Reviews (server data, client-side filter/sort) ---------- */
 let activeFilter = 0; // 0 = all, 'photo', or 1..5
