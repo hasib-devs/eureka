@@ -24,7 +24,7 @@ class ProductReviewController extends Controller
             'title' => 'nullable|string|max:150',
             'review' => 'required|string|max:5000',
             'photos' => 'nullable|array|max:5',
-            'photos.*' => 'image|max:20480',
+            'photos.*' => 'image',
         ]);
 
         $files = [null, null, null, null, null];

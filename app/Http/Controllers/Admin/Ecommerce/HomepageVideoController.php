@@ -24,8 +24,8 @@ class HomepageVideoController extends Controller
             'description' => 'nullable|string',
             'button_text' => 'nullable|string|max:255',
             'button_url' => 'nullable|string|max:255',
-            'video' => 'nullable|file|mimes:mp4,mov,avi,webm|max:51200',
-            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'video' => 'nullable|file|mimes:mp4,mov,avi,webm',
+            'thumbnail' => 'nullable|image',
             'status' => 'nullable',
         ]);
 
@@ -55,8 +55,8 @@ class HomepageVideoController extends Controller
             'description' => 'nullable|string',
             'button_text' => 'nullable|string|max:255',
             'button_url' => 'nullable|string|max:255',
-            'video' => 'nullable|file|mimes:mp4,mov,avi,webm|max:51200',
-            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'video' => 'nullable|file|mimes:mp4,mov,avi,webm',
+            'thumbnail' => 'nullable|image',
             'status' => 'nullable',
         ]);
 

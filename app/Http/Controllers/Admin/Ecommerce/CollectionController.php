@@ -45,7 +45,7 @@ class CollectionController extends Controller
             'name'        => 'required|string|max:255|unique:collections,name',
             'categories'   => 'required|array',
             'categories.*' => 'integer',
-            'cover_photo'  => 'required|image|max:1024|mimes:jpg,jpeg,png,bmp,webp'
+            'cover_photo'  => 'required|image'
         ]);
         
         $cover_photo = $request->file('cover_photo');
@@ -115,7 +115,7 @@ class CollectionController extends Controller
             'name'         => 'required|string|max:255|unique:collections,name,'.$collection->id,
             'categories'   => 'required|array',
             'categories.*' => 'integer',
-            'cover_photo'  => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp,webp'
+            'cover_photo'  => 'nullable|image'
         ]);
         
         $cover_photo = $request->file('cover_photo');

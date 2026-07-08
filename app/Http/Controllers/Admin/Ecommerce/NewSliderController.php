@@ -115,7 +115,7 @@ class NewSliderController extends Controller
     public function update(Request $request, NewSlidersOne $slider)
     {
         $this->validate($request, [
-            'image' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp,webp',
+            'image' => 'nullable|image',
             'url'   => 'nullable|url|string|max:255'
         ]);
         

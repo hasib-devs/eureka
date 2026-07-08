@@ -58,7 +58,7 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             'category'    => 'required|integer',
             'name'        => 'required|string|max:255|unique:categories,name',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
 
         $cover_photo = $request->file('cover_photo');
@@ -142,7 +142,7 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             'category'    => 'required|integer',
             'name'        => 'required|string|max:255|unique:categories,name,'.$subCategory->id,
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
 
         $cover_photo = $request->file('cover_photo');
@@ -233,7 +233,7 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             'category'    => 'required|integer',
             'name'        => 'required|string|max:255|unique:categories,name',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
 
         $cover_photo = $request->file('cover_photo');
@@ -316,7 +316,7 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             'category'    => 'required|integer',
             'name'        => 'required|string|max:255|unique:categories,name',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
         $miniCategory=miniCategory::find($request->ddddd);
 
@@ -375,7 +375,7 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             'mini'    => 'required|integer',
             'name'        => 'required|string|max:255|unique:categories,name',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
 
         $cover_photo = $request->file('cover_photo');
@@ -408,7 +408,7 @@ class SubCategoryController extends Controller
         $this->validate($request, [
             'mini'    => 'required|integer',
             'name'        => 'required|string|max:255|unique:categories,name',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
         $miniCategory=extracategory::find($request->ddddd);
 

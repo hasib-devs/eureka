@@ -615,7 +615,7 @@ class ProductController extends Controller
     {
         $this->validate($request, [
             'photos'   => 'nullable|array',
-            'photos.*' => 'image|mimes:jpg,jpeg,png,bmp,jfif|max:1024'
+            'photos.*' => 'image'
         ]);
         $ids = [];
         foreach($request->old as $old)

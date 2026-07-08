@@ -48,7 +48,7 @@ class ContactController extends Controller
             'phone' => 'required|max:11|min:11',
             'subject' => 'nullable|string',
             'message' => 'required|string',
-            'cover_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'cover_photo' => 'nullable|image',
         ]);
         $cover_photo = $request->file('cover_photo');
         if ($cover_photo) {

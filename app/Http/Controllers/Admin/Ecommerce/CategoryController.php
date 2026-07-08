@@ -46,7 +46,7 @@ class CategoryController extends Controller
         $this->validate($request, [
             'name'        => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp',
+            'cover_photo' => 'nullable|image',
             'pos'   =>'nullable|string|max:255|unique:categories,pos'
         ]);
 
@@ -111,7 +111,7 @@ class CategoryController extends Controller
         $this->validate($request, [
             'name'        => 'required|string|max:255|unique:categories,name,'.$category->id,
             'description' => 'nullable|string',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp',
+            'cover_photo' => 'nullable|image',
         ]);
 
        $ccs = DB::table('categories')->where('pos',$request->pos)->where('id','!=',$category->id)->latest('id')->first();
