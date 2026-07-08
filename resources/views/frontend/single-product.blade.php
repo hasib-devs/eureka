@@ -123,7 +123,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     max-width: 1200px;
-    margin: 50px auto;
+    margin: 90px auto 50px;
     padding: 0 20px;
     gap: 80px;
     font-family: 'Inter', sans-serif;
@@ -427,7 +427,7 @@ body {
 @media (max-width: 900px) {
     .boutique-wrapper {
         display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; row-gap: 10px;
-        padding: 32px 20px; margin: 20px auto;
+        padding: 32px 20px; margin: 48px auto 20px;
     }
 
     /* Dissolve the two columns so every element becomes a direct,
