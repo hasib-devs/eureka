@@ -71,15 +71,27 @@
 .lux-footer .payment-badges { display: flex; gap: 8px; flex-wrap: wrap; }
 .lux-footer .payment-badges span { font-size: 10px; letter-spacing: 0.5px; border: 1px solid #2e2e2e; color: #888; padding: 5px 10px; }
 .lux-whatsapp-fixed {
-    position: fixed; left: 24px; bottom: 24px; width: 48px; height: 48px; border-radius: 50%;
+    position: fixed; right: 24px; bottom: 24px; width: 48px; height: 48px; border-radius: 50%;
     background: #25D366; display: flex; align-items: center; justify-content: center; z-index: 500;
     box-shadow: 0 4px 14px rgba(0,0,0,0.25);
 }
 .lux-whatsapp-fixed svg { width: 24px; height: 24px; stroke: #fff; fill: none; }
+/* Scroll-to-top: right side, above the WhatsApp button, on every page. */
+.lux-scroll-top {
+    position: fixed; right: 24px; bottom: 24px; width: 46px; height: 46px; border-radius: 50%;
+    background: #0a0a0a; color: #C9A227; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; z-index: 500;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3); opacity: 0; pointer-events: none; transition: all 0.3s ease;
+}
+.lux-scroll-top.stacked { bottom: 84px; } /* leave room for the WhatsApp button below */
+.lux-scroll-top.visible { opacity: 1; pointer-events: auto; }
+.lux-scroll-top:hover { background: #C9A227; color: #0a0a0a; }
 @media (max-width: 900px) {
     .lux-footer .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px 30px; }
     .lux-footer .footer-brand { grid-column: 1 / 3; }
-    .lux-whatsapp-fixed { left: 16px; bottom: 16px; }
+    .lux-whatsapp-fixed { right: 16px; bottom: 16px; }
+    .lux-scroll-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
+    .lux-scroll-top.stacked { bottom: 72px; }
 }
 </style>
 
@@ -195,6 +207,23 @@
         <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 01-12.4 7.55L3 21l2.05-5.4A8.5 8.5 0 1121 11.5z"/></svg>
     </a>
 @endif
+
+{{-- Global scroll-to-top: shown after scrolling down, on every page.
+     Stacked above the WhatsApp button when that button is present. --}}
+<button type="button" class="lux-scroll-top{{ setting('whatsapp') ? ' stacked' : '' }}" id="luxScrollTopBtn"
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" aria-label="Back to top">↑</button>
+
+@push('js')
+<script>
+(function () {
+    var btn = document.getElementById('luxScrollTopBtn');
+    if (!btn) return;
+    function toggle() { btn.classList.toggle('visible', window.scrollY > 400); }
+    window.addEventListener('scroll', toggle, { passive: true });
+    toggle();
+})();
+</script>
+@endpush
 
 <script>
 function luxSubscribeNewsletter() {
