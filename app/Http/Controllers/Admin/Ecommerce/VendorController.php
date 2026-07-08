@@ -63,10 +63,10 @@ class VendorController extends Controller
             'description'  => 'required|string',
             'commission'   => 'nullable|numeric',
             'password'     => 'required|string|min:8|confirmed',
-            'profile'      => 'required|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'cover_photo'  => 'required|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'trade'  => 'required|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'nid'  => 'required|image|max:1024|mimes:jpg,jpeg,bmp,png'
+            'profile'      => 'required|image',
+            'cover_photo'  => 'required|image',
+            'trade'  => 'required|image',
+            'nid'  => 'required|image'
         ]);
 
         $profile = $request->file('profile');
@@ -229,10 +229,10 @@ class VendorController extends Controller
             'address'      => 'required|string|max:255',
             'description'  => 'required|string',
             'commission'   => 'nullable|numeric',
-            'profile'      => 'nullable|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'cover_photo'  => 'nullable|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'trade'  => 'required|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'nid'  => 'required|image|max:1024|mimes:jpg,jpeg,bmp,png'
+            'profile'      => 'nullable|image',
+            'cover_photo'  => 'nullable|image',
+            'trade'  => 'required|image',
+            'nid'  => 'required|image'
         ]);
 
         $profile = $request->file('profile');

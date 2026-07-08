@@ -25,6 +25,10 @@
     // Dynamic colour variants from the color_product pivot.
     $colors      = $product->colors;
     $maxSwatches = 4;
+
+    // Hover-peek target: the next gallery image (same source the product page's
+    // thumbnail strip uses). Null when the product has only its hero image.
+    $peekImage = $product->gallery_image_urls->first();
 @endphp
 
 {{-- ─────────────────────────────────────────────────────────────────────────
@@ -161,6 +165,18 @@
         border: 2px solid #eee;
         flex-shrink: 0;
     }
+    /* Colours that carry a variation image are clickable and switch the card photo. */
+    .lux-color.is-clickable {
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .lux-color.is-clickable:hover {
+        transform: scale(1.15);
+    }
+    .lux-color.is-active {
+        border-color: #111;
+        box-shadow: 0 0 0 2px #111;
+    }
 
     /* ── PURCHASE ROW ── */
     .lux-purchase-row {
@@ -223,9 +239,10 @@
 @endPushOnce
 
 <div class="lux-product-card">
-    <div class="lux-product-thumb">
+    <div class="lux-product-thumb"@if ($peekImage && $peekImage !== $mainImage) data-peek="{{ $peekImage }}"@endif>
         <a href="{{ url('product/' . $product->slug) }}">
-            <img src="{{ $mainImage }}" alt="{{ $product->title }}" loading="lazy">
+            <img src="{{ $mainImage }}" alt="{{ $product->title }}" loading="lazy"
+                 data-main="{{ $mainImage }}" data-current="{{ $mainImage }}">
         </a>
     </div>
 
@@ -254,8 +271,15 @@
             @if ($colors->count() > 0)
                 <div class="lux-color-variants">
                     @foreach ($colors->take($maxSwatches) as $color)
-                        <span class="lux-color" style="background:{{ $color->code ?? '#ddd' }}"
-                              title="{{ $color->name }}"></span>
+                        @php
+                            $swatchImg = ! empty($color->pivot->image)
+                                ? asset('uploads/product/' . $color->pivot->image)
+                                : null;
+                        @endphp
+                        <span class="lux-color{{ $swatchImg ? ' is-clickable' : '' }}"
+                              style="background:{{ $color->code ?? '#ddd' }}"
+                              title="{{ $color->name }}"
+                              @if ($swatchImg) data-img="{{ $swatchImg }}" role="button" tabindex="0" aria-label="Show {{ $color->name }}" @endif></span>
                     @endforeach
                     @if ($colors->count() > $maxSwatches)
                         <span class="lux-rating-count">+{{ $colors->count() - $maxSwatches }}</span>
@@ -279,3 +303,63 @@
         </div>
     </div>
 </div>
+
+{{-- ─────────────────────────────────────────────────────────────────────────
+     Card interactions (pushed once, works for every card on the page):
+       • Hover the photo  → peek the next gallery image; leave → restore.
+       • Click a colour   → switch the card photo to that colour's variation.
+     Delegated on document so it also covers Slick's cloned slider slides.
+──────────────────────────────────────────────────────────────────────────── --}}
+@pushOnce('js')
+<script>
+(function () {
+    function restoreSrc(img) {
+        if (img) img.src = img.getAttribute('data-current') || img.getAttribute('data-main');
+    }
+
+    // Hover peek (mouseover/mouseout bubble, so delegation covers cloned slides).
+    document.addEventListener('mouseover', function (e) {
+        var thumb = e.target.closest && e.target.closest('.lux-product-thumb[data-peek]');
+        if (!thumb) return;
+        var img = thumb.querySelector('img');
+        var peek = thumb.getAttribute('data-peek');
+        if (img && peek) img.src = peek;
+    });
+    document.addEventListener('mouseout', function (e) {
+        var thumb = e.target.closest && e.target.closest('.lux-product-thumb[data-peek]');
+        if (!thumb) return;
+        // Ignore moves between the thumb's own children; only restore on real leave.
+        if (e.relatedTarget && thumb.contains(e.relatedTarget)) return;
+        restoreSrc(thumb.querySelector('img'));
+    });
+
+    // Colour swatch → switch the card image to that colour's variation photo.
+    function selectSwatch(sw) {
+        var card = sw.closest('.lux-product-card');
+        if (!card) return;
+        var img = card.querySelector('.lux-product-thumb img');
+        var src = sw.getAttribute('data-img');
+        if (img && src) {
+            img.src = src;
+            img.setAttribute('data-current', src); // becomes the new resting image
+        }
+        card.querySelectorAll('.lux-color').forEach(function (s) { s.classList.remove('is-active'); });
+        sw.classList.add('is-active');
+    }
+
+    document.addEventListener('click', function (e) {
+        var sw = e.target.closest && e.target.closest('.lux-color[data-img]');
+        if (!sw) return;
+        e.preventDefault();
+        selectSwatch(sw);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var sw = e.target.closest && e.target.closest('.lux-color[data-img]');
+        if (!sw) return;
+        e.preventDefault();
+        selectSwatch(sw);
+    });
+})();
+</script>
+@endPushOnce

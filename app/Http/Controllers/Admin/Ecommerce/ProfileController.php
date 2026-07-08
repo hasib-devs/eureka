@@ -72,7 +72,7 @@ class ProfileController extends Controller
     public function updateAvatar(Request $request)
     {
         $this->validate($request, [
-            'avatar' => 'required|image|max:2048|mimes:jpg,jpeg,png,webp',
+            'avatar' => 'required|image',
         ]);
 
         $user = User::find(auth()->id());
@@ -98,7 +98,7 @@ class ProfileController extends Controller
     {
         $data = User::find(auth()->id());
         $this->validate($request, [
-            'avatar' => 'nullable|image|max:1024|mimes:jpeg,jpg,png,bmp',
+            'avatar' => 'nullable|image',
             'name' => 'required|string|max:50',
             'username' => 'required|string|max:50|unique:users,username,'.$data->id,
             'email' => 'required|string|email|max:255',
@@ -112,8 +112,8 @@ class ProfileController extends Controller
             'routing' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'description' => 'required|string',
-            'profile' => 'nullable|image|max:1024|mimes:jpg,jpeg,bmp,png',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,bmp,png',
+            'profile' => 'nullable|image',
+            'cover_photo' => 'nullable|image',
         ]);
 
         $avatar = $request->file('avatar');
@@ -189,7 +189,7 @@ class ProfileController extends Controller
     {
         $data = User::find(auth()->id());
         $this->validate($request, [
-            'avatar' => 'nullable|image|max:1024|mimes:jpeg,jpg,png,bmp',
+            'avatar' => 'nullable|image',
             'name' => 'required|string|max:50',
             'username' => 'required|string|max:50|unique:users,username,'.$data->id,
             'email' => 'required|string|email|max:255',

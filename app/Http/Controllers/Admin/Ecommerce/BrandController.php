@@ -43,7 +43,7 @@ class BrandController extends Controller
         $this->validate($request, [
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
 
         $cover_photo = $request->file('cover_photo');
@@ -104,7 +104,7 @@ class BrandController extends Controller
         $this->validate($request, [
             'name'        => 'required|string|max:255|unique:brands,name,'.$brand->id,
             'description' => 'nullable|string',
-            'cover_photo' => 'nullable|image|max:1024|mimes:jpg,jpeg,png,bmp'
+            'cover_photo' => 'nullable|image'
         ]);
 
         $cover_photo = $request->file('cover_photo');
