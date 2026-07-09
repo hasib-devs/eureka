@@ -121,7 +121,7 @@ class MissionControlController extends Controller
         }
 
         $sent = SslWirelessSms::send($rajin->phone, sprintf(
-            'Mission Control: Task #%d "%s" (%s) is %s. Please check the admin panel.',
+            'Wedevs AI: Task #%d "%s" (%s) is %s. Please check the admin panel.',
             $task->id,
             $task->title,
             ucfirst($task->priority),

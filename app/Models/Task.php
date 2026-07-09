@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Task extends Model
 {
@@ -54,11 +55,11 @@ class Task extends Model
     public static function statusLabel(string $status): string
     {
         return [
-            self::STATUS_AWAITING => 'Awaiting Review',
-            self::STATUS_REVIEW => 'Under Review',
-            self::STATUS_APPROVED => 'Approved',
-            self::STATUS_PROGRESS => 'In Progress',
-            self::STATUS_DELIVERED => 'Delivered',
+            self::STATUS_AWAITING => 'In Queue',
+            self::STATUS_REVIEW => 'Reading Brief',
+            self::STATUS_APPROVED => 'Scheduled',
+            self::STATUS_PROGRESS => 'Working',
+            self::STATUS_DELIVERED => 'Shipped',
         ][$status] ?? $status;
     }
 
@@ -117,6 +118,22 @@ class Task extends Model
         return max(0, self::REMINDER_COOLDOWN - $elapsed);
     }
 
+    /**
+     * When the current working stint began — the newest activity that moved
+     * the task into In Progress. Drives the live elapsed timer.
+     */
+    public function workingSince(): ?Carbon
+    {
+        if ($this->status !== self::STATUS_PROGRESS) {
+            return null;
+        }
+
+        return $this->activities
+            ->where('type', 'status')
+            ->where('status', self::STATUS_PROGRESS)
+            ->last()?->created_at;
+    }
+
     public function toBoardArray(): array
     {
         return [
@@ -134,6 +151,7 @@ class Task extends Model
             'editable' => $this->status === self::STATUS_AWAITING,
             'auto_start_seconds_left' => $this->autoStartSecondsLeft(),
             'reminder_wait_seconds' => $this->reminderWaitSeconds(),
+            'working_since' => $this->workingSince()?->toIso8601String(),
             'created_by' => $this->creator?->name,
             'created_at_human' => $this->created_at->diffForHumans(),
             'activities' => $this->activities->map->toFeedArray()->values()->all(),

@@ -1,9 +1,9 @@
 <div class="mc-modal-scrim" x-show="createOpen" x-transition.opacity @click.self="createOpen = false">
     <div class="mc-modal" @keydown.escape.window="createOpen = false">
-        <h2 x-text="editingId ? 'Refine Task' : 'Launch a New Task'"></h2>
+        <h2 x-text="editingId ? 'Refine the Brief' : 'Assign a Task'"></h2>
         <p class="mc-hint" x-text="editingId
-            ? 'Adjust the brief — Rajin has not started on it yet.'
-            : 'Brief Rajin. The task is transmitted the moment you hit launch.'"></p>
+            ? 'Adjust the brief — the worker has not started on it yet.'
+            : 'Brief the worker. Transmission is instant.'"></p>
 
         <form @submit.prevent="submitTask()">
             <div class="mc-field">
@@ -49,8 +49,7 @@
             <div class="mc-modal-actions">
                 <button type="button" class="mc-btn-ghost" @click="createOpen = false">Cancel</button>
                 <button type="submit" class="mc-btn-primary" :disabled="sending">
-                    <i class='bx' :class="editingId ? 'bx-save' : 'bx-send'"></i>
-                    <span x-text="sending ? 'Working…' : (editingId ? 'Save Changes' : 'Launch Task')"></span>
+                    <span x-text="sending ? 'Assigning…' : (editingId ? 'Save Brief' : 'Assign Task')"></span>
                 </button>
             </div>
         </form>

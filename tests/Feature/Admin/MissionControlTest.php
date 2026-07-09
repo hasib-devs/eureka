@@ -45,9 +45,10 @@ it('shows mission control to an admin and the old docs page is gone', function (
 
     $this->actingAs($admin)->get('/admin/mission-control')
         ->assertOk()
-        ->assertSee('Mission Control')
+        ->assertSee('WEDEVS')
         ->assertSee('missionControl(')
-        ->assertSee('mc-pipe', false);
+        ->assertSee('mc-pipe', false)
+        ->assertSee('mc-metro', false);
 
     $this->actingAs($admin)->get('/admin/setting/docs')->assertNotFound();
 });

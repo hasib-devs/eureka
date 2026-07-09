@@ -1,13 +1,14 @@
-{{-- Task Console: a centered command modal (replaces the old right drawer). --}}
+{{-- Task console: briefing + work log + comments in one modal. --}}
 <div class="mc-modal-scrim" x-show="drawerTask" x-transition.opacity @click.self="drawerId = null">
     <template x-if="drawerTask">
-        <div class="mc-console" @keydown.escape.window="drawerId = null">
-            <div class="mc-console-head" :class="'mc-status--' + drawerTask.status">
-                <span class="mc-status-icon"><i class='bx' :class="statusMeta(drawerTask.status).icon"></i></span>
-                <div class="mc-console-head-copy">
+        <div class="mc-console-modal" @keydown.escape.window="drawerId = null"
+            :style="'--st: var(--mc-' + ({awaiting_review:'olive',under_review:'lime2',approved:'mint',in_progress:'lime',delivered:'pale'}[drawerTask.status] || 'lime') + ')'">
+            <div class="mc-cons-head">
+                @include('admin.mission-control.partials.worker', ['size' => 38])
+                <div class="mc-cons-copy">
                     <h2 x-text="drawerTask.title"></h2>
                     <p>
-                        <span class="mc-status-label" x-text="drawerTask.status_label"></span>
+                        <span class="mc-cons-state" x-text="drawerTask.status_label"></span>
                         <span class="mc-ticker mc-shimmer" :class="tickerClass()" x-text="tickerLine(drawerTask)"></span>
                     </p>
                 </div>
@@ -15,17 +16,17 @@
                 <button type="button" class="mc-x" @click="drawerId = null"><i class='bx bx-x'></i></button>
             </div>
 
-            <div class="mc-console-body">
-                <div class="mc-console-brief">
-                    <p class="mc-console-kicker">Briefing</p>
-                    <p class="mc-console-desc" x-text="drawerTask.description"></p>
+            <div class="mc-cons-body">
+                <div class="mc-cons-brief">
+                    <p class="mc-kicker">Briefing</p>
+                    <p class="mc-cons-desc" x-text="drawerTask.description"></p>
 
                     <div class="mc-thumb-wrap" x-show="drawerTask.image_url" @click="lightbox = drawerTask.image_url">
                         <img class="mc-thumb" :src="drawerTask.image_url || ''" alt="Reference" loading="lazy">
                         <span class="mc-thumb-zoom"><i class='bx bx-expand-alt'></i> View reference</span>
                     </div>
 
-                    <div class="mc-meta">
+                    <div class="mc-meta-row">
                         <span class="mc-chip"><i class='bx bx-user'></i> <span x-text="drawerTask.created_by || 'Admin'"></span></span>
                         <span class="mc-chip"><i class='bx bx-time-five'></i> <span x-text="drawerTask.created_at_human"></span></span>
                         <span class="mc-chip" x-show="drawerTask.due_date"><i class='bx bx-calendar-event'></i> <span x-text="drawerTask.due_date"></span></span>
@@ -33,8 +34,8 @@
                     </div>
                 </div>
 
-                <div class="mc-console-feed">
-                    <p class="mc-console-kicker">Mission log</p>
+                <div class="mc-cons-feed">
+                    <p class="mc-kicker">Work log</p>
                     <div class="mc-timeline">
                         <template x-for="a in displayActivities(drawerTask)" :key="a.id">
                             <div class="mc-event" :class="a.type === 'comment' && 'mc-event--comment'">
@@ -52,7 +53,7 @@
 
                     <form class="mc-comment-form" @submit.prevent="sendComment()">
                         <input class="mc-input" type="text" x-model="commentBody" maxlength="2000"
-                            :placeholder="isExecutor ? 'Reply to the team…' : 'Write a note to Rajin…'">
+                            :placeholder="isExecutor ? 'Reply to the team…' : 'Write a note to the worker…'">
                         <button type="submit" class="mc-btn-primary mc-btn-primary--sq"
                             :disabled="!commentBody.trim()"><i class='bx bx-send'></i></button>
                     </form>
