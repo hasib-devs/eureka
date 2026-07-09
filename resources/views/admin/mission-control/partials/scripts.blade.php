@@ -1,29 +1,40 @@
 <script>
-    // Per-status micro-copy for the AI-console ticker. One place to tune all copy.
+    // Per-status meta: label, icon, stepper caption, CTA for the executor,
+    // and the AI-console ticker lines. One place to tune all copy.
     const MC_STATUS_META = {
         awaiting_review: {
             label: 'Awaiting Review',
             icon: 'bx-radar',
+            step: 'Queue',
+            cta: null,
             lines: ['Signal delivered', "Pinging Rajin's console…", 'Awaiting acknowledgment…'],
         },
         under_review: {
             label: 'Under Review',
             icon: 'bx-search-alt',
+            step: 'Review',
+            cta: { label: 'Start Review', icon: 'bx-search-alt' },
             lines: ['Rajin is examining the brief…', 'Scanning reference material…', 'Assessing scope…'],
         },
         approved: {
             label: 'Approved',
             icon: 'bx-badge-check',
+            step: 'Approve',
+            cta: { label: 'Approve', icon: 'bx-badge-check' },
             lines: ['Green light received', 'Scheduling execution window…'],
         },
         in_progress: {
             label: 'In Progress',
             icon: 'bx-cog',
+            step: 'Build',
+            cta: { label: 'Start Now', icon: 'bx-play' },
             lines: ['Rajin is on it…', 'Work in motion…', 'Progress compiling…'],
         },
         delivered: {
             label: 'Delivered',
             icon: 'bx-check-double',
+            step: 'Done',
+            cta: { label: 'Mark Delivered', icon: 'bx-check-double' },
             lines: ['Mission accomplished ✦', 'Delivered & verified'],
         },
     };
@@ -51,11 +62,17 @@
             form: { title: '', description: '', priority: 'normal', due_date: '', image: null, preview: null },
             errors: {},
             tickerTick: 0,
+            clock: '',
 
             init() {
+                this.clock = this.timeNow();
                 setInterval(() => this.tickerTick++, 3200);
                 setInterval(() => this.tickSeconds(), 1000);
                 setInterval(() => this.refresh(), 12000);
+            },
+
+            timeNow() {
+                return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             },
 
             csrf() {
@@ -71,36 +88,74 @@
             get activeTasks() { return this.tasks.filter(t => t.status !== 'delivered'); },
             get deliveredTasks() { return this.tasks.filter(t => t.status === 'delivered'); },
             get visibleTasks() { return this.tab === 'active' ? this.activeTasks : this.deliveredTasks; },
+            get reviewCount() { return this.tasks.filter(t => t.status === 'under_review').length; },
             get drawerTask() { return this.tasks.find(t => t.id === this.drawerId) || null; },
 
             statusMeta(status) { return MC_STATUS_META[status] || MC_STATUS_META.awaiting_review; },
 
+            // The rotating micro-copy line. The element itself is never
+            // recreated — a parity class re-triggers the entry animation.
             tickerLine(task) {
                 const lines = this.statusMeta(task.status).lines;
                 return lines[this.tickerTick % lines.length];
             },
 
+            tickerClass() { return this.tickerTick % 2 ? 'mc-ticker--b' : 'mc-ticker--a'; },
+
             headerLine() { return MC_HEADER_LINES[this.tickerTick % MC_HEADER_LINES.length]; },
 
             dispatchLine() { return MC_DISPATCH_LINES[this.overlayIdx % MC_DISPATCH_LINES.length]; },
 
+            overlayClass() { return this.overlayIdx % 2 ? 'mc-ticker--b' : 'mc-ticker--a'; },
+
             commentCount(task) { return task.activities.filter(a => a.type === 'comment').length; },
+
+            // Mission-log view: chronological, with consecutive duplicate
+            // status events collapsed so accidental double submissions never
+            // clutter the console.
+            displayActivities(task) {
+                const sorted = [...task.activities].sort((a, b) => a.id - b.id);
+                return sorted.filter((a, i) => {
+                    if (a.type !== 'status') return true;
+                    const prev = sorted[i - 1];
+                    return !(prev && prev.type === 'status' && prev.status === a.status);
+                });
+            },
+
+            stageIndex(status) { return Math.max(0, this.statuses.indexOf(status)); },
+
+            stageState(task, status) {
+                const current = this.stageIndex(task.status);
+                const mine = this.stageIndex(status);
+                if (mine < current || task.status === 'delivered') return 'done';
+                if (mine === current) return 'now';
+                return 'next';
+            },
+
+            pipeProgress(task) {
+                return (this.stageIndex(task.status) / (this.statuses.length - 1)) * 100 + '%';
+            },
+
+            nextStep(task) {
+                const next = this.statuses[this.stageIndex(task.status) + 1];
+                return next ? { status: next, ...MC_STATUS_META[next].cta } : null;
+            },
 
             countdown(task) {
                 if (task.status !== 'approved' || task.auto_start_seconds_left <= 0) return null;
                 const s = task.auto_start_seconds_left;
-                return 'T− auto-start ' + String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+                return 'T− ' + String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0') + ' to auto-start';
             },
 
             remindWait(task) {
-                const m = Math.ceil(task.reminder_wait_seconds / 60);
-                return 'Wait ' + m + 'm';
+                return 'Wait ' + Math.ceil(task.reminder_wait_seconds / 60) + 'm';
             },
 
-            // One heartbeat drives every live number: the approval countdown
-            // (optimistic flip at zero — the next poll confirms) and the
-            // reminder cooldown.
+            // One heartbeat drives every live number: the wall clock, the
+            // approval countdown (optimistic flip at zero — the next poll
+            // confirms) and the reminder cooldown.
             tickSeconds() {
+                this.clock = this.timeNow();
                 this.tasks.forEach(t => {
                     if (t.status === 'approved' && t.auto_start_seconds_left > 0) {
                         t.auto_start_seconds_left--;
@@ -113,12 +168,32 @@
                 });
             },
 
+            // Patch the existing task objects in place instead of replacing
+            // the array: Alpine keeps the same DOM nodes, so nothing is ever
+            // re-created (or worse, duplicated) on refresh.
+            syncTasks(list) {
+                const seen = new Set();
+                list.forEach(fresh => {
+                    seen.add(fresh.id);
+                    const mine = this.tasks.find(t => t.id === fresh.id);
+                    if (mine) {
+                        Object.assign(mine, fresh);
+                    } else {
+                        this.tasks.push(fresh);
+                    }
+                });
+                for (let i = this.tasks.length - 1; i >= 0; i--) {
+                    if (!seen.has(this.tasks[i].id)) this.tasks.splice(i, 1);
+                }
+                this.tasks.sort((a, b) => b.id - a.id);
+            },
+
             async refresh() {
                 try {
                     const res = await fetch(this.urls.feed, { headers: { Accept: 'application/json' } });
                     if (!res.ok) return;
                     const data = await res.json();
-                    this.tasks = data.tasks;
+                    this.syncTasks(data.tasks);
                 } catch (e) {
                     // Offline / navigating away — keep the last known state.
                 }
@@ -170,7 +245,7 @@
                     const data = await res.json();
 
                     if (this.editingId) {
-                        this.tasks = this.tasks.map(t => (t.id === data.task.id ? data.task : t));
+                        this.patchTask(data.task);
                         this.createOpen = false;
                     } else {
                         this.createOpen = false;
@@ -179,6 +254,12 @@
                 } finally {
                     this.sending = false;
                 }
+            },
+
+            patchTask(fresh) {
+                const mine = this.tasks.find(t => t.id === fresh.id);
+                if (mine) Object.assign(mine, fresh);
+                else this.tasks.unshift(fresh);
             },
 
             // The cinematic part: the task is already saved — this is pure
@@ -194,12 +275,12 @@
                     clearInterval(this.overlayTimer);
                     this.overlay = null;
                     this.tab = 'active';
-                    this.tasks.unshift(task);
+                    this.patchTask(task);
                 }, 4400);
             },
 
             async setStatus(task, status) {
-                if (task.status === status) return;
+                if (!this.isExecutor || task.status === status) return;
                 const res = await fetch(this.urls.base + '/' + task.id + '/status', {
                     method: 'PATCH',
                     headers: this.headers(true),
@@ -207,7 +288,12 @@
                 });
                 if (!res.ok) return;
                 const data = await res.json();
-                this.tasks = this.tasks.map(t => (t.id === data.task.id ? data.task : t));
+                this.patchTask(data.task);
+            },
+
+            advance(task) {
+                const next = this.nextStep(task);
+                if (next) this.setStatus(task, next.status);
             },
 
             async removeTask(task) {
