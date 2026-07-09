@@ -297,9 +297,15 @@
                             onclick="window.location='{{ url('admin/setting/home') }}'">
                             <i class="bx bx-home"></i> Home Page
                         </li>
-                        <li class="{{ $navActive('admin/setting/docs') }}"
-                            onclick="window.location='{{ url('admin/setting/docs') }}'">
-                            <i class="bx bx-book"></i> Docs
+                        <li class="{{ $navActive('admin/mission-control*') }}"
+                            onclick="window.location='{{ url('admin/mission-control') }}'">
+                            <i class="bx bx-radar"></i> Mission Control
+                            @if (auth()->user()->isTaskExecutor())
+                                @php $mcAwaiting = \App\Models\Task::where('status', \App\Models\Task::STATUS_AWAITING)->count(); @endphp
+                                @if ($mcAwaiting)
+                                    <span class="mc-nav-badge">{{ $mcAwaiting }}</span>
+                                @endif
+                            @endif
                         </li>
                     </ul>
                 </div>
@@ -335,6 +341,28 @@
                .collapsed, data attrs) are theme-neutral. */
             .dashboard-sidebar {
                 font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
+            }
+
+            /* Mission Control: unread-tasks badge for the executor */
+            .mc-nav-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 18px;
+                height: 18px;
+                padding: 0 5px;
+                margin-left: auto;
+                border-radius: 9px;
+                background: #ef4444;
+                color: #fff;
+                font-size: 11px;
+                font-weight: 700;
+                line-height: 1;
+                animation: mcNavPulse 1.6s ease-in-out infinite;
+            }
+            @keyframes mcNavPulse {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+                50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
             }
 
             /* ---- Single profile section (structure + light colors) ---- */
