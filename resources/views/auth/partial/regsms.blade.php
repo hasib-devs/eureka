@@ -114,7 +114,7 @@
                             <i class="fas fa-paper-plane"></i> Send OTP
                         </button>
                     </div>
-                    <p id="rg-otp-msg" style="display:none" class="au-otp-msg"></p>
+                    <p id="rg-otp-msg" class="au-otp-msg"></p>
                 </div>
                 @endif
 
@@ -131,7 +131,7 @@
                         @error('password')
                             <p class="au-field-error"><i class="fas fa-times-circle"></i> {{ $message }}</p>
                         @enderror
-                        <div class="au-strength" id="rg-strength" style="display:none">
+                        <div class="au-strength" id="rg-strength">
                             <div class="au-strength-bar"><div class="au-strength-fill" id="rg-sf"></div></div>
                             <span class="au-strength-lbl" id="rg-sl"></span>
                         </div>
@@ -143,7 +143,7 @@
                                 class="au-input" placeholder="Repeat password" autocomplete="new-password" required />
                             <button type="button" class="au-eye-btn" id="rg-eye2"><i class="fal fa-eye" id="rg-eye2-ic"></i></button>
                         </div>
-                        <p class="au-match" id="rg-match" style="display:none"></p>
+                        <p class="au-match" id="rg-match"></p>
                     </div>
                 </div>
 

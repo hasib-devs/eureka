@@ -686,11 +686,6 @@ class SettingController extends Controller
     //     return view('admin.e-commerce.social', compact('pixel', 'fci', 'fcs', 'gci', 'gcs'));
     // }
 
-    public function docs()
-    {
-        return view('admin.e-commerce.docs');
-    }
-
     public function getway()
     {
         return view('admin.e-commerce.getway');

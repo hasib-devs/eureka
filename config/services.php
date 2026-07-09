@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // Defaults mirror the credentials already used inline across the app
+    // (RegisterController, CheckoutOtpController, …).
+    'sslwireless' => [
+        'url' => env('SSLW_SMS_URL', 'https://smsplus.sslwireless.com/api/v3/send-sms'),
+        'api_token' => env('SSLW_API_TOKEN', 'kzgohm6e-ibzg6yrh-potoh793-ecd5f90k-oi2qgqsm'),
+        'sid' => env('SSLW_SID', 'EUREKAAVEOTP'),
+    ],
+
 ];

@@ -8,8 +8,10 @@ use App\Models\Category;
 use App\Models\miniCategory;
 use App\Models\Page;
 use App\Models\SubCategory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->configureModels();
+
+        Gate::define('control-tasks', fn (User $user) => $user->isTaskExecutor());
 
         Builder::macro('filter', function ($key, $column = null, $compareWith = null, $filterIf = true) {
             if (($value = request($key, null)) !== null && $filterIf) {

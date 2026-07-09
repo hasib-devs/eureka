@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Direction;
 
 class User extends Authenticatable
 {
@@ -38,14 +36,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-     /**
+    /**
      * Get the customer info associated with the user.
      */
     public function customer_info()
     {
         return $this->hasOne(CustomerInfo::class);
     }
-     /**
+
+    /**
      * Get the shop info associated with the user.
      */
     public function shop_info()
@@ -76,7 +75,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
-    
+
     /**
      * Get all of the coupons that are assigned this user.
      */
@@ -84,7 +83,6 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Coupon::class);
     }
-
 
     /**
      * Get the comments for the user.
@@ -111,7 +109,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Commission::class);
     }
-     /**
+
+    /**
      * Get the chats for the user.
      */
     public function chats()
@@ -125,5 +124,13 @@ class User extends Authenticatable
     public function staff_chats()
     {
         return $this->hasMany(Chat::class, 'staff_id', 'id');
+    }
+
+    /**
+     * The Mission Control executor: the admin who controls task statuses.
+     */
+    public function isTaskExecutor(): bool
+    {
+        return (int) $this->role_id === 1 && strtolower((string) $this->username) === 'rajin';
     }
 }
