@@ -70,7 +70,7 @@ class VariableProductController extends Controller
             'regular_price' => $first['price'],      // card "from" price = first colour
             'discount_price' => null,
             'quantity' => array_sum(array_column($variations, 'qnty')),
-            'image' => $first['image'],              // hero = first colour image
+            'image' => $this->moveUpload($request->file('image')),
             'status' => $request->filled('status'),
             'is_aproved' => $request->filled('status'),
             'is_shown_on_homepage' => $request->filled('is_shown_on_homepage'),
@@ -82,6 +82,7 @@ class VariableProductController extends Controller
         $product->categories()->sync($request->categories, []);
         $this->syncSubCategories($request, $product);
         $this->syncVariations($product, $variations);
+        $this->saveGalleryImages($request, $product);
         $this->saveLifestyleImages($request, $product);
 
         return redirect()->to(routeHelper('variable-products'))
@@ -116,7 +117,7 @@ class VariableProductController extends Controller
         $product = $variable_product;
         abort_unless($product->is_variable, 404);
 
-        $this->validateVariable($request);
+        $this->validateVariable($request, isUpdate: true);
 
         $variations = $this->collectVariations($request);
         if (empty($variations)) {
@@ -129,6 +130,13 @@ class VariableProductController extends Controller
         $linky = $this->youtubeEmbed($request->yvideo);
 
         $first = $variations[0];
+
+        // New main image replaces the current one; otherwise keep it. The old
+        // file is left on disk — legacy variable products share it with a
+        // colour variation, so unlinking it would break that colour's image.
+        $imageName = $request->file('image')
+            ? $this->moveUpload($request->file('image'))
+            : $product->image;
 
         $product->update([
             'title' => $request->title,
@@ -144,7 +152,7 @@ class VariableProductController extends Controller
             'regular_price' => $first['price'],
             'discount_price' => null,
             'quantity' => array_sum(array_column($variations, 'qnty')),
-            'image' => $first['image'],
+            'image' => $imageName,
             'status' => $request->filled('status'),
             'is_aproved' => $request->filled('status'),
             'is_shown_on_homepage' => $request->filled('is_shown_on_homepage'),
@@ -157,6 +165,7 @@ class VariableProductController extends Controller
         DB::table('color_product')->where('product_id', $product->id)->delete();
         $this->syncVariations($product, $variations);
 
+        $this->saveGalleryImages($request, $product);
         $this->saveLifestyleImages($request, $product);
         foreach ($request->input('existing_lifestyle', []) as $imageId => $fields) {
             $product->images()->where('id', $imageId)->update([
@@ -193,7 +202,7 @@ class VariableProductController extends Controller
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private function validateVariable(Request $request): void
+    private function validateVariable(Request $request, bool $isUpdate = false): void
     {
         $this->validate($request, [
             'title' => 'required|string|max:255',
@@ -206,6 +215,9 @@ class VariableProductController extends Controller
             'warranty_returns' => 'nullable|string',
             'spec_labels' => 'nullable|array',
             'spec_values' => 'nullable|array',
+            'image' => ($isUpdate ? 'nullable' : 'required').'|image',
+            'images' => 'nullable|array',
+            'images.*' => 'image',
             'colors' => 'required|array|min:1',
             'colors.*' => 'nullable|integer',
             'color_prices' => 'nullable|array',
@@ -220,6 +232,9 @@ class VariableProductController extends Controller
             'lifestyle_captions' => 'nullable|array',
             'existing_lifestyle' => 'nullable|array',
         ], [
+            'image.required' => 'Add a main image — it is what the product page and cards show by default.',
+            'image.uploaded' => 'The main image failed to upload — please try a smaller file.',
+            'images.*.uploaded' => 'One of the gallery images failed to upload — please try a smaller file.',
             'color_images.*.uploaded' => 'One of the colour images failed to upload — please try a smaller file.',
         ]);
     }
@@ -357,6 +372,22 @@ class VariableProductController extends Controller
         }
 
         return $specs ? json_encode($specs) : null;
+    }
+
+    /**
+     * Store uploaded thumbnail-strip (gallery) images against the product.
+     */
+    private function saveGalleryImages(Request $request, Product $product): void
+    {
+        foreach ($request->file('images', []) as $gallery) {
+            if (! $gallery) {
+                continue;
+            }
+            $product->images()->create([
+                'name' => $this->moveUpload($gallery),
+                'section' => 'gallery',
+            ]);
+        }
     }
 
     private function saveLifestyleImages(Request $request, Product $product): void

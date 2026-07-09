@@ -75,8 +75,21 @@
         animation: none; /* pause the drift; give a clean hover zoom instead */
         transform: scale(1.05);
     }
+    /* Hover-peek overlay: the next gallery image sits on top and cross-fades in. */
+    .lux-product-thumb .lux-peek-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.45s ease, opacity 0.5s ease;
+    }
+    .lux-product-thumb:hover .lux-peek-img {
+        opacity: 1;
+    }
     @media (prefers-reduced-motion: reduce) {
         .lux-product-thumb img { animation: none; }
+        .lux-product-thumb .lux-peek-img { transition: none; }
     }
 
     /* ── INFO AREA ── */
@@ -250,10 +263,13 @@
 @endPushOnce
 
 <div class="lux-product-card">
-    <div class="lux-product-thumb"@if ($peekImage && $peekImage !== $mainImage) data-peek="{{ $peekImage }}"@endif>
+    <div class="lux-product-thumb">
         <a href="{{ url('product/' . $product->slug) }}">
             <img src="{{ $mainImage }}" alt="{{ $product->title }}" loading="lazy"
                  data-main="{{ $mainImage }}" data-current="{{ $mainImage }}">
+            @if ($peekImage && $peekImage !== $mainImage)
+                <img class="lux-peek-img" src="{{ $peekImage }}" alt="" aria-hidden="true" loading="lazy">
+            @endif
         </a>
     </div>
 
@@ -317,33 +333,13 @@
 
 {{-- ─────────────────────────────────────────────────────────────────────────
      Card interactions (pushed once, works for every card on the page):
-       • Hover the photo  → peek the next gallery image; leave → restore.
-       • Click a colour   → switch the card photo to that colour's variation.
-     Delegated on document so it also covers Slick's cloned slider slides.
+       • Click a colour → switch the card photo to that colour's variation.
+     (Hover-peek is pure CSS: the .lux-peek-img overlay cross-fades in, so it
+     also covers Slick's cloned slider slides with no JS.)
 ──────────────────────────────────────────────────────────────────────────── --}}
 @pushOnce('js')
 <script>
 (function () {
-    function restoreSrc(img) {
-        if (img) img.src = img.getAttribute('data-current') || img.getAttribute('data-main');
-    }
-
-    // Hover peek (mouseover/mouseout bubble, so delegation covers cloned slides).
-    document.addEventListener('mouseover', function (e) {
-        var thumb = e.target.closest && e.target.closest('.lux-product-thumb[data-peek]');
-        if (!thumb) return;
-        var img = thumb.querySelector('img');
-        var peek = thumb.getAttribute('data-peek');
-        if (img && peek) img.src = peek;
-    });
-    document.addEventListener('mouseout', function (e) {
-        var thumb = e.target.closest && e.target.closest('.lux-product-thumb[data-peek]');
-        if (!thumb) return;
-        // Ignore moves between the thumb's own children; only restore on real leave.
-        if (e.relatedTarget && thumb.contains(e.relatedTarget)) return;
-        restoreSrc(thumb.querySelector('img'));
-    });
-
     // Colour swatch → switch the card image to that colour's variation photo.
     function selectSwatch(sw) {
         var card = sw.closest('.lux-product-card');

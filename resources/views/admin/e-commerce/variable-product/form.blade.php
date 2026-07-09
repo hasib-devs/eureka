@@ -17,6 +17,7 @@
     $control = 'block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
     $label = 'mb-1 block text-sm font-medium text-slate-700';
     $existingSpecs = isset($product) ? $product->specs : [];
+    $existingGallery = isset($product) ? $product->images->where('section', 'gallery')->values() : collect();
     $existingLifestyle = isset($product) ? $product->images->where('section', 'lifestyle')->values() : collect();
 @endphp
 
@@ -196,7 +197,8 @@
                     <div>
                         <h3 class="text-base font-semibold text-slate-900">Variations (Colours)</h3>
                         <p class="text-xs text-slate-500">
-                            Each colour needs its own image, price and stock. The first row is the default shown on the page.
+                            Each colour needs its own image, price and stock — shown only when a customer selects that colour.
+                            The first row's price is the product's display ("from") price.
                             Missing a colour? Create it first in
                             <a href="{{ routeHelper('color') }}" target="_blank" class="font-medium text-primary hover:underline">Colors</a>.
                         </p>
@@ -249,12 +251,56 @@
                     <span class="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary"><i class="fas fa-photo-video"></i></span>
                     <div>
                         <h3 class="text-base font-semibold text-slate-900">Media</h3>
-                        <p class="text-xs text-slate-500">Lifestyle carousel and product video. The main gallery comes from the colour images above.</p>
+                        <p class="text-xs text-slate-500">Main image, gallery, lifestyle carousel and product video — same as a normal product. Colour images above show only when that colour is selected.</p>
                     </div>
                 </div>
                 <div class="space-y-6 p-5">
-                    {{-- Lifestyle images --}}
+                    {{-- Main image --}}
                     <div>
+                        <label class="{{ $label }}">Main Image @empty($product)<span class="text-danger">*</span>@endempty</label>
+                        <p class="mb-2 text-xs text-slate-400">The big featured photo shown by default (before any colour is selected). 3:4 portrait, 1200×1600px recommended.</p>
+                        @isset($product)
+                            @if ($product->image && ! is_array($product->image))
+                                <img src="{{ asset('uploads/product/' . $product->image) }}" alt=""
+                                    class="mb-2 h-24 w-[72px] rounded-lg border border-slate-200 object-cover">
+                            @endif
+                        @endisset
+                        <input type="file" name="image" accept="image/*" class="{{ $control }} border-slate-300">
+                        @isset($product)
+                            <p class="mt-1 text-xs text-slate-400">Leave empty to keep the current image</p>
+                        @endisset
+                        @error('image')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Gallery images --}}
+                    <div class="border-t border-slate-100 pt-5">
+                        <label class="{{ $label }}">Gallery Images (thumbnails)</label>
+                        <p class="mb-2 text-xs text-slate-400">Shown as the thumbnail strip under the main photo. Select multiple at once.</p>
+                        <input type="file" name="images[]" multiple accept="image/*" class="{{ $control }} border-slate-300">
+                        @error('images.*')
+                            <p class="mt-1 text-sm text-danger">{{ $message }}</p>
+                        @enderror
+                        @if ($existingGallery->isNotEmpty())
+                            <div class="mt-3 flex flex-wrap gap-3">
+                                @foreach ($existingGallery as $img)
+                                    <div class="relative">
+                                        <img src="{{ asset('uploads/product/' . $img->name) }}" alt=""
+                                            class="h-24 w-[72px] rounded-lg border border-slate-200 object-cover">
+                                        <a href="{{ routeHelper('idelte/' . $img->id) }}"
+                                            onclick="return confirm('Delete this gallery image?')"
+                                            class="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-danger text-xs text-white shadow">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lifestyle images --}}
+                    <div class="border-t border-slate-100 pt-5">
                         <div class="mb-2 flex items-center justify-between">
                             <div>
                                 <label class="{{ $label }}">Lifestyle Images ("Styled By Light" carousel)</label>

@@ -61,11 +61,10 @@
     ])->values();
 
     $isVariable = (bool) ($product->is_variable ?? false);
-    // Variable products: the main image defaults to the first colour's image.
-    $firstSwatch = $swatches->first();
-    if ($isVariable && ! empty($firstSwatch['img'])) {
-        $mainImage = $firstSwatch['img'];
-    }
+    // Variable products start with no colour selected: the stage shows the
+    // product's own main image and the gallery is the normal thumbnail strip.
+    // Colour images appear only when a swatch is clicked.
+    $defaultSwatch = $isVariable ? null : $swatches->first();
 
     // Reviews shaped for the client-side list (filter/sort/load-more).
     $reviewsData = $product->reviews->sortByDesc('created_at')->map(
@@ -139,12 +138,19 @@ body {
 }
 .featured-stage img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s var(--ease); animation: stageBreathe 12s ease-in-out infinite; }
 .featured-stage:hover img { animation: none; transform: scale(1.05); }
+/* Hover-peek overlay: the next photo sits on top of the stage and cross-fades in. */
+.featured-stage img.featured-peek {
+    position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none;
+    transition: transform 0.8s var(--ease), opacity 0.5s var(--ease);
+}
+.featured-stage.is-peeking img.featured-peek { opacity: 1; }
 @keyframes stageBreathe {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.035); }
 }
 @media (prefers-reduced-motion: reduce) {
     .featured-stage img { animation: none; }
+    .featured-stage img.featured-peek { transition: none; }
 }
 .stage-badge {
     position: absolute; top: 18px; left: 18px; background: var(--deep-black); color: var(--accent-color);
@@ -470,31 +476,20 @@ body {
 
 <div class="boutique-wrapper">
     <div class="gallery-column">
-        <div class="featured-stage" id="featuredStage" onclick="openLightboxSrc(document.getElementById('featuredImg').src)">
+        <div class="featured-stage" id="featuredStage" onclick="openLightboxSrc(stageVisibleSrc())">
             <span class="stage-badge">{{ $product->is_shown_on_homepage ? 'Bestseller' : $firstCategory }}</span>
             <img id="featuredImg" src="{{ $mainImage }}" alt="{{ $product->title }}">
+            <img id="featuredPeek" class="featured-peek" src="{{ $mainImage }}" alt="" aria-hidden="true">
         </div>
         <div class="thumbnail-grid" id="thumbGrid">
-            @if ($isVariable)
-                {{-- Variable product: one thumbnail per colour; clicking it selects that colour. --}}
-                @foreach ($swatches as $key => $swatch)
-                    @if (!empty($swatch['img']))
-                        <div class="thumb-box {{ $key === 0 ? 'active' : '' }}" data-color="{{ $swatch['slug'] }}"
-                            onclick="selectColorBySlug('{{ $swatch['slug'] }}')">
-                            <img src="{{ $swatch['img'] }}" alt="{{ $product->title }} — {{ $swatch['name'] }}">
-                        </div>
-                    @endif
-                @endforeach
-            @else
-                <div class="thumb-box active" onclick="setFeatured(this, '{{ $mainImage }}')">
-                    <img src="{{ $mainImage }}" alt="{{ $product->title }}">
+            <div class="thumb-box active" onclick="setFeatured(this, '{{ $mainImage }}')">
+                <img src="{{ $mainImage }}" alt="{{ $product->title }}">
+            </div>
+            @foreach ($galleryImages as $key => $image)
+                <div class="thumb-box" onclick="setFeatured(this, '{{ $image }}')">
+                    <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}">
                 </div>
-                @foreach ($galleryImages as $key => $image)
-                    <div class="thumb-box" onclick="setFeatured(this, '{{ $image }}')">
-                        <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}">
-                    </div>
-                @endforeach
-            @endif
+            @endforeach
         </div>
     </div>
 
@@ -534,7 +529,7 @@ body {
                 <span class="selection-label">Select Illumination Essence</span>
                 <div class="swatch-group">
                     @foreach ($swatches as $key => $swatch)
-                        <div class="swatch-wrapper {{ $key === 0 ? 'active' : '' }}"
+                        <div class="swatch-wrapper {{ $defaultSwatch && $key === 0 ? 'active' : '' }}"
                             data-color="{{ $swatch['slug'] }}" data-name="{{ $swatch['name'] }}" data-code="{{ $swatch['code'] }}"
                             data-img="{{ $swatch['img'] }}" data-price="{{ $swatch['price'] }}" data-qty="{{ $swatch['qty'] }}"
                             onclick="selectSwatch(this)">
@@ -544,8 +539,8 @@ body {
                     @endforeach
                 </div>
                 <div class="color-live-readout">
-                    <span class="live-dot" id="liveDot" style="background: {{ $swatches->first()['code'] }};"></span>
-                    Selected essence: <span class="live-name" id="liveName">{{ $swatches->first()['name'] }}</span>
+                    <span class="live-dot" id="liveDot" style="background: {{ $defaultSwatch['code'] ?? '#d6d6d4' }};"></span>
+                    Selected essence: <span class="live-name" id="liveName">{{ $defaultSwatch['name'] ?? '—' }}</span>
                 </div>
             </div>
         @endif
@@ -801,24 +796,34 @@ function setFeatured(el, src) {
     document.getElementById('featuredImg').src = src;
 }
 
-/* Hover the main image to instantly peek the next photo; leave to restore. */
+/* The image the visitor currently sees on the stage (peek overlay wins while hovering). */
+function stageVisibleSrc() {
+    const stage = document.getElementById('featuredStage');
+    const peek = document.getElementById('featuredPeek');
+    if (stage && peek && stage.classList.contains('is-peeking')) return peek.src;
+    return document.getElementById('featuredImg').src;
+}
+
+/* Hover the main image to cross-fade in the next photo; leave to fade back. */
 (function () {
     const stage = document.getElementById('featuredStage');
-    const featured = document.getElementById('featuredImg');
-    if (!stage || !featured) return;
+    const peek = document.getElementById('featuredPeek');
+    if (!stage || !peek) return;
     const srcList = Array.from(document.querySelectorAll('#thumbGrid .thumb-box img')).map(i => i.src);
     if (srcList.length < 2) return;
     stage.addEventListener('mouseenter', function () {
         const idx = srcList.indexOf(currentFeaturedSrc);
-        featured.src = idx === -1 ? srcList[0] : srcList[(idx + 1) % srcList.length];
+        peek.src = idx === -1 ? srcList[0] : srcList[(idx + 1) % srcList.length];
+        stage.classList.add('is-peeking');
     });
     stage.addEventListener('mouseleave', function () {
-        featured.src = currentFeaturedSrc;
+        stage.classList.remove('is-peeking');
     });
 })();
 
 /* ---------- Color swatches + glow ---------- */
-let selectedColor = @json($swatches->first()['slug'] ?? 'blank');
+// Variable products start unselected ('blank') — the stage rests on the main image.
+let selectedColor = @json($defaultSwatch['slug'] ?? 'blank');
 function hexToGlow(hex) {
     const h = (hex || '').replace('#', '');
     if (h.length !== 6) return 'rgba(255,204,0,0.45)';
@@ -840,12 +845,6 @@ function selectSwatch(el) {
     if (IS_VARIABLE) applyVariation(el);
 }
 
-// Clicking a variable product's thumbnail selects the matching colour swatch.
-function selectColorBySlug(slug) {
-    const sw = document.querySelector('.swatch-wrapper[data-color="' + slug + '"]');
-    if (sw) selectSwatch(sw);
-}
-
 // Switch the main image / price / stock to the chosen colour (variable only).
 function applyVariation(el) {
     const img = el.dataset.img;
@@ -853,8 +852,8 @@ function applyVariation(el) {
         currentFeaturedSrc = img;
         const f = document.getElementById('featuredImg');
         if (f) f.src = img;
-        document.querySelectorAll('#thumbGrid .thumb-box').forEach(t =>
-            t.classList.toggle('active', t.dataset.color === selectedColor));
+        // The colour photo isn't part of the gallery strip — clear thumb highlights.
+        document.querySelectorAll('#thumbGrid .thumb-box').forEach(t => t.classList.remove('active'));
     }
 
     const price = parseFloat(el.dataset.price);
