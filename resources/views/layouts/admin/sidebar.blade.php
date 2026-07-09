@@ -339,6 +339,16 @@
                hover/active states). Dark mode: the corporate graphite theme,
                scoped under html.admin-dark. Structure/behavior hooks (.rail,
                .collapsed, data attrs) are theme-neutral. */
+            /* Site brand display font (self-hosted) — used for the profile name.
+               Declared here too because the sidebar renders on every admin page,
+               not just Mission Control where the @font-face also lives. */
+            @font-face {
+                font-family: 'Unbounded';
+                font-style: normal;
+                font-weight: 700;
+                font-display: swap;
+                src: url('{{ asset('fonts/unbounded-700.woff2') }}') format('woff2');
+            }
             .dashboard-sidebar {
                 font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
             }
@@ -424,12 +434,13 @@
             .profile-avatar:hover .profile-avatar-edit { opacity: 1; }
             .profile-meta { min-width: 0; }
             .profile-meta h4 {
-                font-size: 0.92rem;
-                font-weight: 650;
+                font-family: 'Unbounded', var(--font-sans, "Instrument Sans", system-ui, sans-serif);
+                font-size: 0.82rem;
+                font-weight: 700;
                 color: #1e293b;
-                line-height: 1.2;
+                line-height: 1.25;
                 margin: 0;
-                letter-spacing: 0.1px;
+                letter-spacing: -0.2px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -547,14 +558,16 @@
 
             /* ==== Dark mode (html.admin-dark): corporate graphite ==== */
             html.admin-dark .dashboard-sidebar {
+                --admin-gold: #d4af37;
                 background: #0c1322;
                 border-right: 1px solid rgba(148, 163, 184, 0.12);
                 backdrop-filter: none;
             }
+            /* Carved 1px light-blue outline on the profile card (dark mode) */
             html.admin-dark .profile-block {
-                border-color: rgba(148, 163, 184, 0.14);
+                border-color: rgba(147, 197, 253, 0.38);
                 background: rgba(255, 255, 255, 0.03);
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(147, 197, 253, 0.06);
             }
             html.admin-dark .profile-avatar { border-color: rgba(148, 163, 184, 0.35); }
             html.admin-dark .profile-avatar-fallback {
@@ -562,12 +575,14 @@
                 color: #e2e8f0;
             }
             html.admin-dark .profile-meta h4 { color: #f1f5f9; }
-            html.admin-dark .profile-meta p { color: #8494ac; }
+            html.admin-dark .profile-meta p { color: #aab7cc; }
             html.admin-dark .account-actions {
                 border-top-color: rgba(148, 163, 184, 0.12);
                 background: rgba(255, 255, 255, 0.02);
             }
             html.admin-dark .account-actions .account-link { color: #9aa9bf; }
+            /* Profile / dark-mode / collapse icons in deep gold (logout stays red) */
+            html.admin-dark .account-actions .account-link i { color: var(--admin-gold); }
             html.admin-dark .account-actions .account-link:hover,
             html.admin-dark .account-actions .account-link.active {
                 background: rgba(255, 255, 255, 0.08);
@@ -575,10 +590,12 @@
             }
             html.admin-dark .account-actions .logout-btn { color: #f87171; }
             html.admin-dark .account-actions .logout-btn:hover { background: rgba(220, 38, 38, 0.18); color: #fca5a5; }
-            html.admin-dark .menu-section label { color: #64748b; }
-            html.admin-dark .menu-section label:hover { color: #cbd5e1; }
+            html.admin-dark .menu-section label { color: #ffffff; }
+            html.admin-dark .menu-section label:hover { color: #ffffff; }
             html.admin-dark .menu-section label .chev { color: #475569; }
             html.admin-dark .dashboard-sidebar li { color: #94a3b8; }
+            /* Menu item icons in the same deep gold */
+            html.admin-dark .dashboard-sidebar li i { color: var(--admin-gold); }
             html.admin-dark .dashboard-sidebar li:hover {
                 background: rgba(255, 255, 255, 0.06);
                 color: #f1f5f9;
