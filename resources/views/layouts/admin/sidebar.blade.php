@@ -299,7 +299,7 @@
                         </li>
                         <li class="{{ $navActive('admin/mission-control*') }}"
                             onclick="window.location='{{ url('admin/mission-control') }}'">
-                            <i class="bx bx-radar"></i> Mission Control
+                            <i class="bx bx-bot"></i> Wedevs AI
                             @if (auth()->user()->isTaskExecutor())
                                 @php $mcAwaiting = \App\Models\Task::where('status', \App\Models\Task::STATUS_AWAITING)->count(); @endphp
                                 @if ($mcAwaiting)

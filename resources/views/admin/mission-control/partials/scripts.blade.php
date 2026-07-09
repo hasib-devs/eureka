@@ -1,46 +1,37 @@
 <script>
-    // Per-status meta: label, icon, stepper caption, CTA for the executor,
-    // and the AI-console ticker lines. One place to tune all copy.
+    // Per-status meta: label, stepper CTA, and the AI-console ticker lines.
+    // One place to tune all product copy.
     const MC_STATUS_META = {
         awaiting_review: {
-            label: 'Awaiting Review',
-            icon: 'bx-radar',
-            step: 'Queue',
+            label: 'In Queue',
             cta: null,
-            lines: ['Signal delivered', "Pinging Rajin's console…", 'Awaiting acknowledgment…'],
+            lines: ['Waiting for pickup…', 'Signal sent to the worker…', 'Queued — next in line'],
         },
         under_review: {
-            label: 'Under Review',
-            icon: 'bx-search-alt',
-            step: 'Review',
-            cta: { label: 'Start Review', icon: 'bx-search-alt' },
-            lines: ['Rajin is examining the brief…', 'Scanning reference material…', 'Assessing scope…'],
+            label: 'Reading Brief',
+            cta: { label: 'Start Reading' },
+            lines: ['Parsing requirements…', 'Inspecting reference…', 'Scoping the brief…'],
         },
         approved: {
-            label: 'Approved',
-            icon: 'bx-badge-check',
-            step: 'Approve',
-            cta: { label: 'Approve', icon: 'bx-badge-check' },
-            lines: ['Green light received', 'Scheduling execution window…'],
+            label: 'Scheduled',
+            cta: { label: 'Approve' },
+            lines: ['Slot reserved', 'Auto-start scheduled…'],
         },
         in_progress: {
-            label: 'In Progress',
-            icon: 'bx-cog',
-            step: 'Build',
-            cta: { label: 'Start Now', icon: 'bx-play' },
-            lines: ['Rajin is on it…', 'Work in motion…', 'Progress compiling…'],
+            label: 'Working',
+            cta: { label: 'Start Now' },
+            lines: ['Wiring things up…', 'Work in motion…', 'Building — steady progress', 'Assembling components…'],
         },
         delivered: {
-            label: 'Delivered',
-            icon: 'bx-check-double',
-            step: 'Done',
-            cta: { label: 'Mark Delivered', icon: 'bx-check-double' },
-            lines: ['Mission accomplished ✦', 'Delivered & verified'],
+            label: 'Shipped ✦',
+            cta: { label: 'Mark Shipped' },
+            lines: ['Shipped ✦', 'Delivered for your review'],
         },
     };
 
-    const MC_DISPATCH_LINES = ['Encrypting payload…', 'Establishing secure channel…', 'Transmitting to Rajin…'];
-    const MC_HEADER_LINES = ['All channels stable', 'Monitoring task pipeline…', 'Live sync active'];
+    const MC_DISPATCH_LINES = ['Encrypting payload…', 'Opening a channel…', 'Transmitting to the worker…'];
+    const MC_BRAND_LINES = ['teammate online', 'all systems steady', 'live sync active'];
+    const MC_STAGE_PCT = { awaiting_review: 8, under_review: 32, approved: 55, in_progress: 68, delivered: 100 };
 
     function missionControl(boot) {
         return {
@@ -63,6 +54,7 @@
             errors: {},
             tickerTick: 0,
             clock: '',
+            nowMs: Date.now(),
 
             init() {
                 this.clock = this.timeNow();
@@ -88,13 +80,20 @@
             get activeTasks() { return this.tasks.filter(t => t.status !== 'delivered'); },
             get deliveredTasks() { return this.tasks.filter(t => t.status === 'delivered'); },
             get visibleTasks() { return this.tab === 'active' ? this.activeTasks : this.deliveredTasks; },
-            get reviewCount() { return this.tasks.filter(t => t.status === 'under_review').length; },
             get drawerTask() { return this.tasks.find(t => t.id === this.drawerId) || null; },
+
+            // The task the worker "is on" right now: prefer working, then the
+            // earliest pipeline states, newest first within a state.
+            get heroTask() {
+                for (const s of ['in_progress', 'under_review', 'approved', 'awaiting_review']) {
+                    const t = this.tasks.find(x => x.status === s);
+                    if (t) return t;
+                }
+                return null;
+            },
 
             statusMeta(status) { return MC_STATUS_META[status] || MC_STATUS_META.awaiting_review; },
 
-            // The rotating micro-copy line. The element itself is never
-            // recreated — a parity class re-triggers the entry animation.
             tickerLine(task) {
                 const lines = this.statusMeta(task.status).lines;
                 return lines[this.tickerTick % lines.length];
@@ -102,17 +101,14 @@
 
             tickerClass() { return this.tickerTick % 2 ? 'mc-ticker--b' : 'mc-ticker--a'; },
 
-            headerLine() { return MC_HEADER_LINES[this.tickerTick % MC_HEADER_LINES.length]; },
+            brandLine() { return MC_BRAND_LINES[this.tickerTick % MC_BRAND_LINES.length]; },
 
             dispatchLine() { return MC_DISPATCH_LINES[this.overlayIdx % MC_DISPATCH_LINES.length]; },
 
-            overlayClass() { return this.overlayIdx % 2 ? 'mc-ticker--b' : 'mc-ticker--a'; },
-
             commentCount(task) { return task.activities.filter(a => a.type === 'comment').length; },
 
-            // Mission-log view: chronological, with consecutive duplicate
-            // status events collapsed so accidental double submissions never
-            // clutter the console.
+            // Work-log view: chronological, with consecutive duplicate status
+            // events collapsed so accidental double submissions never clutter it.
             displayActivities(task) {
                 const sorted = [...task.activities].sort((a, b) => a.id - b.id);
                 return sorted.filter((a, i) => {
@@ -136,6 +132,61 @@
                 return (this.stageIndex(task.status) / (this.statuses.length - 1)) * 100 + '%';
             },
 
+            statusPercent(task) {
+                if (task.status === 'in_progress') {
+                    const started = task.working_since ? Date.parse(task.working_since) : null;
+                    const mins = started ? Math.max(0, (this.nowMs - started) / 60000) : 0;
+                    return Math.min(96, 60 + Math.floor(mins));
+                }
+                return MC_STAGE_PCT[task.status] ?? 8;
+            },
+
+            heroKick(task) {
+                return { in_progress: 'Live — working now', under_review: 'Live — reading your brief', approved: 'Scheduled — about to start', awaiting_review: 'In queue — next up' }[task.status] || 'Live';
+            },
+
+            heroWith(task) {
+                if (task.status === 'in_progress') {
+                    const el = this.heroElapsed(task);
+                    return 'Wedevs AI is on it' + (el ? ' — running ' + el : '');
+                }
+                return { under_review: 'Wedevs AI is reading the brief', approved: 'Wedevs AI reserved a slot for this', awaiting_review: 'Wedevs AI will pick this up next' }[task.status] || 'Wedevs AI';
+            },
+
+            heroLines(task) {
+                const tick = { kind: 'arrow', type: true, text: this.tickerLine(task) };
+                if (task.status === 'in_progress') {
+                    return [
+                        { kind: 'ok', text: 'Brief parsed — requirements identified' },
+                        { kind: 'ok', text: task.image_url ? 'Reference image analyzed' : 'Workspace prepared' },
+                        tick,
+                    ];
+                }
+                if (task.status === 'under_review') {
+                    return [{ kind: 'ok', text: 'Task picked up' }, tick];
+                }
+                if (task.status === 'approved') {
+                    return [
+                        { kind: 'ok', text: 'Approved — slot reserved' },
+                        { kind: 'arrow', text: (this.countdown(task) || 'starting soon…') },
+                    ];
+                }
+                return [tick];
+            },
+
+            heroElapsed(task) {
+                if (task.status !== 'in_progress' || !task.working_since) return null;
+                let s = Math.max(0, Math.floor((this.nowMs - Date.parse(task.working_since)) / 1000));
+                const h = Math.floor(s / 3600); s -= h * 3600;
+                const m = Math.floor(s / 60); s -= m * 60;
+                const pad = n => String(n).padStart(2, '0');
+                return pad(h) + ':' + pad(m) + ':' + pad(s);
+            },
+
+            stationTasks(status) { return this.tasks.filter(t => t.status === status); },
+
+            stationBusy(status) { return this.tasks.some(t => t.status === status); },
+
             nextStep(task) {
                 const next = this.statuses[this.stageIndex(task.status) + 1];
                 return next ? { status: next, ...MC_STATUS_META[next].cta } : null;
@@ -144,24 +195,25 @@
             countdown(task) {
                 if (task.status !== 'approved' || task.auto_start_seconds_left <= 0) return null;
                 const s = task.auto_start_seconds_left;
-                return 'T− ' + String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0') + ' to auto-start';
+                return 'T− ' + String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
             },
 
             remindWait(task) {
                 return 'Wait ' + Math.ceil(task.reminder_wait_seconds / 60) + 'm';
             },
 
-            // One heartbeat drives every live number: the wall clock, the
-            // approval countdown (optimistic flip at zero — the next poll
-            // confirms) and the reminder cooldown.
+            // One heartbeat drives every live number: the wall clock, elapsed
+            // timers, the approval countdown (optimistic flip at zero — the
+            // next poll confirms) and the reminder cooldown.
             tickSeconds() {
                 this.clock = this.timeNow();
+                this.nowMs = Date.now();
                 this.tasks.forEach(t => {
                     if (t.status === 'approved' && t.auto_start_seconds_left > 0) {
                         t.auto_start_seconds_left--;
                         if (t.auto_start_seconds_left === 0) {
                             t.status = 'in_progress';
-                            t.status_label = 'In Progress';
+                            t.status_label = MC_STATUS_META.in_progress.label;
                         }
                     }
                     if (t.reminder_wait_seconds > 0) t.reminder_wait_seconds--;
@@ -263,8 +315,8 @@
             },
 
             // The cinematic part: the task is already saved — this is pure
-            // presentation. Phase 1 "transmit" (~2.2s), phase 2 "ack" (~2.2s),
-            // then the new card drops onto the board.
+            // presentation. Phase 1 "transmit" (~2.2s), phase 2 "queued"
+            // (~2.2s), then the new card drops onto the board.
             runDispatchTheatre(task) {
                 this.overlay = 'transmit';
                 this.overlayIdx = 0;

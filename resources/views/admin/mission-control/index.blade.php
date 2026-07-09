@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Mission Control')
+@section('title', 'Wedevs AI')
 
 @push('css')
     @include('admin.mission-control.partials.styles')
@@ -9,33 +9,30 @@
 @section('content')
     <div class="mc-shell" x-data="missionControl(@js($boot))" x-cloak>
         <div class="mc-grid-bg" aria-hidden="true"></div>
-        <div class="mc-aurora" aria-hidden="true"></div>
 
         <div class="mc-topbar">
-            <div class="mc-topbar-left">
-                <span class="mc-emblem"><i class='bx bx-radar'></i></span>
+            <div class="mc-brand">
+                @include('admin.mission-control.partials.worker', ['size' => 42])
                 <div>
-                    <h1 class="mc-title">Mission Control</h1>
-                    <p class="mc-sub">
+                    <div class="mc-word">WEDEVS <em>AI</em></div>
+                    <div class="mc-brand-status">
                         <span class="mc-live-dot"></span>
-                        <span class="mc-sub-cap">Systems online</span>
-                        <span class="mc-ticker mc-shimmer" :class="tickerClass()" x-text="headerLine()"></span>
-                    </p>
+                        <span x-text="brandLine()"></span>
+                    </div>
                 </div>
             </div>
             <div class="mc-topbar-right">
-                <div class="mc-stats">
-                    <span class="mc-stat"><i class="mc-stat-dot mc-stat-dot--cyan"></i> Active <b x-text="activeTasks.length"></b></span>
-                    <span class="mc-stat"><i class="mc-stat-dot mc-stat-dot--violet"></i> In review <b x-text="reviewCount"></b></span>
-                    <span class="mc-stat"><i class="mc-stat-dot mc-stat-dot--gold"></i> Delivered <b x-text="deliveredTasks.length"></b></span>
-                </div>
+                <span class="mc-meta"><b x-text="activeTasks.length"></b> in motion &nbsp;·&nbsp; <b x-text="deliveredTasks.length"></b> shipped</span>
                 <span class="mc-clock" x-text="clock"></span>
                 <button type="button" class="mc-launch" x-show="!isExecutor" @click="openCreate()">
-                    <i class='bx bx-rocket'></i> New Task
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Assign Task
                 </button>
             </div>
         </div>
 
+        @include('admin.mission-control.partials.hero')
+        @include('admin.mission-control.partials.metro')
         @include('admin.mission-control.partials.board')
         @include('admin.mission-control.partials.create-panel')
         @include('admin.mission-control.partials.drawer')
