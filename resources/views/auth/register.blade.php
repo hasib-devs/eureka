@@ -203,6 +203,9 @@
 .au-field-error { margin-top: 5px; font-size: 12px; color: #c53030; display: flex; align-items: center; gap: 5px; }
 
 /* Strength meter */
+/* Initial hidden state lives here (not as inline style attributes); the
+   register JS reveals these by setting el.style.display directly. */
+#rg-strength, #rg-match, #rg-otp-msg { display: none; }
 .au-strength { margin-top: 8px; }
 .au-strength-bar { height: 3px; background: #e8e0d5; border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
 .au-strength-fill { height: 100%; border-radius: 99px; width: 0%; transition: width .3s ease, background .3s ease; }
