@@ -23,30 +23,26 @@
             <div class="mc-field">
                 <label>Priority</label>
                 <div class="mc-seg">
-                    <template x-for="p in ['low', 'normal', 'urgent']" :key="p">
-                        <button type="button" :class="form.priority === p && ('mc-seg-on--' + p)"
-                            @click="form.priority = p" x-text="p"></button>
-                    </template>
+                    @foreach (\App\Models\Task::PRIORITIES as $p)
+                        <button type="button" :class="form.priority === '{{ $p }}' && 'mc-seg-on--{{ $p }}'"
+                            @click="form.priority = '{{ $p }}'">{{ $p }}</button>
+                    @endforeach
                 </div>
             </div>
 
             <div class="mc-field">
-                <label for="mc-due">Deadline <span style="opacity:.5">(optional)</span></label>
+                <label for="mc-due">Deadline <span class="mc-optional">(optional)</span></label>
                 <input id="mc-due" class="mc-input" type="date" x-model="form.due_date">
                 <p class="mc-error" x-show="errors.due_date" x-text="errors.due_date && errors.due_date[0]"></p>
             </div>
 
             <div class="mc-field">
-                <label>Reference image <span style="opacity:.5">(optional)</span></label>
+                <label>Reference image <span class="mc-optional">(optional)</span></label>
                 <div class="mc-drop" @click="$refs.mcFile.click()">
-                    <template x-if="form.preview">
-                        <img :src="form.preview" alt="Preview">
-                    </template>
-                    <template x-if="!form.preview">
-                        <span><i class='bx bx-image-add'></i> Click to attach a reference</span>
-                    </template>
+                    <img x-show="form.preview" :src="form.preview || ''" alt="Preview">
+                    <span x-show="!form.preview"><i class='bx bx-image-add'></i> Click to attach a reference</span>
                 </div>
-                <input type="file" x-ref="mcFile" accept="image/*" style="display:none" @change="pickImage($event)">
+                <input type="file" x-ref="mcFile" accept="image/*" class="mc-file-hidden" @change="pickImage($event)">
                 <p class="mc-error" x-show="errors.image" x-text="errors.image && errors.image[0]"></p>
             </div>
 
