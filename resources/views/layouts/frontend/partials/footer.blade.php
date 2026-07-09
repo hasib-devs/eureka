@@ -22,7 +22,7 @@
 .lux-footer .footer-top-inner { max-width: 1200px; margin: 0 auto; padding: 64px 20px 48px; }
 .lux-footer .footer-grid { display: grid; grid-template-columns: 1.3fr 0.9fr 0.9fr 1.1fr; gap: 56px; }
 .lux-footer .footer-brand .footer-logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.lux-footer .footer-brand .footer-logo-row img { height: 68px; width: auto; display: block; }
+.lux-footer .footer-brand .footer-logo-row img { height: 88px; width: auto; display: block; }
 .lux-footer .footer-brand p { font-size: 13.5px; line-height: 1.85; color: #5c5c5c; margin: 0 0 26px; max-width: 300px; }
 .lux-footer .footer-social { display: flex; gap: 10px; flex-wrap: wrap; }
 .lux-footer .footer-social a {
@@ -89,6 +89,7 @@
 @media (max-width: 900px) {
     .lux-footer .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px 30px; }
     .lux-footer .footer-brand { grid-column: 1 / 3; }
+    .lux-footer .footer-brand .footer-logo-row img { height: 64px; }
     .lux-whatsapp-fixed { right: 16px; bottom: 16px; }
     .lux-scroll-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
     .lux-scroll-top.stacked { bottom: 72px; }
