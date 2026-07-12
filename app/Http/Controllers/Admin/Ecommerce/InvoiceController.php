@@ -124,6 +124,87 @@ class InvoiceController extends Controller
         ]);
     }
 
+    /**
+     * Edit a manual invoice.
+     */
+    public function edit(Invoice $invoice)
+    {
+        $invoice->load('items');
+
+        return view('admin.e-commerce.invoice.form', array_merge($this->formOptions(), [
+            'invoice' => $invoice,
+            'items' => $this->itemRows($invoice),
+            'action' => route('admin.invoices.update', $invoice->id),
+            'method' => 'PUT',
+            'heading' => 'Edit Invoice',
+        ]));
+    }
+
+    /**
+     * Update a manual invoice, keeping its original number.
+     */
+    public function update(StoreInvoiceRequest $request, Invoice $invoice)
+    {
+        $this->persist($invoice, $request);
+
+        notify()->success('Invoice updated');
+
+        return redirect()->route('admin.invoices.show', $invoice->id);
+    }
+
+    /**
+     * Open the builder prefilled from an existing invoice (saves as a new one).
+     */
+    public function duplicate(Invoice $invoice)
+    {
+        $invoice->load('items');
+
+        $prefill = new Invoice([
+            'invoice_date' => now()->toDateString(),
+            'customer_name' => $invoice->customer_name,
+            'customer_phone' => $invoice->customer_phone,
+            'customer_email' => $invoice->customer_email,
+            'customer_address' => $invoice->customer_address,
+            'discount' => $invoice->discount,
+            'delivery_label' => $invoice->delivery_label,
+            'delivery_charge' => $invoice->delivery_charge,
+            'additional_charges' => $invoice->additional_charges,
+            'advance_paid' => 0,
+            'status' => 'Draft',
+            'payment_method' => $invoice->payment_method,
+            'notes' => $invoice->notes,
+        ]);
+
+        return view('admin.e-commerce.invoice.form', array_merge($this->formOptions(), [
+            'invoice' => $prefill,
+            'items' => $this->itemRows($invoice),
+            'action' => route('admin.invoices.store'),
+            'method' => 'POST',
+            'heading' => 'Duplicate Invoice',
+        ]));
+    }
+
+    /**
+     * Delete a manual invoice (its items cascade).
+     */
+    public function destroy(Invoice $invoice)
+    {
+        $invoice->delete();
+
+        notify()->success('Invoice deleted');
+
+        return redirect()->route('admin.invoices.index');
+    }
+
+    private function itemRows(Invoice $invoice): array
+    {
+        return $invoice->items->map(fn ($i) => [
+            'description' => $i->description,
+            'qty' => $i->qty,
+            'unit_price' => $i->unit_price,
+        ])->all();
+    }
+
     private function orderRows(string $search, $from, $to): Collection
     {
         $query = Order::query()
