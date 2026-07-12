@@ -32,7 +32,7 @@ class OrderInvoicePresenter extends AbstractInvoicePresenter
             'number' => $order->invoice ?: $order->order_id,
             'date' => $order->created_at,
             'due_date' => null,
-            'status' => $this->paymentStatus($grandTotal, $advance),
+            'status' => PaymentStatus::forOrder($grandTotal, $advance, $order->pay_staus),
             'customer' => [
                 'name' => trim($order->first_name.' '.$order->last_name),
                 'phone' => $order->phone,
@@ -53,21 +53,6 @@ class OrderInvoicePresenter extends AbstractInvoicePresenter
             'business' => $this->businessInfo(),
             'payment_details' => $this->paymentDetails($order->payment_method),
         ], $this->appearance());
-    }
-
-    protected function paymentStatus(float $grandTotal, float $advance): string
-    {
-        if ($grandTotal > 0 && $advance >= $grandTotal) {
-            return 'Paid';
-        }
-        if ($advance > 0) {
-            return 'Partially Paid';
-        }
-        if ($this->order->pay_staus == 1) {
-            return 'Paid';
-        }
-
-        return 'Unpaid';
     }
 
     protected function address(): string
