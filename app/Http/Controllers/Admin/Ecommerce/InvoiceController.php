@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Admin\Ecommerce;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreInvoiceRequest;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PartialPayment;
+use App\Models\Product;
+use App\Models\User;
+use App\Support\Invoices\InvoiceNumber;
+use App\Support\Invoices\InvoiceTotals;
 use App\Support\Invoices\ManualInvoicePresenter;
 use App\Support\Invoices\OrderInvoicePresenter;
 use App\Support\Invoices\PaymentStatus;
@@ -13,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -66,6 +72,32 @@ class InvoiceController extends Controller
                 'date_to' => $to,
             ],
         ]);
+    }
+
+    /**
+     * Show the manual invoice builder.
+     */
+    public function create()
+    {
+        return view('admin.e-commerce.invoice.form', array_merge($this->formOptions(), [
+            'invoice' => null,
+            'items' => [['description' => '', 'qty' => 1, 'unit_price' => 0]],
+            'action' => route('admin.invoices.store'),
+            'method' => 'POST',
+            'heading' => 'Create Invoice',
+        ]));
+    }
+
+    /**
+     * Persist a new manual invoice.
+     */
+    public function store(StoreInvoiceRequest $request)
+    {
+        $invoice = $this->persist(new Invoice, $request);
+
+        notify()->success('Invoice created');
+
+        return redirect()->route('admin.invoices.show', $invoice->id);
     }
 
     /**
@@ -165,5 +197,76 @@ class InvoiceController extends Controller
             'status' => $inv->status,
             'url' => route('admin.invoices.show', $inv->id),
         ]);
+    }
+
+    /**
+     * Fill, compute totals for, and save a manual invoice with its items.
+     */
+    private function persist(Invoice $invoice, StoreInvoiceRequest $request): Invoice
+    {
+        $data = $request->validated();
+
+        $items = collect($data['items'])->map(fn ($i) => [
+            'description' => $i['description'],
+            'qty' => (float) $i['qty'],
+            'unit_price' => (float) $i['unit_price'],
+            'line_total' => round((float) $i['qty'] * (float) $i['unit_price'], 2),
+        ])->all();
+
+        $totals = InvoiceTotals::compute(
+            $items,
+            $data['discount'] ?? 0,
+            $data['delivery_charge'] ?? 0,
+            $data['additional_charges'] ?? 0,
+            $data['advance_paid'] ?? 0,
+        );
+
+        return DB::transaction(function () use ($invoice, $data, $items, $totals) {
+            $invoice->fill([
+                'invoice_date' => $data['invoice_date'],
+                'due_date' => $data['due_date'] ?? null,
+                'customer_name' => $data['customer_name'],
+                'customer_phone' => $data['customer_phone'] ?? null,
+                'customer_email' => $data['customer_email'] ?? null,
+                'customer_address' => $data['customer_address'] ?? null,
+                'discount' => $data['discount'] ?? 0,
+                'delivery_label' => $data['delivery_label'] ?? null,
+                'delivery_charge' => $data['delivery_charge'] ?? 0,
+                'additional_charges' => $data['additional_charges'] ?? 0,
+                'advance_paid' => $data['advance_paid'] ?? 0,
+                'subtotal' => $totals['subtotal'],
+                'grand_total' => $totals['grand_total'],
+                'due_amount' => $totals['due_amount'],
+                'status' => $data['status'],
+                'payment_method' => $data['payment_method'] ?? null,
+                'notes' => $data['notes'] ?? null,
+            ]);
+
+            if (! $invoice->exists) {
+                $invoice->invoice_no = InvoiceNumber::next();
+                $invoice->created_by = auth()->id();
+            }
+
+            $invoice->save();
+
+            $invoice->items()->delete();
+            $invoice->items()->createMany($items);
+
+            return $invoice;
+        });
+    }
+
+    private function formOptions(): array
+    {
+        return [
+            'customers' => User::where('role_id', 3)->orderBy('name')->get(['id', 'name', 'phone', 'email']),
+            'products' => Product::where('status', 1)->orderBy('title')->get(['id', 'title', 'regular_price']),
+            'deliveryPresets' => [
+                ['label' => 'Dhaka City', 'amount' => 80],
+                ['label' => 'Outside Dhaka', 'amount' => 150],
+            ],
+            'statuses' => self::STATUSES,
+            'paymentMethods' => ['Cash', 'Bank Transfer', 'bKash', 'Nagad', 'Rocket'],
+        ];
     }
 }
