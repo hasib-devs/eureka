@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PartialPayment;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 use App\Support\Invoices\InvoiceNumber;
 use App\Support\Invoices\InvoiceTotals;
@@ -194,6 +195,64 @@ class InvoiceController extends Controller
         notify()->success('Invoice deleted');
 
         return redirect()->route('admin.invoices.index');
+    }
+
+    /**
+     * Invoice appearance & payment settings form.
+     */
+    public function settings()
+    {
+        return view('admin.e-commerce.invoice.settings');
+    }
+
+    /**
+     * Persist invoice settings (accent/header colors, mobile numbers & QR, signature).
+     */
+    public function updateSettings(Request $request)
+    {
+        $request->validate([
+            'invoice_accent' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'invoice_header_bg' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'invoice_bkash_number' => ['nullable', 'string', 'max:50'],
+            'invoice_nagad_number' => ['nullable', 'string', 'max:50'],
+            'invoice_rocket_number' => ['nullable', 'string', 'max:50'],
+            'invoice_signature' => ['nullable', 'image'],
+            'invoice_bkash_qr' => ['nullable', 'image'],
+            'invoice_nagad_qr' => ['nullable', 'image'],
+            'invoice_rocket_qr' => ['nullable', 'image'],
+        ]);
+
+        foreach (['invoice_accent', 'invoice_header_bg', 'invoice_bkash_number', 'invoice_nagad_number', 'invoice_rocket_number'] as $key) {
+            Setting::updateOrCreate(['name' => $key], ['value' => $request->input($key)]);
+        }
+
+        foreach (['invoice_signature', 'invoice_bkash_qr', 'invoice_nagad_qr', 'invoice_rocket_qr'] as $key) {
+            if ($request->hasFile($key)) {
+                Setting::updateOrCreate(['name' => $key], ['value' => $this->storeUpload($request->file($key), $key)]);
+            }
+        }
+
+        notify()->success('Invoice settings saved');
+
+        return back();
+    }
+
+    private function storeUpload($file, string $key): string
+    {
+        $dir = public_path('uploads/invoice');
+        if (! file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        $old = setting($key);
+        if ($old && file_exists($dir.'/'.$old)) {
+            @unlink($dir.'/'.$old);
+        }
+
+        $name = $key.'-'.now()->timestamp.'.'.$file->getClientOriginalExtension();
+        $file->move($dir, $name);
+
+        return $name;
     }
 
     private function itemRows(Invoice $invoice): array
