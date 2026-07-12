@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PartialPayment;
+use App\Support\Invoices\ManualInvoicePresenter;
+use App\Support\Invoices\OrderInvoicePresenter;
 use App\Support\Invoices\PaymentStatus;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -63,6 +65,30 @@ class InvoiceController extends Controller
                 'date_from' => $from,
                 'date_to' => $to,
             ],
+        ]);
+    }
+
+    /**
+     * Render a manual invoice.
+     */
+    public function show(Invoice $invoice)
+    {
+        $invoice->load('items');
+
+        return view('admin.e-commerce.invoice.show', [
+            'vm' => (new ManualInvoicePresenter($invoice))->toArray(),
+        ]);
+    }
+
+    /**
+     * Render an existing order as an invoice.
+     */
+    public function showOrder(Order $order)
+    {
+        $order->load('orderDetails');
+
+        return view('admin.e-commerce.invoice.show', [
+            'vm' => (new OrderInvoicePresenter($order))->toArray(),
         ]);
     }
 
