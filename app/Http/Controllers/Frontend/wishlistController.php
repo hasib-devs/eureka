@@ -53,7 +53,11 @@ class wishlistController extends Controller
         }
 
         if ($request->expectsJson()) {
-            return response()->json(['alert' => 'Success', 'message' => $message]);
+            return response()->json([
+                'alert' => 'Success',
+                'message' => $message,
+                'count' => wishlist::where('user_id', auth()->id())->count(),
+            ]);
         }
 
         notify()->success($message, 'Wishlist');

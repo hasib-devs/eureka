@@ -18,4 +18,20 @@ class Coupon extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    /**
+     * The customer who EARNED this coupon (null for admin-created public coupons).
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Admin-created, publicly usable coupons (not personal reward coupons).
+     */
+    public function scopePublic($query)
+    {
+        return $query->whereNull('user_id');
+    }
 }

@@ -120,6 +120,8 @@ class SettingController extends Controller
             Setting::updateOrCreate(['name' => 'SMS_API_KEY'], ['value' => $request->get('SMS_API_KEY')]);
             Setting::updateOrCreate(['name' => 'SMS_API_SENDER_ID'], ['value' => $request->get('SMS_API_SENDER_ID')]);
             Setting::updateOrCreate(['name' => 'sms_config_status'], ['value' => $request->get('sms_config_status')]);
+            Setting::updateOrCreate(['name' => 'order_sms_status'], ['value' => $request->get('order_sms_status') ? 1 : 0]);
+            Setting::updateOrCreate(['name' => 'order_sms_template'], ['value' => $request->get('order_sms_template')]);
             notify()->success('SMS configuration successfully updated', 'Success');
 
             return back();

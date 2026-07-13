@@ -11,7 +11,9 @@ use App\Models\Order;
 use App\Models\OrderDetails;
 use App\Models\Product;
 use App\Models\Review;
+use App\Services\OrderSms;
 use App\Services\ProductPriceCalculator;
+use App\Services\RewardCoupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -240,6 +242,8 @@ class OrderController extends Controller
 
         $avg = Review::where('product_id', $product_id)->avg('rating');
         Product::where('id', $product_id)->update(['review' => round($avg, 1)]);
+
+        RewardCoupon::forReview(Auth::id());
 
         notify()->success('Review submitted.', 'Thanks');
 
@@ -581,6 +585,9 @@ class OrderController extends Controller
         }
 
         Session::forget('gift_wrap');
+
+        OrderSms::send($order);
+        RewardCoupon::forPurchase($userId);
 
         return $order->load('orderDetails');
     }

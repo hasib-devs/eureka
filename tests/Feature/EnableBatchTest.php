@@ -53,10 +53,9 @@ it('loads the wishlist page for a customer with a saved product without crashing
         ->assertSee($product->title);
 });
 
-it('populates the brand filter on the category page (E5)', function () {
+it('loads the category page as a clean product grid (E5)', function () {
     $this->withoutVite();
     $product = enableBatchProduct();
-    $brandName = DB::table('brands')->where('id', $product->brand_id)->value('name');
 
     $category = Category::create([
         'name' => 'Table Lamps',
@@ -65,11 +64,12 @@ it('populates the brand filter on the category page (E5)', function () {
     ]);
     $category->products()->attach($product->id);
 
+    // The category page was redesigned to a clean, Shop-style vertical grid, so
+    // it no longer renders the filter sidebar — it should load and show the product.
     $this->get('/category/table-lamps-e5')
         ->assertOk()
-        ->assertViewHas('brands', fn ($brands) => $brands->contains('id', $product->brand_id))
-        ->assertSee('name="brands[]"', false)
-        ->assertSee($brandName);
+        ->assertViewHas('brands') // controller still provides it; the view just no longer uses a filter
+        ->assertSee($product->title);
 });
 
 it('shows COD, bKash and Bank payment options at checkout (E1, E7)', function () {

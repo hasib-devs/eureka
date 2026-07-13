@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Ecommerce\CustomerController;
 use App\Http\Controllers\Admin\Ecommerce\DashboardController;
 use App\Http\Controllers\Admin\Ecommerce\HomepageVideoController;
 use App\Http\Controllers\Admin\Ecommerce\InvoiceController;
+use App\Http\Controllers\Admin\Ecommerce\MenuController;
 use App\Http\Controllers\Admin\Ecommerce\MobileMenuController;
 use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
 use App\Http\Controllers\Admin\Ecommerce\OrderController;
@@ -38,8 +39,8 @@ use App\Http\Controllers\CourierController;
 use App\Http\Controllers\Frontend\IncompleteLeadController;
 use App\Http\Controllers\pageController;
 use App\Http\Controllers\subscriptionController;
-use App\Http\Controllers\SystemController;
 // use App\Http\Controllers\Admin\POSController;
+use App\Http\Controllers\SystemController;
 use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('mobile-menu', [MobileMenuController::class, 'index'])->name('mobile-menu.index');
     Route::post('mobile-menu', [MobileMenuController::class, 'update'])->name('mobile-menu.update');
+
+    Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
+    Route::post('menu', [MenuController::class, 'store'])->name('menu.store');
+    Route::put('menu/{menu}', [MenuController::class, 'update'])->name('menu.update');
+    Route::delete('menu/{menu}', [MenuController::class, 'destroy'])->name('menu.destroy');
 
     Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('wishlist', [WishlistController::class, 'update'])->name('wishlist.update');

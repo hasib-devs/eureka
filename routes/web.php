@@ -191,6 +191,7 @@ Route::middleware(['account', 'auth'])->group(function () {
     Route::get('wishlist/', [wishlistController::class, 'index'])->name('wishlist');
     Route::post('wishlist/add', [wishlistController::class, 'store'])->name('wishlist.add');
     Route::get('wishlist/remove/{item}', [wishlistController::class, 'delete'])->name('wishlist.remove');
+    Route::get('my-coupons', [AccountController::class, 'coupons'])->name('coupons');
     Route::get('ticket/', [ContactController::class, 'ticket'])->name('ticket');
     Route::post('ticket/create', [ContactController::class, 'ticketCreate'])->name('ticket.create');
 

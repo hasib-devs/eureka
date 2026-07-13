@@ -223,6 +223,10 @@
                             onclick="window.location='{{ url('admin/mobile-menu') }}'">
                             <i class="bx bx-mobile-alt"></i> Mobile Menu
                         </li>
+                        <li class="{{ $navActive('admin/menu*') }}"
+                            onclick="window.location='{{ url('admin/menu') }}'">
+                            <i class="bx bx-menu"></i> Header Menu
+                        </li>
                         <li class="{{ $navActive('admin/page*') }}"
                             onclick="window.location='{{ url('admin/pages') }}'">
                             <i class="bx bx-file"></i> Pages

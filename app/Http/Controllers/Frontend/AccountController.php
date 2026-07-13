@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Blog;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Withdraw;
 use Carbon\Carbon;
@@ -28,7 +29,14 @@ class AccountController extends Controller
         $delevery=Order::where('user_id',auth()->id())->where('status','3')->count();
         return view('frontend.account-dashboard',compact('blog','order','pending','processing','cancel','shipping','delevery'));
     }
-    
+
+    public function coupons(){
+        $coupons = Coupon::where('user_id', auth()->id())
+            ->orderByDesc('id')
+            ->get();
+        return view('frontend.my-coupons', compact('coupons'));
+    }
+
 
     public function sendEotp(Request $request){
         

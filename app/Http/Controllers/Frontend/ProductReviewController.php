@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
+use App\Services\RewardCoupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -51,9 +52,13 @@ class ProductReviewController extends Controller
         $avg = Review::where('product_id', $product->id)->avg('rating');
         Product::where('id', $product->id)->update(['review' => round($avg, 1)]);
 
+        $reward = RewardCoupon::forReview(Auth::id());
+
         return response()->json([
             'alert' => 'success',
-            'message' => 'Thank you — your signature has been posted.',
+            'message' => $reward
+                ? 'Thank you — your review is posted. A reward coupon has been added to your account!'
+                : 'Thank you — your signature has been posted.',
             'review' => $this->presentReview($review),
         ]);
     }
