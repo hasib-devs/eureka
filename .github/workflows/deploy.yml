@@ -69,7 +69,7 @@ jobs:
       - name: Update code on server
         shell: bash
         run: |
-          repo_url="git@github.com:hasib-devs/eureka.git"
+          repo_url="git@github.com:rajin10/eureka.git"
           remote_cmd="cd '$DEPLOY_PATH' && \
             (git remote set-url origin '$repo_url' 2>/dev/null || git remote add origin '$repo_url') && \
             timeout 150 git -c core.sshCommand='ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15' fetch origin && \
