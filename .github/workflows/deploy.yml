@@ -17,6 +17,11 @@ jobs:
         -o ConnectTimeout=20
         -o ServerAliveInterval=15
         -o ServerAliveCountMax=4
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     steps:
       - name: Checkout code
@@ -33,6 +38,17 @@ jobs:
 
       - name: Build assets
         run: npm run build
+
+      - name: Validate deployment secrets
+        shell: bash
+        run: |
+          for name in SSH_HOST SSH_USER SSH_PORT DEPLOY_PATH SSH_PRIVATE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing required secret: $name"
+              exit 1
+            fi
+          done
+          echo "Deploy path resolved to: ${DEPLOY_PATH}"
 
       - name: Setup SSH key
         shell: bash
