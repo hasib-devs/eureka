@@ -291,7 +291,8 @@
             </div>
 
             @if (setting('wishlist_status', '1') !== '0')
-                <form action="{{ route('wishlist.add') }}" method="POST" class="lux-wishlist-form" style="margin:0;">
+                <form action="{{ route('wishlist.add') }}" method="POST" class="lux-wishlist-form" style="margin:0;"
+                      data-login="{{ route('login') }}">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->slug }}">
                     <button type="submit" class="lux-wishlist-btn" aria-label="Save to Wishlist">
@@ -419,6 +420,53 @@
         mq.addEventListener('change', function () { mq.matches ? updateScrollPeek() : clearScrollPeek(); });
     }
     updateScrollPeek();
+
+    // ── Wishlist add (AJAX; works on every card, prompts guests to log in) ──
+    function luxWishToast(msg, type) {
+        if (window.jQuery && jQuery.toast) {
+            jQuery.toast({
+                heading: type === 'success' ? 'Wishlist' : 'Notice',
+                text: msg,
+                icon: type === 'success' ? 'success' : 'warning',
+                position: 'top-right',
+                stack: false
+            });
+        } else {
+            alert(msg);
+        }
+    }
+    document.addEventListener('submit', function (e) {
+        var form = e.target.closest && e.target.closest('.lux-wishlist-form');
+        if (!form) return;
+        e.preventDefault();
+        var btn = form.querySelector('button');
+        if (btn && btn.disabled) return;
+        if (btn) btn.disabled = true;
+        var token = document.querySelector('meta[name="csrf-token"]');
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': token ? token.getAttribute('content') : '',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: new FormData(form)
+        })
+        .then(function (r) {
+            if (r.status === 401 || r.status === 419) {
+                luxWishToast('Please log in to save items to your wishlist.', 'warning');
+                setTimeout(function () { window.location = form.getAttribute('data-login') || '/login'; }, 900);
+                return null;
+            }
+            return r.json().catch(function () { return {}; });
+        })
+        .then(function (data) {
+            if (btn) btn.disabled = false;
+            if (!data) return;
+            luxWishToast(data.message || 'Added to your wishlist', 'success');
+        })
+        .catch(function () { if (btn) btn.disabled = false; });
+    });
 })();
 </script>
 @endPushOnce
