@@ -18,9 +18,6 @@ $PHP artisan event:cache
 echo "[deploy] Running migrations..."
 $PHP artisan migrate --force
 
-echo "[deploy] Ensuring Mission Control executor account exists (idempotent)..."
-$PHP artisan db:seed --class=RajinSeeder --force
-
 echo "[deploy] Restarting queue workers..."
 $PHP artisan queue:restart
 
