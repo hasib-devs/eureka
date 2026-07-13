@@ -11,13 +11,24 @@ class wishlistController extends Controller
 {
     public function index()
     {
-        $wishlist = wishlist::where('user_id', auth()->id())->latest('id')->get();
+        if (setting('wishlist_status', '1') === '0') {
+            return redirect()->route('home');
+        }
+
+        $wishlist = wishlist::where('user_id', auth()->id())
+            ->with(['product.brand', 'product.sizes', 'product.colors', 'product.reviews'])
+            ->latest('id')
+            ->get();
 
         return view('frontend.wishlist', compact('wishlist'));
     }
 
     public function store(Request $request)
     {
+        if (setting('wishlist_status', '1') === '0') {
+            return redirect()->route('home');
+        }
+
         $p = Product::where('slug', $request->product_id)->first();
         $already = wishlist::where('user_id', auth()->id())->where('product_id', $p->id)->count();
         if ($already == 0) {

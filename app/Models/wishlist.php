@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class wishlist extends Model
 {
     use HasFactory;
+
     protected $guarded = ['id'];
-    public function wishlist()
+
+    public function product()
     {
-        return $this->belongsToMany(Product::class,wishlist::class,'id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

@@ -657,12 +657,12 @@
                                                         @endauth
 
                                                         @if(setting('g_bkash')=='true')
-                                                        <!--<label for="Bkash">-->
-                                                        <!--    <input type="radio" name="payment_method"-->
-                                                        <!--        class="payment_method" value="Bkash" id="Bkash">-->
-                                                        <!--    <img src="{{asset('/')}}icon/bkash.png">-->
-                                                        <!--    Bkash-->
-                                                        <!--</label>-->
+                                                        <label for="Bkash">
+                                                            <input type="radio" name="payment_method"
+                                                                class="payment_method" value="Bkash" id="Bkash">
+                                                            <img src="{{asset('/')}}icon/bkash.png">
+                                                            Bkash
+                                                        </label>
                                                         @endif
                                                         @if(setting('g_nagad')=='true')
                                                         <!--<label for="Nagad">-->
@@ -681,12 +681,12 @@
                                                         <!--</label>-->
                                                         @endif
                                                         @if(setting('g_bank')=='true')
-                                                        <!--<label for="Bank">-->
-                                                        <!--    <input type="radio" name="payment_method"-->
-                                                        <!--        class="payment_method" value="Bank" id="Bank">-->
-                                                        <!--    <img src="{{asset('/')}}icon/bank.png">-->
-                                                        <!--    Bank-->
-                                                        <!--</label>-->
+                                                        <label for="Bank">
+                                                            <input type="radio" name="payment_method"
+                                                                class="payment_method" value="Bank" id="Bank">
+                                                            <img src="{{asset('/')}}icon/bank.png">
+                                                            Bank
+                                                        </label>
                                                         @endif
                                                     </div>
                                                 </div>

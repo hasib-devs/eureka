@@ -80,6 +80,19 @@
                             </select>
                             <p class="mt-1 text-xs text-slate-500">Currently selected: <span class="font-semibold text-primary">{{ Str::upper(setting('recovrAC')) }}</span></p>
                         </div>
+                        <div>
+                            <label for="google_login_status" class="mb-1 block text-sm font-medium text-slate-700">Google Login</label>
+                            <select name="google_login_status" id="google_login_status" class="{{ $selectControl }}">
+                                @if (setting('google_login_status') == '1')
+                                    <option value="1">On</option>
+                                    <option value="0">Off</option>
+                                @else
+                                    <option value="0">Off</option>
+                                    <option value="1">On</option>
+                                @endif
+                            </select>
+                            <p class="mt-1 text-xs text-slate-500">Show &ldquo;Continue with Google&rdquo; on login/register. Requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in <code>.env</code>.</p>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-5 py-4">

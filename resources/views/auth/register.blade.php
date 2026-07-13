@@ -267,6 +267,15 @@
 .au-alt { text-align: center; font-size: 14px; color: var(--au-muted); margin-bottom: 24px; }
 .au-alt a { font-weight: 700; color: var(--au-text); text-decoration: none; border-bottom: 1.5px solid var(--au-gold); padding-bottom: 1px; transition: color .2s; }
 .au-alt a:hover { color: var(--au-gold); }
+.au-google-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 12px 16px; margin-bottom: 16px;
+    border: 1px solid #dadce0; border-radius: 8px;
+    background: #fff; color: #3c4043; font-weight: 600;
+    text-decoration: none; font-size: 15px;
+    transition: background .2s, box-shadow .2s;
+}
+.au-google-btn:hover { background: #f7f8f8; box-shadow: 0 1px 3px rgba(60,64,67,.15); }
 
 .au-trust { display: flex; align-items: center; justify-content: center; gap: 18px; padding-top: 20px; border-top: 1px solid var(--au-border); }
 .au-trust-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #a8b4c0; }

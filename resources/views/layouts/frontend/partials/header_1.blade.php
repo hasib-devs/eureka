@@ -431,7 +431,9 @@
         #mobileSearchBtn {
             width: 52px;
             height: 52px;
-            display: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Responsive */
@@ -871,7 +873,7 @@
                 justify-content: flex-end;
             }
 
-            /* Right side shows the cart only */
+            /* Mobile right side shows the cart only (search stays desktop-only) */
             #mobileSearchBtn {
                 display: none !important;
             }
@@ -947,6 +949,15 @@
                     <img src="{{ asset('assets/frontend/images/user.png') }}" alt="Account"
                         style="width:22px; height:22px; object-fit:contain;">
                 </a>
+
+                {{-- Wishlist (desktop only; mobile keeps just the cart) --}}
+                @if (setting('wishlist_status', '1') !== '0')
+                    <a href="{{ route('wishlist') }}" class="action desktop-only" title="Wishlist" aria-label="Wishlist">
+                        <img src="{{ asset('assets/frontend/images/heart.png') }}" alt="Wishlist"
+                            style="width:22px; height:22px; object-fit:contain;">
+                        <span class="badge" id="wishlistCount">{{ auth()->check() ? App\Models\wishlist::where('user_id', auth()->id())->count() : 0 }}</span>
+                    </a>
+                @endif
 
 
                 {{-- Cart --}}

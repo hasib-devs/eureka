@@ -330,7 +330,7 @@
                 <span class="sp-sidebar-title">Filters</span>
                 <button class="sp-sidebar-close" id="spSidebarClose" aria-label="Close">✕</button>
             </div>
-            <x-filter-search-component name="category" :value="$slug" />
+            <x-filter-search-component name="category" :value="$slug" :brands="$brands" />
         </div>
     </aside>
     <div class="sp-sidebar-overlay" id="spOverlay"></div>

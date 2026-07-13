@@ -9,6 +9,42 @@
     {{-- <!-- Custom Head Code --> --}}
     {!! setting('header_code') !!}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Brand palette bridge: map the admin Color Settings onto the Tailwind theme
+         variables so the whole storefront (bg-primary / text-primary / accent, etc.)
+         follows the admin palette. MUST come after @vite so these :root values win
+         over the compiled @theme defaults. Empty settings fall back to today's brand. --}}
+    @php
+        $__hexShade = function (string $hex, float $amt): string {
+            $hex = ltrim(trim($hex), '#');
+            if (strlen($hex) === 3) { $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2]; }
+            if (strlen($hex) !== 6 || ! ctype_xdigit($hex)) { return '#'.$hex; }
+            $ch = fn ($c) => max(0, min(255, (int) round($c * (1 - $amt))));
+            return sprintf('#%02x%02x%02x', $ch(hexdec(substr($hex, 0, 2))), $ch(hexdec(substr($hex, 2, 2))), $ch(hexdec(substr($hex, 4, 2))));
+        };
+        $__hexTint = function (string $hex, float $amt): string {
+            $hex = ltrim(trim($hex), '#');
+            if (strlen($hex) === 3) { $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2]; }
+            if (strlen($hex) !== 6 || ! ctype_xdigit($hex)) { return '#'.$hex; }
+            $ch = fn ($c) => max(0, min(255, (int) round($c + (255 - $c) * $amt)));
+            return sprintf('#%02x%02x%02x', $ch(hexdec(substr($hex, 0, 2))), $ch(hexdec(substr($hex, 2, 2))), $ch(hexdec(substr($hex, 4, 2))));
+        };
+        $brandPrimary = setting('PRIMARY_COLOR') ?: '#f85606';
+        $brandSecondary = setting('SECONDARY_COLOR') ?: '#1e293b';
+        $brandAccent = setting('OPTIONAL_COLOR') ?: '#f2d231';
+    @endphp
+    <style>
+        :root {
+            --color-primary: {{ $brandPrimary }};
+            --color-primary-500: {{ $brandPrimary }};
+            --color-primary-600: {{ $__hexShade($brandPrimary, 0.10) }};
+            --color-primary-700: {{ $__hexShade($brandPrimary, 0.22) }};
+            --color-primary-100: {{ $__hexTint($brandPrimary, 0.80) }};
+            --color-primary-50: {{ $__hexTint($brandPrimary, 0.90) }};
+            --color-secondary: {{ $brandSecondary }};
+            --color-accent: {{ $brandAccent }};
+        }
+    </style>
     <style>
     
     
