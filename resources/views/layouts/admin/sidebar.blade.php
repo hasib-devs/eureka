@@ -76,6 +76,10 @@
                             onclick="window.location='{{ url('admin/incomplete-leads') }}'">
                             <i class="bx bx-error-alt"></i> Incomplete Orders
                         </li>
+                        <li class="{{ $navActive('admin/invoices') || $navActive('admin/invoices/*') ? 'active' : '' }}"
+                            onclick="window.location='{{ url('admin/invoices') }}'">
+                            <i class="bx bx-receipt"></i> Invoices
+                        </li>
                     </ul>
                 </div>
 

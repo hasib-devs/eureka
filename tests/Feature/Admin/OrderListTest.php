@@ -1,19 +1,8 @@
 <?php
 
 use App\Models\Order;
-use App\Models\User;
-use Database\Seeders\RoleSeeder;
 
-function adminUser(): User
-{
-    test()->seed(RoleSeeder::class);
-
-    return User::factory()->create([
-        'role_id' => 1, // Admin
-        'is_approved' => true,
-        'status' => true,
-    ]);
-}
+// adminUser() is provided globally by tests/Pest.php.
 
 it('renders the admin order list with orders and their status badges', function () {
     $this->withoutVite();

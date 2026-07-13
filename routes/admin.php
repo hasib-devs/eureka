@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\Ecommerce\CouponController;
 use App\Http\Controllers\Admin\Ecommerce\CustomerController;
 use App\Http\Controllers\Admin\Ecommerce\DashboardController;
 use App\Http\Controllers\Admin\Ecommerce\HomepageVideoController;
+use App\Http\Controllers\Admin\Ecommerce\InvoiceController;
 use App\Http\Controllers\Admin\Ecommerce\MissionControlController;
 use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
 use App\Http\Controllers\Admin\Ecommerce\OrderController;
@@ -235,6 +236,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
     });
 
     Route::post('/fraud-checker', [OrderController::class, 'fraud_checker'])->name('order.fraud_checker');
+
+    // invoices controller
+    Route::group(['as' => 'invoices.', 'prefix' => 'invoices'], function () {
+        Route::get('/', [InvoiceController::class, 'index'])->name('index');
+        Route::get('create', [InvoiceController::class, 'create'])->name('create');
+        Route::post('/', [InvoiceController::class, 'store'])->name('store');
+        Route::get('settings', [InvoiceController::class, 'settings'])->name('settings');
+        Route::post('settings', [InvoiceController::class, 'updateSettings'])->name('settings.update');
+        Route::get('order/{order}', [InvoiceController::class, 'showOrder'])->name('order');
+        Route::get('manual/{invoice}', [InvoiceController::class, 'show'])->name('show');
+        Route::get('manual/{invoice}/edit', [InvoiceController::class, 'edit'])->name('edit');
+        Route::put('manual/{invoice}', [InvoiceController::class, 'update'])->name('update');
+        Route::get('manual/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])->name('duplicate');
+        Route::delete('manual/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
+    });
 
     Route::get('/incomplete-leads', [IncompleteLeadController::class, 'index'])
         ->name('incomplete.leads.index');

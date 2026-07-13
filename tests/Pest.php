@@ -1,6 +1,11 @@
 <?php
 
+use App\Models\Brand;
+use App\Models\Product;
+use App\Models\User;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /*
@@ -44,7 +49,24 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function seedRoles(): void
 {
-    // ..
+    test()->seed(RoleSeeder::class);
+}
+
+function adminUser(): User
+{
+    seedRoles();
+
+    return User::factory()->create(['role_id' => 1]);
+}
+
+function makeProduct(): Product
+{
+    seedRoles();
+
+    $user = User::factory()->create();
+    $brand = Brand::create(['name' => 'Test Brand', 'slug' => 'brand-'.Str::random(10)]);
+
+    return Product::factory()->create(['user_id' => $user->id, 'brand_id' => $brand->id]);
 }
