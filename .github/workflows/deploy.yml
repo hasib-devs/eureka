@@ -17,10 +17,10 @@ jobs:
         -o ConnectTimeout=20
         -o ServerAliveInterval=15
         -o ServerAliveCountMax=4
-      SSH_HOST: ${{ secrets.SSH_HOST }}
-      SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_PORT: ${{ secrets.SSH_PORT }}
-      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      SSH_HOST: ${{ secrets.SSH_HOST || 'eureka.reliableuksolutions.com' }}
+      SSH_USER: ${{ secrets.SSH_USER || 'u562520413' }}
+      SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/home/u562520413/domains/eureka.reliableuksolutions.com/public_html' }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     steps:
@@ -58,7 +58,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
 
           for i in 1 2 3 4 5; do
-            if ssh-keyscan -T 10 -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null; then
+            if ssh-keyscan -T 10 -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null; then
               break
             fi
             echo "ssh-keyscan attempt $i failed, retrying..."
@@ -69,15 +69,15 @@ jobs:
       - name: Update code on server
         shell: bash
         run: |
-          repo_url="git@github.com:${{ github.repository }}.git"
-          remote_cmd="cd '${{ secrets.DEPLOY_PATH }}' && \
+          repo_url="git@github.com:hasib-devs/eureka.git"
+          remote_cmd="cd '$DEPLOY_PATH' && \
             (git remote set-url origin '$repo_url' 2>/dev/null || git remote add origin '$repo_url') && \
             timeout 150 git -c core.sshCommand='ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15' fetch origin && \
             git reset --hard origin/main"
 
           n=0
-          until ssh $SSH_OPTS -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" \
-                  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "$remote_cmd"; do
+          until ssh $SSH_OPTS -i ~/.ssh/deploy_key -p "$SSH_PORT" \
+                  "$SSH_USER@$SSH_HOST" "$remote_cmd"; do
             n=$((n + 1))
             if [ "$n" -ge 5 ]; then
               echo "::error::Failed to update code on server after $n attempts."
@@ -92,9 +92,9 @@ jobs:
         run: |
           n=0
           until rsync -az --delete \
-                  -e "ssh $SSH_OPTS -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" \
+                  -e "ssh $SSH_OPTS -i ~/.ssh/deploy_key -p $SSH_PORT" \
                   public/build/ \
-                  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/build/"; do
+                  "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/public/build/"; do
             n=$((n + 1))
             if [ "$n" -ge 5 ]; then
               echo "::error::Failed to upload built assets after $n attempts."
@@ -108,9 +108,9 @@ jobs:
         shell: bash
         run: |
           n=0
-          until ssh $SSH_OPTS -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" \
-                  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-                  "cd '${{ secrets.DEPLOY_PATH }}' && bash scripts/deploy.sh"; do
+          until ssh $SSH_OPTS -i ~/.ssh/deploy_key -p "$SSH_PORT" \
+                  "$SSH_USER@$SSH_HOST" \
+                  "cd '$DEPLOY_PATH' && bash scripts/deploy.sh"; do
             n=$((n + 1))
             if [ "$n" -ge 5 ]; then
               echo "::error::Post-deploy script failed after $n attempts."
