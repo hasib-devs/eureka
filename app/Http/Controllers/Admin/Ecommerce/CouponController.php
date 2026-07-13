@@ -16,7 +16,7 @@ class CouponController extends Controller
      */
     public function index()
     {
-        $coupons = DB::table('coupons')->latest('id')->get();
+        $coupons = DB::table('coupons')->whereNull('user_id')->latest('id')->get();
         return view('admin.e-commerce.coupon.index', compact('coupons'));
     }
 

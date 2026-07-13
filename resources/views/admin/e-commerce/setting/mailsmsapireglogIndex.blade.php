@@ -254,6 +254,29 @@
                                     value="{{ setting('SMS_API_SENDER_ID') }}" class="{{ $control }}">
                             </div>
                         </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50/60 px-4 py-3">
+                            <div>
+                                <label for="order_sms_status" class="block text-sm font-medium text-slate-700">Order Confirmation SMS</label>
+                                <p class="mt-0.5 text-xs text-slate-500">Text the customer when an order is placed</p>
+                            </div>
+                            <select name="order_sms_status" id="order_sms_status"
+                                class="h-10 w-28 cursor-pointer rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                @if (setting('order_sms_status') == 1)
+                                    <option value="1">ON</option>
+                                    <option value="0">OFF</option>
+                                @else
+                                    <option value="0">OFF</option>
+                                    <option value="1">ON</option>
+                                @endif
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="order_sms_template" class="mb-1 block text-sm font-medium text-slate-700">Order SMS Template</label>
+                            <textarea name="order_sms_template" id="order_sms_template" rows="3" class="{{ $control }}">{{ setting('order_sms_template') }}</textarea>
+                            <p class="mt-1 text-xs text-slate-500">Placeholders: <code>{name}</code> <code>{invoice}</code> <code>{total}</code> <code>{site}</code> <code>{track_url}</code>. Leave blank to use the default message.</p>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-5 py-4">

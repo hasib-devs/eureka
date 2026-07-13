@@ -463,6 +463,11 @@
         .then(function (data) {
             if (btn) btn.disabled = false;
             if (!data) return;
+            if (data.count !== undefined) {
+                document.querySelectorAll('#wishlistCount, .wishlist-count').forEach(function (el) {
+                    el.textContent = data.count;
+                });
+            }
             luxWishToast(data.message || 'Added to your wishlist', 'success');
         })
         .catch(function () { if (btn) btn.disabled = false; });

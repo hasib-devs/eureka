@@ -193,6 +193,10 @@ class CartController extends Controller
     {
         $coupon = Coupon::where('code', $code)->where('status', true)->where('expire_date', '>=', date('Y-m-d'))->first();
 
+        if ($coupon && $coupon->user_id && $coupon->user_id != auth()->id()) {
+            $coupon = null; // personal reward coupon owned by another customer
+        }
+
         if ($coupon) {
             if ($coupon->available_limit > 0) {
                 $coupon_limit = DB::table('coupon_user')->where('user_id', auth()->id())->where('coupon_id', $coupon->id)->get();
@@ -257,6 +261,10 @@ class CartController extends Controller
     public function applyCouponBuyNow($code, $id, $qty, $dynamic)
     {
         $coupon = Coupon::where('code', $code)->where('status', true)->where('expire_date', '>=', date('Y-m-d'))->first();
+
+        if ($coupon && $coupon->user_id && $coupon->user_id != auth()->id()) {
+            $coupon = null; // personal reward coupon owned by another customer
+        }
 
         if ($coupon) {
             if ($coupon->available_limit > 0) {

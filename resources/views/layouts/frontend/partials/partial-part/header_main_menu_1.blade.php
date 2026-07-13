@@ -238,18 +238,32 @@
 
             <div class="nav-menus">
                 <ul class="nav-categories" id="navCategoriesDesktop">
-                    <li><a href="{{ route('home') }}" class="{{ Request::is('/') ? 'active' : '' }}">Home</a></li>
-                    <li><a href="{{ route('product') }}" class="{{ Request::is('product*') ? 'active' : '' }}">Shop</a>
-                    </li>
-                    <li><a href="{{ route('categories_all') }}"
-                            class="{{ Request::is('categories_all*') || Request::is('category/*') || Request::is('sub-category/*') || Request::is('mini-category/*') || Request::is('extra-category/*') ? 'active' : '' }}">Categories</a>
-                    </li>
-                    <li><a href="{{ route('blogs') }}"
-                            class="{{ Request::is('blogs*') || Request::is('blog/*') ? 'active' : '' }}">Blog</a></li>
-                    <li><a href="{{ route('track') }}" class="{{ Request::is('track*') ? 'active' : '' }}">Track</a>
-                    </li>
-                    <li><a href="{{ route('contact') }}"
-                            class="{{ Request::is('contact') ? 'active' : '' }}">Contact</a></li>
+                    @php
+                        try {
+                            $__menuItems = \App\Models\MenuItem::active()->get();
+                        } catch (\Throwable $e) {
+                            $__menuItems = collect();
+                        }
+                    @endphp
+                    @forelse ($__menuItems as $mi)
+                        @php
+                            $__p = trim(parse_url($mi->url, PHP_URL_PATH) ?? '', '/');
+                            $__active = $__p === '' ? Request::is('/') : (Request::is($__p) || Request::is($__p . '/*'));
+                        @endphp
+                        <li><a href="{{ $mi->url }}" @if ($mi->new_tab) target="_blank" rel="noopener" @endif
+                                class="{{ $__active ? 'active' : '' }}">{{ $mi->label }}</a></li>
+                    @empty
+                        {{-- Fallback default links when no menu is configured (or table absent) --}}
+                        <li><a href="{{ route('home') }}" class="{{ Request::is('/') ? 'active' : '' }}">Home</a></li>
+                        <li><a href="{{ route('product') }}" class="{{ Request::is('product*') ? 'active' : '' }}">Shop</a></li>
+                        <li><a href="{{ route('categories_all') }}"
+                                class="{{ Request::is('categories_all*') || Request::is('category/*') || Request::is('sub-category/*') || Request::is('mini-category/*') || Request::is('extra-category/*') ? 'active' : '' }}">Categories</a></li>
+                        <li><a href="{{ route('blogs') }}"
+                                class="{{ Request::is('blogs*') || Request::is('blog/*') ? 'active' : '' }}">Blog</a></li>
+                        <li><a href="{{ route('track') }}" class="{{ Request::is('track*') ? 'active' : '' }}">Track</a></li>
+                        <li><a href="{{ route('contact') }}"
+                                class="{{ Request::is('contact') ? 'active' : '' }}">Contact</a></li>
+                    @endforelse
 
                     @if (auth()->check() && auth()->user()->role_id != 1)
                         <li><a href="{{ route('order') }}">Orders</a></li>

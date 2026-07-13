@@ -9,6 +9,7 @@
         ['route' => 'returns',       'label' => 'Returns',             'icon' => 'fa-undo'],
         ['route' => 'download',      'label' => 'Download',            'icon' => 'fa-download'],
         ['route' => 'wishlist',      'label' => 'Wishlist',            'icon' => 'fa-heart'],
+        ['route' => 'coupons',       'label' => 'My Coupons',          'icon' => 'fa-ticket-alt'],
         ['route' => 'ticket',        'label' => 'Support Ticket',      'icon' => 'fa-headset'],
         ['route' => 'user_blog',     'label' => 'My Blogs',            'icon' => 'fa-newspaper'],
         ['route' => 'myrefer',       'label' => 'My Refer',            'icon' => 'fa-share-alt'],
