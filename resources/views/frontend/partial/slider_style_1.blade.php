@@ -201,6 +201,8 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.45);
             /* medium black overlay */
+            pointer-events: none;
+            /* let clicks reach the slide link below */
         }
 
 
@@ -227,6 +229,8 @@
             background: linear-gradient(to bottom,
                     rgba(0, 0, 0, 0.1),
                     rgba(0, 0, 0, 0.3));
+            pointer-events: none;
+            /* let clicks reach the slide link below */
         }
 
         /* mobile fix */

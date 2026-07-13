@@ -21,7 +21,8 @@
                     @endif
                     </div>
                     @forelse ($wishlist as $wish_prod)
-                    @foreach($wish_prod->wishlist as $product)
+                    @php $product = $wish_prod->product; @endphp
+                    @if ($product)
                     <div class="product col-lg-12 h-auto">
     <div class="product-wrapper list-comp">
         <div class="pin row">
@@ -149,7 +150,7 @@
         
     </div>
 </div>
-                    @endforeach
+                    @endif
                         @empty
                     @endforelse
                 </div>

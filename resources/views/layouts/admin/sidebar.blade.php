@@ -192,6 +192,10 @@
                             onclick="window.location='{{ url('admin/coupon') }}'">
                             <i class="bx bx-cut"></i> Coupons
                         </li>
+                        <li class="{{ $navActive('admin/wishlist*') }}"
+                            onclick="window.location='{{ url('admin/wishlist') }}'">
+                            <i class="bx bx-heart"></i> Wishlists
+                        </li>
                     </ul>
                 </div>
 

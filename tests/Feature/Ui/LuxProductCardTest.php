@@ -4,7 +4,9 @@ use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Build an in-memory product with manually-set relations so the component can be
@@ -38,6 +40,27 @@ it('renders the dynamic review count, average stars and colour swatches', functi
         ->toContain('★★★★☆')       // avg 4.33 -> 4 full stars
         ->toContain('#FFCC00')     // dynamic swatch colours from the pivot
         ->toContain('#000000');
+});
+
+it('renders a working wishlist form wired to wishlist.add (E4)', function () {
+    $product = luxCardProduct([5], [['Gold', '#FFCC00']]);
+
+    $html = Blade::render('<x-lux-product-card :product="$product" />', ['product' => $product]);
+
+    expect($html)
+        ->toContain('lux-wishlist-form')
+        ->toContain(route('wishlist.add'))
+        ->toContain('name="product_id" value="test-lamp"');
+});
+
+it('hides the wishlist form on the card when the wishlist feature is disabled', function () {
+    Setting::create(['name' => 'wishlist_status', 'value' => '0']);
+    Cache::flush();
+
+    $product = luxCardProduct([5], [['Gold', '#FFCC00']]);
+    $html = Blade::render('<x-lux-product-card :product="$product" />', ['product' => $product]);
+
+    expect($html)->not->toContain('lux-wishlist-form');
 });
 
 it('uses an explicit category label when provided', function () {

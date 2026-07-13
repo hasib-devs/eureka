@@ -126,6 +126,7 @@ class SettingController extends Controller
         } elseif ($request->type == 7) {
             Setting::updateOrCreate(['name' => 'regVerify'], ['value' => $request->get('regVerify')]);
             Setting::updateOrCreate(['name' => 'recovrAC'], ['value' => $request->get('recovrAC')]);
+            Setting::updateOrCreate(['name' => 'google_login_status'], ['value' => $request->get('google_login_status') === '1' ? '1' : '0']);
             notify()->success('SMS configuration successfully updated', 'Success');
 
             return back();

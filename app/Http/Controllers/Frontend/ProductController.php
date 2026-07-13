@@ -92,7 +92,12 @@ class ProductController extends Controller
             ]);
         }
 
-        return view('frontend.category-product', compact('category', 'slug', 'products'));
+        $brands = Brand::whereIn(
+            'id',
+            $category->products()->where('products.status', true)->distinct()->pluck('products.brand_id')->filter()
+        )->orderBy('name')->get();
+
+        return view('frontend.category-product', compact('category', 'slug', 'products', 'brands'));
     }
 
     public function showProductByBrand($slug, Request $request)

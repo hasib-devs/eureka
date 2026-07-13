@@ -6,6 +6,7 @@ use App\Models\Banner;
 use App\Models\Blog;
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Product;
 use App\Models\Slider;
 use App\Models\User;
 use Database\Seeders\Concerns\SeedsAssets;
@@ -23,10 +24,15 @@ class ContentSeeder extends Seeder
         if ($sliderImages === []) {
             $sliderImages = ['default.png'];
         }
+        // Point each slide at a real category page so the hero links are testable.
+        $categorySlugs = Category::where('status', 1)->pluck('slug')->filter()->values();
         foreach ($sliderImages as $i => $img) {
+            $target = $categorySlugs->isNotEmpty()
+                ? url('category/'.$categorySlugs[$i % $categorySlugs->count()])
+                : url('product');
             Slider::firstOrCreate(
                 ['image' => $img],
-                ['url' => '#', 'status' => 1, 'is_feature' => $i === 0 ? 1 : 0, 'is_pop' => 0, 'is_sub' => 0]
+                ['url' => $target, 'status' => 1, 'is_feature' => $i === 0 ? 1 : 0, 'is_pop' => 0, 'is_sub' => 0]
             );
         }
 
@@ -48,6 +54,14 @@ class ContentSeeder extends Seeder
             ['code' => 'LIGHT500'],
             ['description' => '৳500 off orders over ৳5000', 'discount_type' => 'amount', 'discount' => 500, 'limit_per_user' => 1, 'total_use_limit' => 100, 'available_limit' => 100, 'expire_date' => now()->addMonths(6)->toDateString(), 'status' => 1]
         );
+
+        // Feature a spread of products on the homepage and give a few "reach" so the
+        // homepage "Cozy Lighting" grid and the trending row are populated in the demo.
+        $homepageIds = Product::where('status', 1)->latest('id')->take(12)->pluck('id');
+        Product::whereIn('id', $homepageIds)->update(['is_shown_on_homepage' => true]);
+
+        $trendingIds = Product::where('status', 1)->inRandomOrder()->take(6)->pluck('id');
+        Product::whereIn('id', $trendingIds)->update(['reach' => 100]);
 
         // Blogs — copy a real image into uploads/blogs/ so the view path resolves.
         $adminId = User::where('role_id', 1)->value('id') ?? User::value('id');

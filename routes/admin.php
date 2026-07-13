@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\Ecommerce\TagController;
 use App\Http\Controllers\Admin\Ecommerce\ticketController;
 use App\Http\Controllers\Admin\Ecommerce\VariableProductController;
 use App\Http\Controllers\Admin\Ecommerce\VendorController;
+use App\Http\Controllers\Admin\Ecommerce\WishlistController;
 use App\Http\Controllers\Admin\IpBlockController;
 use App\Http\Controllers\blogControler as ablogController;
 use App\Http\Controllers\campaingController;
@@ -82,6 +83,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('mobile-menu', [MobileMenuController::class, 'index'])->name('mobile-menu.index');
     Route::post('mobile-menu', [MobileMenuController::class, 'update'])->name('mobile-menu.update');
+
+    Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('wishlist', [WishlistController::class, 'update'])->name('wishlist.update');
     Route::resource('banner', BannerController::class);
 
     Route::resource('sliderone', NewSliderController::class);

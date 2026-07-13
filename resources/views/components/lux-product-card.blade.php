@@ -282,9 +282,15 @@
                 </h2>
             </div>
 
-            <button type="button" class="lux-wishlist-btn" aria-label="Save to Wishlist">
-                Save to Wishlist ♡
-            </button>
+            @if (setting('wishlist_status', '1') !== '0')
+                <form action="{{ route('wishlist.add') }}" method="POST" class="lux-wishlist-form" style="margin:0;">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->slug }}">
+                    <button type="submit" class="lux-wishlist-btn" aria-label="Save to Wishlist">
+                        Save to Wishlist ♡
+                    </button>
+                </form>
+            @endif
         </div>
 
         <div class="lux-variants-row">

@@ -1,3 +1,4 @@
+@props(['brands' => collect()])
 <form action="{{ route('product.filter') }}" method="GET" id="form">
     <div class="range">
         <ul class="dropdown-menu6">
