@@ -330,7 +330,7 @@
                 <span class="sp-sidebar-title">Filters</span>
                 <button class="sp-sidebar-close" id="spSidebarClose" aria-label="Close">✕</button>
             </div>
-            <x-filter-search-component name="category" :value="$slug" :brands="$brands" />
+            <x-filter-search-component name="category" :value="$slug" :brands="$brands" :show-price="false" />
         </div>
     </aside>
     <div class="sp-sidebar-overlay" id="spOverlay"></div>
@@ -415,21 +415,6 @@
                 ]
             });
         });
-
-        // ── Price range slider ──
-        $("#slider-range").slider({
-            range:  true,
-            min:    0,
-            max:    50000,
-            values: [50, 50000],
-            slide:  function (event, ui) {
-                $("#amount").val("{!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + ui.values[0] + " - {!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + ui.values[1]);
-            }
-        });
-        $("#amount").val(
-            "{!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + $("#slider-range").slider("values", 0) +
-            " - {!! setting('CURRENCY_CODE_MIN') ?? 'TK' !!}" + $("#slider-range").slider("values", 1)
-        );
 
         // ── Qty buttons ──
         $('.value-plus').on('click', function () {

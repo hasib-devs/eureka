@@ -5,7 +5,7 @@
             <style>
                 :root {
                     --menu-bg: #22385a;
-                    --menu-accent: #f85606;
+                    --menu-accent: var(--primary_color, #f85606);
                     --menu-text: #ffffff;
                     --item-bg: #ffffff;
                     --item-border: #e6e9ef;
@@ -85,7 +85,7 @@
                 }
 
                 .nav-categories>li>a.active {
-                    color: #f85606;
+                    color: var(--primary_color, #f85606);
                     background: rgba(129, 140, 248, 0.1);
                 }
 

@@ -4,7 +4,7 @@
     <style>
         :root {
             --bg-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --bg-2: #f85606;
+            --bg-2: var(--primary_color, #f85606);
             --accent: #ff6b6b;
             --accent-hover: #ff5252;
             --dark: #1a1a2e;
@@ -798,7 +798,7 @@
 
         /* Cart badge: visible orange */
         .main-header .badge {
-            background: #E85E0A !important;
+            background: var(--primary_color, #E85E0A) !important;
             color: #fff !important;
         }
 

@@ -75,16 +75,24 @@
         animation: none; /* pause the drift; give a clean hover zoom instead */
         transform: scale(1.05);
     }
-    /* Hover-peek overlay: the next gallery image sits on top and cross-fades in. */
+    /* Hover-peek overlay: the next gallery image sits on top and cross-fades in.
+       Desktop: the swap waits ~2s after hover before it reveals (premium feel);
+       leaving hides it immediately. Mobile uses .lux-scroll-peek (see JS) so the
+       swap is driven by scroll position with no delay. */
     .lux-product-thumb .lux-peek-img {
         position: absolute;
         top: 0;
         left: 0;
         opacity: 0;
         pointer-events: none;
-        transition: transform 0.45s ease, opacity 0.5s ease;
+        transition: transform 0.45s ease, opacity 0.6s ease;
     }
     .lux-product-thumb:hover .lux-peek-img {
+        opacity: 1;
+        transition-delay: 0s, 2s; /* transform immediate, opacity waits ~2s */
+    }
+    /* Mobile scroll-driven swap: JS toggles this as the card scrolls up the viewport. */
+    .lux-product-thumb.lux-scroll-peek .lux-peek-img {
         opacity: 1;
     }
     @media (prefers-reduced-motion: reduce) {
@@ -373,6 +381,44 @@
         e.preventDefault();
         selectSwatch(sw);
     });
+
+    // ── Mobile scroll-driven image swap ──
+    // On phones the 2nd (peek) image cross-fades in based on scroll position:
+    // a card shows its 1st image while it sits low in the viewport, then swaps
+    // to the 2nd image as it scrolls up past the middle. Auto-adjusts to the
+    // screen height (uses window.innerHeight) and is disabled on desktop.
+    var mq = window.matchMedia('(max-width: 768px)');
+    var ticking = false;
+
+    function updateScrollPeek() {
+        ticking = false;
+        if (!mq.matches) return;
+        var mid = window.innerHeight * 0.5;
+        document.querySelectorAll('.lux-product-thumb').forEach(function (t) {
+            if (!t.querySelector('.lux-peek-img')) return;
+            var r = t.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > window.innerHeight) return; // off-screen
+            var center = r.top + r.height / 2;
+            if (center < mid) t.classList.add('lux-scroll-peek');
+            else t.classList.remove('lux-scroll-peek');
+        });
+    }
+
+    function clearScrollPeek() {
+        document.querySelectorAll('.lux-product-thumb.lux-scroll-peek')
+            .forEach(function (t) { t.classList.remove('lux-scroll-peek'); });
+    }
+
+    function onScroll() {
+        if (!ticking) { ticking = true; requestAnimationFrame(updateScrollPeek); }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function () { mq.matches ? updateScrollPeek() : clearScrollPeek(); });
+    if (mq.addEventListener) {
+        mq.addEventListener('change', function () { mq.matches ? updateScrollPeek() : clearScrollPeek(); });
+    }
+    updateScrollPeek();
 })();
 </script>
 @endPushOnce
