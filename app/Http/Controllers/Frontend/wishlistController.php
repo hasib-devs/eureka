@@ -30,22 +30,35 @@ class wishlistController extends Controller
         }
 
         $p = Product::where('slug', $request->product_id)->first();
+
+        if (! $p) {
+            if ($request->expectsJson()) {
+                return response()->json(['alert' => 'Error', 'message' => 'Product not found'], 404);
+            }
+            notify()->error('Product not found', 'Error');
+
+            return back();
+        }
+
         $already = wishlist::where('user_id', auth()->id())->where('product_id', $p->id)->count();
+
         if ($already == 0) {
             wishlist::create([
                 'user_id' => auth()->id(),
                 'product_id' => $p->id,
             ]);
-            notify()->success('Wishlist Added', 'Success');
-
-            return back();
-
+            $message = 'Added to your wishlist';
         } else {
-            return response()->json([
-                'alert' => 'Success',
-                'message' => 'Already Added',
-            ]);
+            $message = 'Already in your wishlist';
         }
+
+        if ($request->expectsJson()) {
+            return response()->json(['alert' => 'Success', 'message' => $message]);
+        }
+
+        notify()->success($message, 'Wishlist');
+
+        return back();
     }
 
     public function delete($id)

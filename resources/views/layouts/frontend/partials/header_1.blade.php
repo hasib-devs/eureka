@@ -918,7 +918,7 @@
             <div class="hdr-left">
                 <a class="logo-link" href="{{ route('home') }}" aria-label="Go to homepage">
                     <img src="{{ asset('uploads/setting/' . setting('logo')) }}"
-                        alt="{{ setting('site_title') ?? config('app.name', 'Store') }}"
+                        alt="{{ setting('site_title') ?: 'Anas Luxy World' }}"
                         onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
                     <span
                         style="display:none; font-weight:700; font-size:18px; letter-spacing:-0.3px; color:#1C1917;">{{ setting('site_title') ?? config('app.name', 'Store') }}</span>

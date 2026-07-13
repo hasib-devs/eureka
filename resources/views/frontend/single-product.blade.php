@@ -481,16 +481,16 @@ body {
     <div class="gallery-column">
         <div class="featured-stage" id="featuredStage" onclick="openLightboxSrc(stageVisibleSrc())">
             <span class="stage-badge">{{ $product->is_shown_on_homepage ? 'Bestseller' : $firstCategory }}</span>
-            <img id="featuredImg" src="{{ $mainImage }}" alt="{{ $product->title }}">
-            <img id="featuredPeek" class="featured-peek" src="{{ $mainImage }}" alt="" aria-hidden="true">
+            <img id="featuredImg" src="{{ $mainImage }}" alt="{{ $product->title }}" decoding="async" fetchpriority="high">
+            <img id="featuredPeek" class="featured-peek" src="{{ $mainImage }}" alt="" aria-hidden="true" loading="lazy" decoding="async">
         </div>
         <div class="thumbnail-grid" id="thumbGrid">
             <div class="thumb-box active" onclick="setFeatured(this, '{{ $mainImage }}')">
-                <img src="{{ $mainImage }}" alt="{{ $product->title }}">
+                <img src="{{ $mainImage }}" alt="{{ $product->title }}" loading="lazy" decoding="async">
             </div>
             @foreach ($galleryImages as $key => $image)
                 <div class="thumb-box" onclick="setFeatured(this, '{{ $image }}')">
-                    <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}">
+                    <img src="{{ $image }}" alt="{{ $product->title }} photo {{ $key + 2 }}" loading="lazy" decoding="async">
                 </div>
             @endforeach
         </div>
@@ -629,7 +629,7 @@ body {
             <div class="lifestyle-grid" id="lifestyleGrid">
                 @if ($productVideoFile)
                     <div class="lifestyle-tile video-tile" onclick="openVideoLightbox()">
-                        <video autoplay loop muted playsinline @if($productVideoThumb) poster="{{ $productVideoThumb }}" @endif>
+                        <video loop muted playsinline preload="none" data-lazy-video @if($productVideoThumb) poster="{{ $productVideoThumb }}" @endif>
                             <source src="{{ $productVideoFile }}" type="video/mp4">
                         </video>
                         <div class="play-button">
@@ -645,7 +645,7 @@ body {
                 @endif
                 @foreach ($lifestyleImages as $key => $tile)
                     <div class="lifestyle-tile" onclick="openLightbox({{ $key }})">
-                        <img src="{{ $tile->url }}" alt="{{ $tile->caption ?? $product->title }}">
+                        <img src="{{ $tile->url }}" alt="{{ $tile->caption ?? $product->title }}" loading="lazy" decoding="async">
                         @if ($tile->tag || $tile->caption)
                             <div class="lifestyle-caption">
                                 @if ($tile->tag)<span class="tag">{{ $tile->tag }}</span>@endif
@@ -760,7 +760,7 @@ body {
 @if ($productVideoFile)
     <div class="lightbox-overlay" id="videoLightboxOverlay">
         <button type="button" class="lightbox-close" onclick="closeVideoLightbox()">&times;</button>
-        <video id="lightboxVideo" controls loop playsinline style="max-width:90vw; max-height:85vh;"
+        <video id="lightboxVideo" controls loop playsinline preload="none" style="max-width:90vw; max-height:85vh;"
             @if($productVideoThumb) poster="{{ $productVideoThumb }}" @endif>
             <source src="{{ $productVideoFile }}" type="video/mp4">
             Your browser does not support embedded video.
@@ -768,6 +768,32 @@ body {
     </div>
 @endif
 
+<script>
+/* Lazy-play the product video tile: only load & play once it scrolls into
+   view (saves mobile bandwidth); falls back to immediate play if the browser
+   lacks IntersectionObserver. If inline playback is blocked, the poster, the
+   play button, and tap-to-open-lightbox still work. */
+(function () {
+    var vids = document.querySelectorAll('video[data-lazy-video]');
+    if (!vids.length) return;
+    function play(v) {
+        if (!v.dataset.loaded) { v.dataset.loaded = '1'; try { v.load(); } catch (e) {} }
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+    }
+    if (!('IntersectionObserver' in window)) {
+        vids.forEach(play);
+        return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+            if (en.isIntersecting) play(en.target);
+            else { try { en.target.pause(); } catch (e) {} }
+        });
+    }, { threshold: 0.25 });
+    vids.forEach(function (v) { io.observe(v); });
+})();
+</script>
 
 <script>
 /* ---------- Data from the server ---------- */
@@ -1117,7 +1143,7 @@ function renderReviews() {
         card.className = 'review-card';
         const photosHtml = (r.photos && r.photos.length)
             ? '<div class="review-photos">' + r.photos.map((p, i) =>
-                `<img src="${p}" alt="Customer photo" data-review="${r.id}" data-index="${i}">`).join('') + '</div>'
+                `<img src="${p}" alt="Customer photo" loading="lazy" decoding="async" data-review="${r.id}" data-index="${i}">`).join('') + '</div>'
             : '';
         card.innerHTML = `
             <div class="review-avatar">${escapeHtml(initials(r.name))}</div>

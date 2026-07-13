@@ -106,7 +106,7 @@
                 <div class="footer-col footer-brand">
                     <div class="footer-logo-row">
                         <a href="{{ route('home') }}">
-                            <img src="{{ asset('uploads/setting/' . setting('logo')) }}" alt="{{ config('app.name') }}">
+                            <img src="{{ asset('uploads/setting/' . setting('logo')) }}" alt="{{ setting('site_title') ?: 'Anas Luxy World' }}">
                         </a>
                     </div>
                     @if (setting('footer_description'))
@@ -186,7 +186,7 @@
 
     <div class="footer-bottom">
         <div class="footer-bottom-inner">
-            <span class="copyright">{{ setting('copy_right_text') ?? '© '.date('Y').' '.config('app.name').'. All Rights Reserved.' }}</span>
+            <span class="copyright">{{ setting('copy_right_text') ?: '© '.date('Y').' '.(setting('site_title') ?: 'Anas Luxy World').'. All Rights Reserved.' }}</span>
             <div class="payment-badges">
                 <span>Cash on Delivery</span>
                 @if (setting('bkash'))<span>bKash</span>@endif

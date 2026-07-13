@@ -1024,7 +1024,7 @@
             <div class="lux-video-wrap">
                 <div class="lux-video-box-container">
                     <div class="lux-video-box">
-                        <video controls poster="{{ $video->thumbnail ? asset('storage/' . $video->thumbnail) : '' }}">
+                        <video id="luxHomeVideo" controls playsinline preload="metadata" poster="{{ $video->thumbnail ? asset('storage/' . $video->thumbnail) : '' }}">
                             <source src="{{ asset('storage/' . $video->video) }}">
                         </video>
                     </div>
@@ -1038,12 +1038,20 @@
                     @endif
 
                     <div class="lux-video-buttons">
-                        <button class="lux-video-btn lux-video-btn-primary">Watch Now</button>
-                        <button class="lux-video-btn lux-video-btn-secondary">Learn More</button>
+                        <button type="button" class="lux-video-btn lux-video-btn-primary" onclick="luxPlayHomeVideo()">Watch Now</button>
+                        <button type="button" class="lux-video-btn lux-video-btn-secondary" onclick="window.location='{{ route('product') }}'">Learn More</button>
                     </div>
                 </div>
             </div>
         </section>
+        <script>
+            function luxPlayHomeVideo() {
+                var v = document.getElementById('luxHomeVideo');
+                if (!v) return;
+                v.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (v.play) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+            }
+        </script>
     @endif
 
     @if (!empty($banners) && $banners->count())
