@@ -17,12 +17,6 @@
         </div>
     </section>
 
-    @if (session('success'))
-        <div class="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">

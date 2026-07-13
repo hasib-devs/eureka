@@ -85,8 +85,9 @@ class VariableProductController extends Controller
         $this->saveGalleryImages($request, $product);
         $this->saveLifestyleImages($request, $product);
 
-        return redirect()->to(routeHelper('variable-products'))
-            ->with('success', 'Variable product created.');
+        notify()->success('Variable product created.');
+
+        return redirect()->to(routeHelper('variable-products'));
     }
 
     /**
@@ -174,8 +175,9 @@ class VariableProductController extends Controller
             ]);
         }
 
-        return redirect()->to(routeHelper('variable-products'))
-            ->with('success', 'Variable product updated.');
+        notify()->success('Variable product updated.');
+
+        return redirect()->to(routeHelper('variable-products'));
     }
 
     /**
@@ -196,8 +198,9 @@ class VariableProductController extends Controller
         $product->categories()->detach();
         $product->delete();
 
-        return redirect()->to(routeHelper('variable-products'))
-            ->with('success', 'Variable product deleted.');
+        notify()->success('Variable product deleted.');
+
+        return redirect()->to(routeHelper('variable-products'));
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

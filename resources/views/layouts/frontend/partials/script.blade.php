@@ -3,7 +3,7 @@
 <script src="{{ asset('/') }}assets/frontend/js/bootstrap.min.js"></script>
 <script src="{{ asset('/') }}assets/frontend/js/slick.js"></script>
 <script src="{{ asset('/') }}assets/frontend/js/moment.js"></script>
-<script src="{{ asset('/') }}assets/frontend/js/toast.min.js"></script>
+<script src="{{ asset('assets/js/app-toast.js') }}"></script>
 <script src="{{ asset('/') }}assets/frontend/js/Font-Awesome.js"></script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 {{--  <x-notify::notify /> --}}

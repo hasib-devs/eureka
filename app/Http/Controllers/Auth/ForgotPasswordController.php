@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
@@ -26,17 +26,19 @@ class ForgotPasswordController extends Controller
 
     public function sendResetLinkEmail(Request $request)
     {
-        $this->validate($request, [ 
-            'username' => 'required'
+        $this->validate($request, [
+            'username' => 'required',
         ]);
-        
+
         $user = User::where('username', $request->username)->first();
-        
-        if (!$user) {
-            return back()->with('error', 'Username is not valid');
+
+        if (! $user) {
+            notify()->error('Username is not valid');
+
+            return back();
         }
 
-        $response = Password::sendResetLink($request->only(['username']), function($user, $token) use($request) {
+        $response = Password::sendResetLink($request->only(['username']), function ($user, $token) {
             $user->notify(new ResetPasswordNotification($user, $token));
         });
 
