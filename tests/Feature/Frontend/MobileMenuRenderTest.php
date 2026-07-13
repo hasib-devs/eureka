@@ -16,6 +16,8 @@ it('renders the configured links, curated category and social in the mobile menu
     $view = $this->view('layouts.frontend.partials.mobile-menu');
 
     $view->assertSee('alw-menu-overlay', false);
+    // the header must be lifted above the overlay so the hamburger/X stays visible when open
+    $view->assertSee('alw-menu-open .main-header', false);
     $view->assertSee('Browse Shop');
     $view->assertSee('Cozy Lighting');
     $view->assertSee('https://fb.com/anas', false);
