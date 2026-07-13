@@ -168,9 +168,19 @@
     .alw-icon-chip:hover, .alw-icon-chip:focus-visible{ border-color:#E8A657; color:#E8A657; background:rgba(232,166,87,.14); }
     .alw-icon-chip:hover svg, .alw-icon-chip:focus-visible svg{ stroke:#E8A657; }
 
-    /* Header transform + hamburger recolor while menu is open (mobile) */
+    /* Keep the fixed header bar (with the hamburger -> X) ABOVE the overlay so it stays
+       visible and tappable to close; go translucent while open (mobile only).
+       The overlay is z-index:9990, so the header must sit above that. */
     @media (max-width:991px){
-        body.alw-menu-open .site-header{ background:rgba(15,12,9,.32) !important; -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom-color:rgba(255,255,255,.08) !important; z-index:9999 !important; }
+        body.alw-menu-open .site-header,
+        body.alw-menu-open .app-header,
+        body.alw-menu-open .main-header{ z-index:9996 !important; }
+        body.alw-menu-open .main-header,
+        body.alw-menu-open .main-header .header-row{
+            background:rgba(15,12,9,.30) !important;
+            -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+            box-shadow:none !important; border-bottom-color:rgba(255,255,255,.08) !important;
+        }
         body.alw-menu-open .hamburger .bars span{ background:#F5EEE3 !important; }
     }
 
