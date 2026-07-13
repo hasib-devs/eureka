@@ -57,7 +57,7 @@ jobs:
           # Inner git fetch uses non-interactive SSH + a hard timeout so a broken
           # server->GitHub connection fails fast instead of hanging for minutes.
           remote_cmd="cd ${{ secrets.DEPLOY_PATH }} && \
-            timeout 150 git -c core.sshCommand='ssh -i ~/.ssh/github_hasib -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15' fetch origin && \
+            timeout 150 git -c core.sshCommand='ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15' fetch origin && \
             git reset --hard origin/main"
           n=0
           until ssh $SSH_OPTS -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" \
