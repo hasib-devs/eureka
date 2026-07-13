@@ -49,33 +49,37 @@
 
                                 <div class="form-group col-md-12">
                                     <label for="phone">মোবাইল নম্বর <sup class="text-red-500">*</sup></label>
-                                    <input @if (auth()->user())
-                                    value="{{auth()->user()->phone}}"
-                                    @endif required name="phone" id="phone"
+                                    <input @if (auth()->user()) value="{{ auth()->user()->phone }}" @endif
+                                        required name="phone" id="phone"
                                         class="form-control @error('phone') is-invalid @enderror" type="number" />
                                     @error('phone')
                                         <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
 
-                                @if(setting('sms_config_status') == 1)
-                                <div class="form-group col-md-12" id="otp_wrap">
-                                    <label for="checkout_otp">OTP কোড <sup class="text-red-500">*</sup></label>
-                                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                        <input type="text" id="checkout_otp" class="form-control" placeholder="মোবাইলে পাঠানো OTP লিখুন" inputmode="numeric" autocomplete="one-time-code" style="flex:1; min-width:150px;">
-                                        <button type="button" id="checkout_otp_send" class="btn btn-secondary" style="white-space:nowrap;"
-                                            data-send-url="{{ route('checkout.otp.send') }}" data-verify-url="{{ route('checkout.otp.verify') }}">OTP পাঠান</button>
-                                        <button type="button" id="checkout_otp_verify" class="btn btn-primary" style="white-space:nowrap;" disabled>ভেরিফাই করুন</button>
+                                @if (setting('sms_config_status') == 1)
+                                    <div class="form-group col-md-12" id="otp_wrap">
+                                        <label for="checkout_otp">OTP কোড <sup class="text-red-500">*</sup></label>
+                                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                            <input type="text" id="checkout_otp" class="form-control"
+                                                placeholder="মোবাইলে পাঠানো OTP লিখুন" inputmode="numeric"
+                                                autocomplete="one-time-code" style="flex:1; min-width:150px;">
+                                            <button type="button" id="checkout_otp_send" class="btn btn-secondary"
+                                                style="white-space:nowrap;" data-send-url="{{ route('checkout.otp.send') }}"
+                                                data-verify-url="{{ route('checkout.otp.verify') }}">OTP পাঠান</button>
+                                            <button type="button" id="checkout_otp_verify" class="btn btn-primary"
+                                                style="white-space:nowrap;" disabled>ভেরিফাই করুন</button>
+                                        </div>
+                                        <small id="checkout_otp_msg" class="form-text"></small>
                                     </div>
-                                    <small id="checkout_otp_msg" class="form-text"></small>
-                                </div>
                                 @endif
 
                                 <div class="form-group col-md-12" id="email_wrap">
                                     <label for="email">ইমেইল <span class="text-slate-400">(ঐচ্ছিক)</span></label>
-                                    <input name="email" id="email" class="form-control @error('email') is-invalid @enderror" type="email"  />
+                                    <input name="email" id="email"
+                                        class="form-control @error('email') is-invalid @enderror" type="email" />
                                     @error('email')
-                                        <small class="form-text text-danger">{{$message}}</small>
+                                        <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
 
@@ -86,44 +90,7 @@
                                     <small class="form-text text-danger">{{$message}}</small>
                                 @enderror
                                 </div> --}}
-                                {{-- <div class="form-group col-md-6">
-                                <label for="city">Division <sup style="color: red;">*</sup></label>
-                                <select name="city" id="divisions"  class="form-control @error('city') is-invalid @enderror"  onchange="divisionsList();">
-                                    <option>Select Division</option>
-                                    <option @isset($order->town)@if ($order->town == 'Barishal')selected @endif @endisset value="Barishal">Barishal</option>
-                                    <option @isset($order->town) @if ($order->town == 'Chattogram')selected @endif @endisset value="Chattogram">Chattogram</option>
-                                    <option @isset($order->town)@if ($order->town == 'Dhaka')selected @endif @endisset value="Dhaka">Dhaka</option>
-                                    <option @isset($order->town)@if ($order->town == 'Khulna')selected @endif @endisset value="Khulna">Khulna</option>
-                                    <option @isset($order->town)@if ($order->town == 'Mymensingh')selected @endif @endisset value="Mymensingh">Mymensingh</option>
-                                    <option @isset($order->town)@if ($order->town == 'Rajshahi')selected @endif @endisset value="Rajshahi">Rajshahi</option>
-                                    <option @isset($order->town)@if ($order->town == 'Rangpur')selected @endif @endisset value="Rangpur">Rangpur</option>
-                                    <option @isset($order->town)@if ($order->town == 'Sylhet')selected @endif @endisset value="Sylhet">Sylhet</option>
-                                </select><!--/ Division Section-->
-                                @error('city')
-                                    <small class="form-text text-danger">{{$message}}</small>
-                                @enderror
-                                </div> --}}
-                                {{-- <div class="form-group col-md-6">
-                                <label for="district">District <sup style="color: red;">*</sup></label>
-                                <select name="district"  class="form-control @error('district') is-invalid @enderror"  id="distr" onchange="thanaList();">
-                                    <option disabled >Select District</option>
-                                    @isset($order->district)
-                                    <option selected value="{{$order->district}}">{{$order->district}}</option>
-                                    @endisset
-                                </select><!--/ Districts Section-->
-                                @error('district')
-                                    <small class="form-text text-danger">{{$message}}</small>
-                                @enderror
-                                </div> --}}
-                                {{-- <div class="form-group col-md-6">
-                                <label for="district">Thana <sup style="color: red;">*</sup></label>
-                                <select name="thana"  class="form-control @error('district') is-invalid @enderror"  id="polic_sta">
-                                    <option disabled >Select Thana</option>
-                                    @isset($order->thana)
-                                    <option selected value="{{$order->thana}}">{{$order->thana}}</option>
-                                    @endisset
-                                </select>
-                            </div> --}}
+                                @include('frontend.partial.checkout.district_field')
 
                                 <div class="form-group col-md-12">
                                     <label for="address">সম্পূর্ণ ঠিকানা</label>
@@ -132,9 +99,10 @@
                                         <small class="form-text text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="alert alert-warning mt-2 text-center" role="alert">
-                                    ⚠️ শিপিং চার্জ প্রতি কেজি ঢাকার ভিতরে ১১০ পরবর্তী প্রতি কেজি ১৫ টাকা করে যোগ হবে। ঢাকার বাহিরে প্রতি কেজি ১৩০ টাকা পরবর্তী প্রতি কেজি ২০ টাকা যোগ হবে।
+                                    ⚠️ শিপিং চার্জ প্রতি কেজি ঢাকার ভিতরে ১১০ পরবর্তী প্রতি কেজি ১৫ টাকা করে যোগ হবে। ঢাকার
+                                    বাহিরে প্রতি কেজি ১৩০ টাকা পরবর্তী প্রতি কেজি ২০ টাকা যোগ হবে।
                                 </div>
 
                                 @if ($product->sheba == 1)
@@ -158,15 +126,6 @@
                                     <input type="hidden" name="pr" value="{{ $request->pr }}">
                                 @endif
 
-                                <!--<div class="form-group col-md-12">-->
-                                <!--    <select name="shipping_range" id="shipping_range" class="form-control">-->
-                                <!--        <option value="1">Inside {{ setting('shipping_range_inside') }}-->
-                                <!--            ({{ setting('shipping_charge') }})</option>-->
-                                <!--        <option value="0">Outside of ({{ setting('shipping_charge_out_of_range') }})</option>-->
-                                <!--    </select>-->
-                                <!--</div>-->
-
-                                
                                 {{-- <div class="form-group col-md-12">
                                 <label for="company">Company (optional)</label>
                                 <input  name="company" id="company" class="form-control @error('company') is-invalid @enderror" type="text"  />
@@ -246,7 +205,7 @@
                                                                         class="payment_method" value="Cash on Delivery"
                                                                         id="cod" checked>
                                                                     <img src="{{ asset('/') }}icon/delivery-man.png">
-                                                                   ক্যাশ অন<br> ডেলিভারি
+                                                                    ক্যাশ অন<br> ডেলিভারি
                                                                 </label>
                                                             @endif
                                                             @if (setting('g_aamar') == 'true')
@@ -321,7 +280,7 @@
                                                 <small class="form-text text-danger">{{ $message }}</small>
                                             @enderror
                                         </div>
-                                        <p class="mt-2 bg-[#dcdcdc80] p-[10px] rounded-[5px] mb-[10px]" id="appended">
+                                        <p class="mt-2 bg-[#dcdcdc80] p-2.5 rounded-[5px] mb-2.5" id="appended">
                                         </p>
                                         <div id="payment-details"></div>
                                     </div>
@@ -337,34 +296,26 @@
                                 $sub_total = $request->dynamic_price * $request->qty;
                             }
                             ?>
-                            <div class="product mb-[10px] flex">
-                                <img class="w-[50px]" src="{{ asset('uploads/product/' . $product->image) }}"
+                            <div class="product mb-2.5 flex">
+                                <img class="w-12.5" src="{{ asset('uploads/product/' . $product->image) }}"
                                     alt="">
-                                <a class="ml-[10px]"
+                                <a class="ml-2.5"
                                     href="{{ route('product.details', $product->slug) }}">{{ $product->title }}</a>
                                 <span class="flex-auto text-right"> {{ $sub_total }}</span>
                                 <input type="hidden" name="id" value="{{ $request->id }}">
                                 <input type="hidden" name="qty" value="{{ $request->qty }}">
                                 <?php
                                 $attr = [];
-                            $attributes = DB::table('attributes')->get();
-                            foreach ($attributes as $attribute) {
-                                $attribute_prouct = DB::table('attribute_product')
-                                    ->select('*')
-                                    ->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')
-                                    ->addselect('attribute_values.name as vName')
-                                    ->addselect('attribute_product.id as vid')
-                                    ->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')
-                                    ->where('attribute_product.product_id', $product->id)
-                                    ->where('attributes.id', $attribute->id)
-                                    ->get();
-                                if ($attribute_prouct->count() > 0) {
-                                    $slug = $attribute->slug;
+                                $attributes = DB::table('attributes')->get();
+                                foreach ($attributes as $attribute) {
+                                    $attribute_prouct = DB::table('attribute_product')->select('*')->join('attribute_values', 'attribute_values.id', '=', 'attribute_product.attribute_value_id')->addselect('attribute_values.name as vName')->addselect('attribute_product.id as vid')->join('attributes', 'attributes.id', '=', 'attribute_values.attributes_id')->where('attribute_product.product_id', $product->id)->where('attributes.id', $attribute->id)->get();
+                                    if ($attribute_prouct->count() > 0) {
+                                        $slug = $attribute->slug;
 
-                                    $attr[$slug] = $request->$slug;
+                                        $attr[$slug] = $request->$slug;
+                                    }
                                 }
-                            }
-                            ?>
+                                ?>
                                 <input type="hidden" name="size"
                                     value="{{ $attr != '' ? json_encode($attr) : 'blank' }}">
                                 <input type="hidden" name="color" value="{{ $request->color }}">
@@ -418,35 +369,30 @@
 
                             <div class="rvinfo">
                                 <span>মোট</span>
-                                <span><span id="sub-total"> {{ $sub_total }}</< /span> <strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                                <span><span id="sub-total">{{ $sub_total }}</span> <strong>
+                                        {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
                             </div>
                             @php $giftFee = Session::has('gift_wrap') ? (float) config('shop.gift_wrap_fee') : 0; @endphp
                             @if ($giftFee > 0)
-                            <div class="rvinfo">
-                                <span>🎁 গিফট র‍্যাপিং</span>
-                                <span>+ {{ number_format($giftFee, 2, '.', ',') }}<strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
-                            </div>
+                                <div class="rvinfo">
+                                    <span>🎁 গিফট র‍্যাপিং</span>
+                                    <span>+ {{ number_format($giftFee, 2, '.', ',') }}<strong>
+                                            {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                                </div>
                             @endif
-                            
-                            
-                            <!--<div class="rvinfo">-->
-                            <!--    <span>Shipping Charge</span>-->
-                            <!--    <span>+ <span id="ship-charge">-->
-                            <!--            @if (isset($order->shipping_charge))-->
-                            <!--                {{ $order->shipping_charge }}-->
-                            <!--            @else-->
-                            <!--                0.00-->
-                            <!--            @endif-->
-                            <!--        </span><strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>-->
-                            <!--</div>-->
-                            
-                            
+
+
+                            <div class="rvinfo">
+                                <span>ডেলিভারি চার্জ</span>
+                                <span>+ <span id="ship-charge">0.00</span><strong>
+                                        {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                            </div>
 
                             <div class="rvinfo coupon">
                                 <span>কুপন <span class="coupon-name"></span></span>
                                 <span>- <span
                                         id="coupon">{{ Session::has('coupon') ? number_format(Session::get('coupon')['discount'], 2, '.', ',') : '0.00' }}</span><strong>
-                                            {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                                        {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
                             </div>
                             <hr>
                             <div class="rvinfo">
@@ -460,12 +406,14 @@
                                     @endif
                                     <strong>
                                         <span id="total">
-                                            {{ $total ?? number_format($sub_total + $giftFee, 2, '.', ',') }}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
+                                            {{ $total ?? number_format($sub_total + $giftFee, 2, '.', ',') }}</span>
+                                        {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
                                     </strong>
                                 </h4>
                             </div>
                         </div>
-                        <input value="অর্ডার করুন" type="submit" id="checkout_submit_btn" @if(setting('sms_config_status') == 1) disabled @endif>
+                        <input value="অর্ডার করুন" type="submit" id="checkout_submit_btn"
+                            @if (setting('sms_config_status') == 1) disabled @endif>
                     </div>
                 </div>
             </form>
@@ -475,8 +423,8 @@
 
 @push('js')
     <script src="{{ asset('/') }}assets/frontend/js/city.js"></script>
-    @if(setting('sms_config_status') == 1)
-    <script src="{{ asset('assets/frontend/js/checkout-otp.js') }}"></script>
+    @if (setting('sms_config_status') == 1)
+        <script src="{{ asset('assets/frontend/js/checkout-otp.js') }}"></script>
     @endif
     <script>
         $(document).ready(function() {
@@ -487,18 +435,6 @@
                 let id = "{!! $request->id !!}";
                 let qty = "{!! $request->qty !!}";
                 let dynamic_price = "{!! $request->dynamic_price !!}";
-                let shipping_charge = 0;
-                let download_able = "{!! $product->download_able !!}";
-
-                // if (download_able != 1) {
-                //     if ($("select[name='city']").val() == 'Dhaka') {
-                //         let charge = "{!! setting('shipping_charge') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     } else {
-                //         let charge = "{!! setting('shipping_charge_out_of_range') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     }
-                // }
 
                 if (code != '') {
                     $.ajax({
@@ -512,13 +448,10 @@
                             if (response.alert == 'success') {
                                 $('.alert-message .alert').removeClass('alert-danger').addClass(
                                     'alert-success').text(response.message);
-                                $('span#ship-charge').text(number_format(shipping_charge, 2,
-                                    '.', ','));
                                 $('span#coupon').text(number_format(response.discount, 2, '.',
                                     ','));
-                                let total = response.total + shipping_charge;
-                                $('span#total').text(number_format(total, 2, '.', ','));
                                 $('span.coupon-name').text('(' + code + ')');
+                                divis();
                                 $('#coupon').val('')
                             } else {
                                 $('.alert-message .alert').removeClass('alert-success')
@@ -579,8 +512,8 @@
                     appended.html('নিচে দেয়া ব্যাংকে টাকা পাঠিয়ে নিচের ফিল্ডগুলো পূরণ করুন <br> ' +
                         'Bank Name: ' + bank + '<br>Branch: ' + branch + '<br>holder: ' + holder +
                         '<br>Account: ' + account);
-                    
-                        off_email();
+
+                    off_email();
                 } else if (method == 'Cash on Delivery') {
                     appended.html('পণ্য হাতে পেয়ে টাকা দিন। ');
                     off_email();
@@ -645,35 +578,25 @@
                 }
                 $('#payment-details').html(html);
             })
-            $(document).on('change', '#shipping_range', function(e) {
+            $(document).on('change', '#distr', function(e) {
                 divis()
             });
 
 
             // Email stays visible & optional; only drop the required flag when not needed
-            function off_email(){
+            function off_email() {
                 $('#email').removeAttr('required');
             }
-            
-            
+
+
             divis();
+
             function divis() {
-                let shipping_charge = 0;
-                let download_able = "{!! $product->download_able !!}";
-                // if (download_able != 1) {
-                //     if ($("select[name='shipping_range']").val() == 1) {
-                //         let charge = "{!! setting('shipping_charge') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     } else {
-                //         let charge = "{!! setting('shipping_charge_out_of_range') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     }
-                // }
-                let subtotal = $('span#sub-total').text();
-                let coupon = $('span#coupon').text();
-                let rep_subtotal = subtotal.replace(',', '');
-                let rep_coupon = coupon.replace(',', '');
-                let total = (parseInt(rep_subtotal) + shipping_charge) - parseInt(rep_coupon);
+                let stotal = parseFloat("{!! $sub_total !!}") || 0;
+                let giftFee = parseFloat("{!! $giftFee !!}") || 0;
+                let shipping_charge = checkoutShippingCharge(stotal, 1);
+                let coupon = parseFloat($('span#coupon').text().replace(/,/g, '')) || 0;
+                let total = Math.max(0, stotal + giftFee + shipping_charge - coupon);
                 $('span#ship-charge').text(number_format(shipping_charge, 2, '.', ','));
                 $('span#total').text(number_format(total, 2, '.', ','));
             }
@@ -700,85 +623,86 @@
             }
         });
     </script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    console.log('Incomplete lead JS loaded');
+            console.log('Incomplete lead JS loaded');
 
-    const nameInput    = document.getElementById('first_name');
-    const phoneInput   = document.getElementById('phone');
-    const emailInput   = document.getElementById('email');
-    const addressInput = document.getElementById('address');
-    const leadUrl      = document.getElementById('lead_store_url')?.value;
+            const nameInput = document.getElementById('first_name');
+            const phoneInput = document.getElementById('phone');
+            const emailInput = document.getElementById('email');
+            const addressInput = document.getElementById('address');
+            const leadUrl = document.getElementById('lead_store_url')?.value;
 
-    if (!nameInput || !phoneInput || !leadUrl) {
-        console.error('Incomplete lead elements missing');
-        return;
-    }
+            if (!nameInput || !phoneInput || !leadUrl) {
+                console.error('Incomplete lead elements missing');
+                return;
+            }
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    let typingTimer;
-    const delay = 800;
+            let typingTimer;
+            const delay = 800;
 
-    function collectFormData() {
-        return {
-            name: nameInput.value.trim(),
-            phone: phoneInput.value.trim(),
-            email: emailInput?.value.trim() || '',
-            address: addressInput?.value.trim() || '',
-            page_type: 'buy_now',
-            id: document.querySelector('input[name="id"]')?.value || '',
-            qty: document.querySelector('input[name="qty"]')?.value || '',
-            dynamic_price: document.querySelector('input[name="dynamic_prices"]')?.value || '',
-            size: document.querySelector('input[name="size"]')?.value || '',
-            color: document.querySelector('input[name="color"]')?.value || ''
-        };
-    }
+            function collectFormData() {
+                return {
+                    name: nameInput.value.trim(),
+                    phone: phoneInput.value.trim(),
+                    email: emailInput?.value.trim() || '',
+                    address: addressInput?.value.trim() || '',
+                    page_type: 'buy_now',
+                    id: document.querySelector('input[name="id"]')?.value || '',
+                    qty: document.querySelector('input[name="qty"]')?.value || '',
+                    dynamic_price: document.querySelector('input[name="dynamic_prices"]')?.value || '',
+                    size: document.querySelector('input[name="size"]')?.value || '',
+                    color: document.querySelector('input[name="color"]')?.value || ''
+                };
+            }
 
-    // Save when any one field is filled, even without submitting the form
-    function hasAnyData(d) {
-        return !!(d.name || d.phone || d.email || d.address);
-    }
+            // Save when any one field is filled, even without submitting the form
+            function hasAnyData(d) {
+                return !!(d.name || d.phone || d.email || d.address);
+            }
 
-    function saveIncompleteLead() {
-        const formData = collectFormData();
-        if (!hasAnyData(formData)) return;
+            function saveIncompleteLead() {
+                const formData = collectFormData();
+                if (!hasAnyData(formData)) return;
 
-        fetch(leadUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(res => res.json())
-        .then(data => console.log('Saved:', data))
-        .catch(err => console.error('Fetch error:', err));
-    }
+                fetch(leadUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(res => res.json())
+                    .then(data => console.log('Saved:', data))
+                    .catch(err => console.error('Fetch error:', err));
+            }
 
-    function handleTyping() {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(saveIncompleteLead, delay);
-    }
+            function handleTyping() {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(saveIncompleteLead, delay);
+            }
 
-    nameInput.addEventListener('keyup', handleTyping);
-    phoneInput.addEventListener('keyup', handleTyping);
-    if (emailInput) emailInput.addEventListener('keyup', handleTyping);
-    if (addressInput) addressInput.addEventListener('change', saveIncompleteLead);
+            nameInput.addEventListener('keyup', handleTyping);
+            phoneInput.addEventListener('keyup', handleTyping);
+            if (emailInput) emailInput.addEventListener('keyup', handleTyping);
+            if (addressInput) addressInput.addEventListener('change', saveIncompleteLead);
 
-    window.addEventListener('beforeunload', function () {
-        const formData = collectFormData();
-        if (!hasAnyData(formData)) return;
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', leadUrl, false);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
-        try { xhr.send(JSON.stringify(formData)); } catch (e) {}
-    });
-});
-</script>
+            window.addEventListener('beforeunload', function() {
+                const formData = collectFormData();
+                if (!hasAnyData(formData)) return;
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', leadUrl, false);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+                try {
+                    xhr.send(JSON.stringify(formData));
+                } catch (e) {}
+            });
+        });
+    </script>
 
 @endpush
-

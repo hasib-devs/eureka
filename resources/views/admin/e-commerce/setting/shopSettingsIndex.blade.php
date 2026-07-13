@@ -23,7 +23,8 @@
     </section>
 
     @php
-        $control = 'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+        $control =
+            'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
     @endphp
 
     <section class="mb-6">
@@ -87,13 +88,11 @@
                     </div>
                     <div class="grid grid-cols-1 gap-x-4 p-5 md:grid-cols-2">
                         <div class="mb-4">
-                            <x-ui.input name="min_rec" label="Minimum Recharge" type="text"
-                                :value="setting('min_rec') ?? 50" />
+                            <x-ui.input name="min_rec" label="Minimum Recharge" type="text" :value="setting('min_rec') ?? 50" />
                         </div>
 
                         <div class="mb-4">
-                            <x-ui.input name="min_with" label="Minimum Withdraw" type="text"
-                                :value="setting('min_with') ?? 500" />
+                            <x-ui.input name="min_with" label="Minimum Withdraw" type="text" :value="setting('min_with') ?? 500" />
                         </div>
                     </div>
                 </div>
@@ -115,8 +114,7 @@
                                 Country of Serve <span class="text-danger">*</span>
                             </label>
                             <input class="{{ $control }}" type="text" name="COUNTRY_SERVE" id="COUNTRY_SERVE"
-                                placeholder="Bangladesh"
-                                value="{{ setting('COUNTRY_SERVE') ?? 'Bangladesh' }}" required>
+                                placeholder="Bangladesh" value="{{ setting('COUNTRY_SERVE') ?? 'Bangladesh' }}" required>
                         </div>
 
                         <div>
@@ -128,20 +126,45 @@
                         </div>
 
                         <div>
+                            <label for="shipping_charge" class="mb-1 block text-sm font-medium text-slate-700">
+                                Shipping Charge (Inside Area) <span class="text-danger">*</span>
+                            </label>
+                            <input class="{{ $control }}" name="shipping_charge" id="shipping_charge" type="number"
+                                step="0.01" value="{{ setting('shipping_charge') ?? 0 }}" required>
+                        </div>
+
+                        <div>
+                            <label for="shipping_charge_out_of_range" class="mb-1 block text-sm font-medium text-slate-700">
+                                Shipping Charge (Outside Area) <span class="text-danger">*</span>
+                            </label>
+                            <input class="{{ $control }}" name="shipping_charge_out_of_range"
+                                id="shipping_charge_out_of_range" type="number" step="0.01"
+                                value="{{ setting('shipping_charge_out_of_range') ?? 0 }}" required>
+                        </div>
+
+                        <div>
+                            <label for="shipping_free_above" class="mb-1 block text-sm font-medium text-slate-700">
+                                Free Shipping Above <span class="text-danger">*</span>
+                            </label>
+                            <input class="{{ $control }}" name="shipping_free_above" id="shipping_free_above"
+                                type="number" step="0.01" value="{{ setting('shipping_free_above') ?? 0 }}"
+                                required>
+                        </div>
+
+                        <div>
                             <label for="CURRENCY_CODE" class="mb-1 block text-sm font-medium text-slate-700">
                                 Currency Code <span class="text-danger">*</span>
                             </label>
                             <input class="{{ $control }}" type="text" name="CURRENCY_CODE" id="CURRENCY_CODE"
-                                placeholder="Currency code"
-                                value="{{ setting('CURRENCY_CODE') ?? 'BDT' }}" required>
+                                placeholder="Currency code" value="{{ setting('CURRENCY_CODE') ?? 'BDT' }}" required>
                         </div>
 
                         <div>
                             <label for="CURRENCY_CODE_MIN" class="mb-1 block text-sm font-medium text-slate-700">
                                 Currency Code Small <span class="text-danger">*</span>
                             </label>
-                            <input class="{{ $control }}" type="text" name="CURRENCY_CODE_MIN" id="CURRENCY_CODE_MIN"
-                                placeholder="Currency code"
+                            <input class="{{ $control }}" type="text" name="CURRENCY_CODE_MIN"
+                                id="CURRENCY_CODE_MIN" placeholder="Currency code"
                                 value="{{ setting('CURRENCY_CODE_MIN') ?? 'Tk' }}" required>
                         </div>
 
@@ -150,8 +173,7 @@
                                 Currency Icon <span class="text-danger">*</span>
                             </label>
                             <input class="{{ $control }}" type="text" name="CURRENCY_ICON" id="CURRENCY_ICON"
-                                placeholder="Currency icon"
-                                value="{{ setting('CURRENCY_ICON') ?? '৳' }}" required>
+                                placeholder="Currency icon" value="{{ setting('CURRENCY_ICON') ?? '৳' }}" required>
                         </div>
                     </div>
                 </div>
@@ -172,8 +194,8 @@
                             <label for="shop_commission" class="mb-1 block text-sm font-medium text-slate-700">
                                 Vendor Commission <span class="text-danger">*</span>
                             </label>
-                            <input class="{{ $control }}" type="number" name="shop_commission" id="shop_commission"
-                                placeholder="Bangladesh"
+                            <input class="{{ $control }}" type="number" name="shop_commission"
+                                id="shop_commission" placeholder="Bangladesh"
                                 value="{{ setting('shop_commission') ?? 0 }}" required>
                         </div>
 
@@ -190,8 +212,7 @@
                                 Default Point <span class="text-danger">*</span>
                             </label>
                             <input class="{{ $control }}" type="text" name="Default_Point" id="Default_Point"
-                                placeholder="Bangladesh"
-                                value="{{ setting('Default_Point') ?? 0 }}" required>
+                                placeholder="Bangladesh" value="{{ setting('Default_Point') ?? 0 }}" required>
                         </div>
 
                         <div>
@@ -199,8 +220,7 @@
                                 Point Rate <span class="text-danger">*</span>
                             </label>
                             <input class="{{ $control }}" type="text" name="Point_rate" id="Point_rate"
-                                placeholder="Bangladesh"
-                                value="{{ setting('Point_rate') ?? 0 }}" required>
+                                placeholder="Bangladesh" value="{{ setting('Point_rate') ?? 0 }}" required>
                         </div>
                     </div>
 

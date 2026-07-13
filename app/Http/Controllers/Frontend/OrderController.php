@@ -14,6 +14,7 @@ use App\Models\Review;
 use App\Services\OrderSms;
 use App\Services\ProductPriceCalculator;
 use App\Services\RewardCoupon;
+use App\Services\ShippingCharge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -111,6 +112,8 @@ class OrderController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:100',
             'phone' => 'required',
+            'district' => 'nullable|string|max:100',
+            'thana' => 'nullable|string|max:100',
         ]);
 
         $order = $this->createOrder($request, Auth::id() ?: null, 'cart');
@@ -125,6 +128,8 @@ class OrderController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:100',
             'phone' => 'required',
+            'district' => 'nullable|string|max:100',
+            'thana' => 'nullable|string|max:100',
         ]);
 
         $order = $this->createOrder($request, Auth::id() ?: null, 'buy_now');
@@ -504,18 +509,20 @@ class OrderController extends Controller
         }
 
         $sellerCount = count($sellerIds);
-        $city = $request->city ?? '';
-        $freeAbove = (float) (setting('shipping_free_above') ?? 0);
+        $city = trim((string) ($request->city ?? ''));
+        $district = trim((string) ($request->district ?? ''));
 
-        if ($freeAbove > 0 && $stotal >= $freeAbove) {
-            $singleCharge = 0.0;
-            $shippingCharge = 0.0;
-        } else {
-            $singleCharge = (float) ($city === 'Dhaka'
-                ? setting('shipping_charge')
-                : setting('shipping_charge_out_of_range'));
-            $shippingCharge = $singleCharge * $sellerCount;
+        if ($district === '' && $city !== '') {
+            $district = $city;
         }
+
+        if ($district === '') {
+            $district = ShippingCharge::insideArea();
+        }
+
+        $shipping = ShippingCharge::forOrder((float) $stotal, $sellerCount, $district, $city);
+        $singleCharge = $shipping['single'];
+        $shippingCharge = $shipping['total'];
 
         $discount = 0.0;
         $couponCode = null;
@@ -541,7 +548,7 @@ class OrderController extends Controller
             'country' => $request->country ?? setting('COUNTRY_SERVE') ?? 'Bangladesh',
             'address' => $request->address ?? '',
             'town' => $city,
-            'district' => $request->district ?? '',
+            'district' => $district,
             'thana' => $request->thana ?? '',
             'post_code' => $request->post_code ?? '',
             'phone' => $request->phone,
