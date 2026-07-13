@@ -19,12 +19,6 @@
         </div>
     </section>
 
-    @if (session('success'))
-        <div class="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm text-emerald-700">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <form action="{{ routeHelper('related-products') }}" method="POST">
         @csrf
 

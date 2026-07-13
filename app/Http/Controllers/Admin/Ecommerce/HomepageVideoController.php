@@ -11,11 +11,14 @@ class HomepageVideoController extends Controller
     public function index()
     {
         $videos = HomepageVideo::latest()->get();
-       return view('admin.e-commerce.video.index', compact('videos'));}
+
+        return view('admin.e-commerce.video.index', compact('videos'));
+    }
 
     public function create()
     {
-       return view('admin.e-commerce.video.create');}
+        return view('admin.e-commerce.video.create');
+    }
 
     public function store(Request $request)
     {
@@ -41,12 +44,15 @@ class HomepageVideoController extends Controller
 
         HomepageVideo::create($data);
 
-        return redirect()->route('admin.video.index')->with('success', 'Video added');
+        notify()->success('Video added');
+
+        return redirect()->route('admin.video.index');
     }
 
     public function edit(HomepageVideo $video)
     {
-        return view('admin.e-commerce.video.edit', compact('video'));    }
+        return view('admin.e-commerce.video.edit', compact('video'));
+    }
 
     public function update(Request $request, HomepageVideo $video)
     {
@@ -72,13 +78,17 @@ class HomepageVideoController extends Controller
 
         $video->update($data);
 
-        return redirect()->route('admin.video.index')->with('success', 'Updated');
+        notify()->success('Updated');
+
+        return redirect()->route('admin.video.index');
     }
 
     public function destroy(HomepageVideo $video)
     {
         $video->delete();
 
-        return back()->with('success', 'Deleted');
+        notify()->success('Deleted');
+
+        return back();
     }
 }

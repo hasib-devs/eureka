@@ -205,6 +205,8 @@ class HomeController extends Controller
         $response = curl_exec($ch);
         curl_close($ch);
 
-        return back()->with('message', 'Notification sent.');
+        notify()->success('Notification sent.');
+
+        return back();
     }
 }

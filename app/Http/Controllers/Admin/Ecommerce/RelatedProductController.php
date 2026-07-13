@@ -43,6 +43,8 @@ class RelatedProductController extends Controller
             Product::whereIn('id', $ids)->update(['is_related' => true]);
         }
 
-        return back()->with('success', 'Related products updated.');
+        notify()->success('Related products updated.');
+
+        return back();
     }
 }

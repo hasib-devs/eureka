@@ -87,6 +87,7 @@
 
     <x-notify::notify />
     @notifyJs
+    <script src="{{ asset('assets/js/app-toast.js') }}"></script>
 
     @stack('js')
     <script>
