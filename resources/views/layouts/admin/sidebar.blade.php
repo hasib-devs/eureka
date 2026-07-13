@@ -215,6 +215,10 @@
                             onclick="window.location='{{ url('admin/video') }}'">
                             <i class="bx bx-video"></i> Homepage Video
                         </li>
+                        <li class="{{ $navActive('admin/mobile-menu*') }}"
+                            onclick="window.location='{{ url('admin/mobile-menu') }}'">
+                            <i class="bx bx-mobile-alt"></i> Mobile Menu
+                        </li>
                         <li class="{{ $navActive('admin/page*') }}"
                             onclick="window.location='{{ url('admin/pages') }}'">
                             <i class="bx bx-file"></i> Pages

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Ecommerce\DashboardController;
 use App\Http\Controllers\Admin\Ecommerce\HomepageVideoController;
 use App\Http\Controllers\Admin\Ecommerce\InvoiceController;
 use App\Http\Controllers\Admin\Ecommerce\MissionControlController;
+use App\Http\Controllers\Admin\Ecommerce\MobileMenuController;
 use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
 use App\Http\Controllers\Admin\Ecommerce\OrderController;
 use App\Http\Controllers\Admin\Ecommerce\ProductController;
@@ -78,6 +79,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('slider', SliderController::class);
     Route::resource('video', HomepageVideoController::class);
+
+    Route::get('mobile-menu', [MobileMenuController::class, 'index'])->name('mobile-menu.index');
+    Route::post('mobile-menu', [MobileMenuController::class, 'update'])->name('mobile-menu.update');
     Route::resource('banner', BannerController::class);
 
     Route::resource('sliderone', NewSliderController::class);

@@ -385,7 +385,7 @@
         })();
     </script>
 
-    @include('layouts.frontend.partials.mobile-sidebar')
+    @include('layouts.frontend.partials.mobile-menu')
 
 <script>
 (function () {
