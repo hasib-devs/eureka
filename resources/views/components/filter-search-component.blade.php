@@ -1,5 +1,6 @@
-@props(['brands' => collect()])
+@props(['brands' => collect(), 'showPrice' => true])
 <form action="{{ route('product.filter') }}" method="GET" id="form">
+    @if ($showPrice)
     <div class="range">
         <ul class="dropdown-menu6">
             <li>
@@ -9,6 +10,7 @@
             </li>
         </ul>
     </div>
+    @endif
 
     {{-- Use incoming $request if provided, otherwise fallback to global request() --}}
     @php
@@ -122,8 +124,8 @@
                 height: 100%;
             }
             .cck2:hover{
-                background: orange;
-                border-color: orange;
+                background: var(--primary_color, #f85606);
+                border-color: var(--primary_color, #f85606);
             }
             .cck2.active {
                 background: black;
@@ -296,7 +298,7 @@
         <ul>
             <li><input value="Filter" type="submit"></li>
             <li> <a class="redirect"
-                    style="background: #ff5722;color: white;border: none;padding: 8px 25px;display: inline-block;"
+                    style="background: var(--primary_color, #ff5722);color: white;border: none;padding: 8px 25px;display: inline-block;"
                     href="{{ $req->unr ?? Request::url() }}">Reset</a> </li>
         </ul>
     </div>

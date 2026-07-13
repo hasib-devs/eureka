@@ -134,10 +134,10 @@
         /* Active state for regular items */
         .msc-item.active {
             background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-            border-color: #f85606;
+            border-color: var(--primary_color, #f85606);
         }
         .msc-item.active > a {
-            color: #f85606;
+            color: var(--primary_color, #f85606);
             font-weight: 600;
         }
         .msc-item.active > a::before {
@@ -148,7 +148,7 @@
             transform: translateY(-50%);
             width: 5px;
             height: 5px;
-            background: #f85606;
+            background: var(--primary_color, #f85606);
             border-radius: 50%;
         }
 
@@ -199,7 +199,7 @@
             color: #111827;
         }
         .msc-parent > .msc-toggle:focus {
-            outline: 2px solid #f85606;
+            outline: 2px solid var(--primary_color, #f85606);
             outline-offset: -2px;
             border-radius: 6px;
         }
@@ -211,7 +211,7 @@
         }
         .msc-parent.open > .msc-toggle {
             background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-            color: #f85606;
+            color: var(--primary_color, #f85606);
             font-weight: 600;
         }
         

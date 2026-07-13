@@ -144,6 +144,8 @@ body {
     transition: transform 0.8s var(--ease), opacity 0.5s var(--ease);
 }
 .featured-stage.is-peeking img.featured-peek { opacity: 1; }
+/* Thumbnail selection: cross-fade the chosen photo in over ~1.6s (not an instant swap). */
+.featured-stage.is-selecting img.featured-peek { transition: opacity 1.6s var(--ease); opacity: 1; }
 @keyframes stageBreathe {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.035); }
@@ -151,6 +153,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .featured-stage img { animation: none; }
     .featured-stage img.featured-peek { transition: none; }
+    .featured-stage.is-selecting img.featured-peek { transition: none; }
 }
 .stage-badge {
     position: absolute; top: 18px; left: 18px; background: var(--deep-black); color: var(--accent-color);
@@ -789,11 +792,37 @@ const lifestyleImages = @json($lifestyleImages->pluck('url'));
 // The image the stage rests on (set by thumbnail clicks, and by colour
 // swatches on variable products). Hover peeks the next image, then reverts here.
 let currentFeaturedSrc = document.getElementById('featuredImg').src;
+let gallerySelectTimer = null;
 function setFeatured(el, src) {
     document.querySelectorAll('.thumb-box').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
-    currentFeaturedSrc = src;
-    document.getElementById('featuredImg').src = src;
+    if (src === currentFeaturedSrc) return;
+
+    const base = document.getElementById('featuredImg');
+    const stage = document.getElementById('featuredStage');
+    const peek = document.getElementById('featuredPeek');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Reduced motion / missing nodes: fall back to an instant swap.
+    if (!base || !stage || !peek || reduce) {
+        if (base) base.src = src;
+        currentFeaturedSrc = src;
+        return;
+    }
+
+    // Cross-fade over ~1.6s: paint the new photo on the peek layer and fade it
+    // in on top of the current one, then commit it to the base layer.
+    stage.classList.remove('is-peeking'); // don't let a hover fade fight the swap
+    peek.src = src;
+    void peek.offsetWidth;                // restart the opacity transition from 0
+    stage.classList.add('is-selecting');
+    currentFeaturedSrc = src;             // keep hover logic in sync immediately
+
+    clearTimeout(gallerySelectTimer);
+    gallerySelectTimer = setTimeout(function () {
+        base.src = src;
+        stage.classList.remove('is-selecting'); // peek fades back over the now-identical base
+    }, 1600);
 }
 
 /* The image the visitor currently sees on the stage (peek overlay wins while hovering). */

@@ -48,7 +48,7 @@
         font-size: 25px;
     }
     .checked {
-        color: orange;
+        color: var(--primary_color, #f85606);
     }
     /* Three column layout */
     .side {
