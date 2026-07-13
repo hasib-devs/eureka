@@ -33,3 +33,7 @@ public/fonts-manifest.dev.json
 
 # Subagent-driven-development scratch
 .superpowers/
+
+# Runtime user uploads (stored on disk per-environment, not versioned)
+/public/uploads/product/
+/public/uploads/tasks/

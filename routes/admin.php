@@ -15,7 +15,6 @@ use App\Http\Controllers\Admin\Ecommerce\CustomerController;
 use App\Http\Controllers\Admin\Ecommerce\DashboardController;
 use App\Http\Controllers\Admin\Ecommerce\HomepageVideoController;
 use App\Http\Controllers\Admin\Ecommerce\InvoiceController;
-use App\Http\Controllers\Admin\Ecommerce\MissionControlController;
 use App\Http\Controllers\Admin\Ecommerce\MobileMenuController;
 use App\Http\Controllers\Admin\Ecommerce\NewSliderController;
 use App\Http\Controllers\Admin\Ecommerce\OrderController;
@@ -343,14 +342,4 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('setting/getway', [SettingController::class, 'getway'])->name('setting.getway');
     Route::post('setting/getway', [SettingController::class, 'setting_g'])->name('setting_g');
     Route::get('setting/home', [SettingController::class, 'home'])->name('setting.home');
-
-    // Mission Control — premium task pipeline (replaces the old Docs page)
-    Route::get('mission-control', [MissionControlController::class, 'index'])->name('mission.index');
-    Route::get('mission-control/feed', [MissionControlController::class, 'feed'])->name('mission.feed');
-    Route::post('mission-control', [MissionControlController::class, 'store'])->name('mission.store');
-    Route::put('mission-control/{task}', [MissionControlController::class, 'update'])->name('mission.update');
-    Route::delete('mission-control/{task}', [MissionControlController::class, 'destroy'])->name('mission.destroy');
-    Route::patch('mission-control/{task}/status', [MissionControlController::class, 'updateStatus'])->name('mission.status');
-    Route::post('mission-control/{task}/comment', [MissionControlController::class, 'comment'])->name('mission.comment');
-    Route::post('mission-control/{task}/remind', [MissionControlController::class, 'remind'])->name('mission.remind');
 });

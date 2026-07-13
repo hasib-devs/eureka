@@ -125,12 +125,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Chat::class, 'staff_id', 'id');
     }
-
-    /**
-     * The Mission Control executor: the admin who controls task statuses.
-     */
-    public function isTaskExecutor(): bool
-    {
-        return (int) $this->role_id === 1 && strtolower((string) $this->username) === 'rajin';
-    }
 }
