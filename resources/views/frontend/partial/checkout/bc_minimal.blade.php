@@ -86,44 +86,7 @@
                                     <small class="form-text text-danger">{{$message}}</small>
                                 @enderror
                                 </div> --}}
-                                {{-- <div class="form-group col-md-6">
-                                <label for="city">Division <sup style="color: red;">*</sup></label>
-                                <select name="city" id="divisions"  class="form-control @error('city') is-invalid @enderror"  onchange="divisionsList();">
-                                    <option>Select Division</option>
-                                    <option @isset($order->town)@if ($order->town == 'Barishal')selected @endif @endisset value="Barishal">Barishal</option>
-                                    <option @isset($order->town) @if ($order->town == 'Chattogram')selected @endif @endisset value="Chattogram">Chattogram</option>
-                                    <option @isset($order->town)@if ($order->town == 'Dhaka')selected @endif @endisset value="Dhaka">Dhaka</option>
-                                    <option @isset($order->town)@if ($order->town == 'Khulna')selected @endif @endisset value="Khulna">Khulna</option>
-                                    <option @isset($order->town)@if ($order->town == 'Mymensingh')selected @endif @endisset value="Mymensingh">Mymensingh</option>
-                                    <option @isset($order->town)@if ($order->town == 'Rajshahi')selected @endif @endisset value="Rajshahi">Rajshahi</option>
-                                    <option @isset($order->town)@if ($order->town == 'Rangpur')selected @endif @endisset value="Rangpur">Rangpur</option>
-                                    <option @isset($order->town)@if ($order->town == 'Sylhet')selected @endif @endisset value="Sylhet">Sylhet</option>
-                                </select><!--/ Division Section-->
-                                @error('city')
-                                    <small class="form-text text-danger">{{$message}}</small>
-                                @enderror
-                                </div> --}}
-                                {{-- <div class="form-group col-md-6">
-                                <label for="district">District <sup style="color: red;">*</sup></label>
-                                <select name="district"  class="form-control @error('district') is-invalid @enderror"  id="distr" onchange="thanaList();">
-                                    <option disabled >Select District</option>
-                                    @isset($order->district)
-                                    <option selected value="{{$order->district}}">{{$order->district}}</option>
-                                    @endisset
-                                </select><!--/ Districts Section-->
-                                @error('district')
-                                    <small class="form-text text-danger">{{$message}}</small>
-                                @enderror
-                                </div> --}}
-                                {{-- <div class="form-group col-md-6">
-                                <label for="district">Thana <sup style="color: red;">*</sup></label>
-                                <select name="thana"  class="form-control @error('district') is-invalid @enderror"  id="polic_sta">
-                                    <option disabled >Select Thana</option>
-                                    @isset($order->thana)
-                                    <option selected value="{{$order->thana}}">{{$order->thana}}</option>
-                                    @endisset
-                                </select>
-                            </div> --}}
+                                @include('frontend.partial.checkout.district_field')
 
                                 <div class="form-group col-md-12">
                                     <label for="address">সম্পূর্ণ ঠিকানা</label>
@@ -158,15 +121,6 @@
                                     <input type="hidden" name="pr" value="{{ $request->pr }}">
                                 @endif
 
-                                <!--<div class="form-group col-md-12">-->
-                                <!--    <select name="shipping_range" id="shipping_range" class="form-control">-->
-                                <!--        <option value="1">Inside {{ setting('shipping_range_inside') }}-->
-                                <!--            ({{ setting('shipping_charge') }})</option>-->
-                                <!--        <option value="0">Outside of ({{ setting('shipping_charge_out_of_range') }})</option>-->
-                                <!--    </select>-->
-                                <!--</div>-->
-
-                                
                                 {{-- <div class="form-group col-md-12">
                                 <label for="company">Company (optional)</label>
                                 <input  name="company" id="company" class="form-control @error('company') is-invalid @enderror" type="text"  />
@@ -418,7 +372,7 @@
 
                             <div class="rvinfo">
                                 <span>মোট</span>
-                                <span><span id="sub-total"> {{ $sub_total }}</< /span> <strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                                <span><span id="sub-total">{{ $sub_total }}</span> <strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
                             </div>
                             @php $giftFee = Session::has('gift_wrap') ? (float) config('shop.gift_wrap_fee') : 0; @endphp
                             @if ($giftFee > 0)
@@ -429,18 +383,10 @@
                             @endif
                             
                             
-                            <!--<div class="rvinfo">-->
-                            <!--    <span>Shipping Charge</span>-->
-                            <!--    <span>+ <span id="ship-charge">-->
-                            <!--            @if (isset($order->shipping_charge))-->
-                            <!--                {{ $order->shipping_charge }}-->
-                            <!--            @else-->
-                            <!--                0.00-->
-                            <!--            @endif-->
-                            <!--        </span><strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>-->
-                            <!--</div>-->
-                            
-                            
+                            <div class="rvinfo">
+                                <span>ডেলিভারি চার্জ</span>
+                                <span>+ <span id="ship-charge">0.00</span><strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                            </div>
 
                             <div class="rvinfo coupon">
                                 <span>কুপন <span class="coupon-name"></span></span>
@@ -487,18 +433,6 @@
                 let id = "{!! $request->id !!}";
                 let qty = "{!! $request->qty !!}";
                 let dynamic_price = "{!! $request->dynamic_price !!}";
-                let shipping_charge = 0;
-                let download_able = "{!! $product->download_able !!}";
-
-                // if (download_able != 1) {
-                //     if ($("select[name='city']").val() == 'Dhaka') {
-                //         let charge = "{!! setting('shipping_charge') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     } else {
-                //         let charge = "{!! setting('shipping_charge_out_of_range') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     }
-                // }
 
                 if (code != '') {
                     $.ajax({
@@ -512,13 +446,10 @@
                             if (response.alert == 'success') {
                                 $('.alert-message .alert').removeClass('alert-danger').addClass(
                                     'alert-success').text(response.message);
-                                $('span#ship-charge').text(number_format(shipping_charge, 2,
-                                    '.', ','));
                                 $('span#coupon').text(number_format(response.discount, 2, '.',
                                     ','));
-                                let total = response.total + shipping_charge;
-                                $('span#total').text(number_format(total, 2, '.', ','));
                                 $('span.coupon-name').text('(' + code + ')');
+                                divis();
                                 $('#coupon').val('')
                             } else {
                                 $('.alert-message .alert').removeClass('alert-success')
@@ -645,7 +576,7 @@
                 }
                 $('#payment-details').html(html);
             })
-            $(document).on('change', '#shipping_range', function(e) {
+            $(document).on('change', '#distr', function(e) {
                 divis()
             });
 
@@ -658,22 +589,11 @@
             
             divis();
             function divis() {
-                let shipping_charge = 0;
-                let download_able = "{!! $product->download_able !!}";
-                // if (download_able != 1) {
-                //     if ($("select[name='shipping_range']").val() == 1) {
-                //         let charge = "{!! setting('shipping_charge') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     } else {
-                //         let charge = "{!! setting('shipping_charge_out_of_range') !!}";
-                //         shipping_charge += parseInt(charge);
-                //     }
-                // }
-                let subtotal = $('span#sub-total').text();
-                let coupon = $('span#coupon').text();
-                let rep_subtotal = subtotal.replace(',', '');
-                let rep_coupon = coupon.replace(',', '');
-                let total = (parseInt(rep_subtotal) + shipping_charge) - parseInt(rep_coupon);
+                let stotal = parseFloat("{!! $sub_total !!}") || 0;
+                let giftFee = parseFloat("{!! $giftFee !!}") || 0;
+                let shipping_charge = checkoutShippingCharge(stotal, 1);
+                let coupon = parseFloat($('span#coupon').text().replace(/,/g, '')) || 0;
+                let total = Math.max(0, stotal + giftFee + shipping_charge - coupon);
                 $('span#ship-charge').text(number_format(shipping_charge, 2, '.', ','));
                 $('span#total').text(number_format(total, 2, '.', ','));
             }

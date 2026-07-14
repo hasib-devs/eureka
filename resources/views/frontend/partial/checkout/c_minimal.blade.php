@@ -348,60 +348,6 @@
                                 <small class="form-text text-danger">{{$message}}</small>
                                 @enderror
                             </div>
-                            {{-- <div class="form-group col-md-6">
-                                <label for="city">Division <sup style="color: red;">*</sup></label>
-                                <select name="city" id="divisions"
-                                    class="form-control @error('city') is-invalid @enderror"
-                                    onchange="divisionsList();">
-                                    <option disabled>Select Division</option>
-                                    <option @isset($order->town) @if($order->town =='Barishal')selected @endif @endisset
-                                        value="Barishal">Barishal</option>
-                                    <option @isset($order->town) @if($order->town=='Chattogram')selected @endif
-                                        @endisset value="Chattogram">Chattogram</option>
-                                    <option @isset($order->town) @if($order->town =='Dhaka')selected @endif @endisset
-                                        value="Dhaka">Dhaka</option>
-                                    <option @isset($order->town) @if($order->town =='Khulna')selected @endif @endisset
-                                        value="Khulna">Khulna</option>
-                                    <option @isset($order->town) @if($order->town =='Mymensingh')selected @endif
-                                        @endisset value="Mymensingh">Mymensingh</option>
-                                    <option @isset($order->town) @if($order->town =='Rajshahi')selected @endif @endisset
-                                        value="Rajshahi">Rajshahi</option>
-                                    <option @isset($order->town) @if($order->town =='Rangpur')selected @endif @endisset
-                                        value="Rangpur">Rangpur</option>
-                                    <option @isset($order->town) @if($order->town =='Sylhet')selected @endif @endisset
-                                        value="Sylhet">Sylhet</option>
-                                </select>
-                                <!--/ Division Section-->
-
-                                @error('city')
-                                <small class="form-text text-danger">{{$message}}</small>
-                                @enderror
-
-                            </div> --}}
-                            {{-- <div class="form-group col-md-6">
-                                <label for="district">District <sup style="color: red;">*</sup></label>
-                                <select name="district" class="form-control @error('district') is-invalid @enderror"
-                                    id="distr" onchange="thanaList();">
-                                    <option disabled>Select District</option>
-                                    @isset($order->district)
-                                    <option selected value="{{$order->district}}">{{$order->district}}</option>
-                                    @endisset
-                                </select>
-                                <!--/ Districts Section-->
-                                @error('district')
-                                <small class="form-text text-danger">{{$message}}</small>
-                                @enderror
-                            </div> --}}
-                            {{-- <div class="form-group col-md-6">
-                                <label for="district">Thana <sup style="color: red;">*</sup></label>
-                                <select name="thana" class="form-control @error('district') is-invalid @enderror"
-                                    id="polic_sta">
-                                    <option disabled>Select Thana</option>
-                                    @isset($order->thana)
-                                    <option selected value="{{$order->thana}}">{{$order->thana}}</option>
-                                    @endisset
-                                </select>
-                            </div> --}}
                             <div class="form-group col-md-12">
                                 <label for="phone">মোবাইল নম্বর <sup class="text-[red]">*</sup></label>
                                 <input @if (auth()->user())
@@ -434,6 +380,8 @@
                                 @enderror
                             </div>
                             
+                            @include('frontend.partial.checkout.district_field')
+
                             <div class="form-group col-md-12">
                                     <label for="address">সম্পূর্ণ ঠিকানা</label>
                                     <textarea name="address" id="address" rows="4"
@@ -442,14 +390,7 @@
                                         <small class="form-text text-danger">{{$message}}</small>
                                     @enderror
                             </div>
-                            
-                            <!--<div class="form-group col-md-12">-->
-                            <!--    <select name="shipping_range" id="shipping_range" class="form-control">-->
-                            <!--        <option value="1">Inside {{ setting('shipping_range_inside') }} ({{ setting('shipping_charge') }})</option>-->
-                            <!--        <option value="0">Outside of ({{ setting('shipping_charge_out_of_range') }})</option>-->
-                            <!--    </select>-->
-                            <!--</div>-->
-                            
+
                             <div class="alert alert-warning mt-2 text-center" role="alert">
                                 ⚠️ শিপিং চার্জ প্রতি কেজি ঢাকার ভিতরে ১১০ পরবর্তী প্রতি কেজি ১৫ টাকা করে যোগ হবে। ঢাকার বাহিরে প্রতি কেজি ১৩০ টাকা পরবর্তী প্রতি কেজি ২০ টাকা যোগ হবে।
                             </div>
@@ -781,26 +722,10 @@ $stotal = 0;
                             <span>+ {{ number_format($giftFee, 2, '.', ',') }}<strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
                         </div>
                         @endif
-                        <!--<div class="rvinfo">-->
-                        <!--    <span>-->
-                        <!--        Shipping Charge @if ($stotal > setting('shipping_free_above'))(Free)@endif-->
-                        <!--    </span>-->
-                        <!--    <span>-->
-                        <!--        +-->
-                        <!--        @if ($stotal > setting('shipping_free_above'))-->
-                        <!--            0.00-->
-                        <!--        @else-->
-                        <!--            <span id="ship-charge">-->
-                        <!--                @if(isset($order->shipping_charge))-->
-
-                        <!--                {{$order->single_charge*$seller_count}}-->
-
-                        <!--                @else 0.00 @endif-->
-                        <!--            </span>-->
-                        <!--        @endif-->
-                        <!--        <strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong>-->
-                        <!--    </span>-->
-                        <!--</div>-->
+                        <div class="rvinfo">
+                            <span>ডেলিভারি চার্জ</span>
+                            <span>+ <span id="ship-charge">0.00</span><strong> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}</strong></span>
+                        </div>
                         <div class="rvinfo coupon">
                             <span>কুপন <span class="coupon-name"></span></span>
                             <span>- <span
@@ -812,20 +737,12 @@ $stotal = 0;
                         <div class="rvinfo">
                             <span>সর্বমোট</span>
                             <h4>
-                                @if (Session::has('coupon'))
                                 @php
-                                $sub_total = $stotal;
-                                $discount = Session::get('coupon')['discount'];
-                                $rep_sub = str_replace(',', '', $sub_total);
-                                $total = number_format($rep_sub + $giftFee - $discount, 2, '.', ',');
+                                    $discount = Session::has('coupon') ? (float) Session::get('coupon')['discount'] : 0;
+                                    $total = number_format(max(0, $stotal + $giftFee - $discount), 2, '.', ',');
                                 @endphp
-                                @endif
                                 <strong>
-                                    @if ($stotal > setting('shipping_free_above'))
-                                        {{ $stotal + $giftFee }}
-                                    @else
-                                        <span id="total">{{$total ?? $stotal + $giftFee}}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
-                                    @endif
+                                    <span id="total">{{ $total }}</span> {{ setting('CURRENCY_CODE_MIN') ?? 'TK' }}
                                 </strong>
                             </h4>
                         </div>
@@ -853,18 +770,7 @@ $stotal = 0;
             $('#coupon').removeClass('is-invalid');
             let stotal = "{!! $stotal !!}";
             let code = $('input#coupon').val();
-            let seller_count = $('#seller_count').val();
-            let shipping_charge = 0;
 
-            if ($("select[name='shipping_range']").val() == 1) {
-                let charge = "{!! setting('shipping_charge') !!}";
-                shipping_charge += parseInt(charge);
-            } else {
-                let charge = "{!! setting('shipping_charge_out_of_range') !!}";
-                shipping_charge += parseInt(charge);
-            }
-            shipping_charge = parseInt(shipping_charge) * parseInt(seller_count);
-        
             if (code != '') {
                 $.ajax({
                     type: 'GET',
@@ -876,11 +782,9 @@ $stotal = 0;
                         if (response.alert == 'success') {
                             $('.alert-message .alert').removeClass('alert-danger').addClass('alert-success').text(response.message);
 
-                            $('span#ship-charge').text(number_format(shipping_charge, 2, '.', ','));
                             $('span#coupon').text(number_format(response.discount, 2, '.', ','));
-                            let total = response.total + shipping_charge;
-                            $('span#total').text(number_format(total, 2, '.', ','));
                             $('span.coupon-name').text('(' + code + ')');
+                            div();
 
                             $('#coupon').val('')
                         } else {
@@ -1003,30 +907,18 @@ $stotal = 0;
         }
             
 
-        $(document).on('change', '#shipping_range', function (e) {
+        $(document).on('change', '#distr', function (e) {
             div();
         });
 
         function div() {
-            let shipping_charge = 0;
-            let seller_count = $('#seller_count').val();
-            if ($("select[name='shipping_range']").val() == 1) {
-                let charge = "{!! setting('shipping_charge') !!}";
-                shipping_charge += parseInt(charge);
-            } else {
-                let charge = "{!! setting('shipping_charge_out_of_range') !!}";
-                shipping_charge += parseInt(charge);
-            }
+            let stotal = parseFloat("{!! $stotal !!}") || 0;
+            let giftFee = parseFloat("{!! $giftFee !!}") || 0;
+            let seller_count = parseInt($('#seller_count').val()) || 1;
+            let shipping_charge = checkoutShippingCharge(stotal, seller_count);
+            let coupon = parseFloat($('span#coupon').text().replace(/,/g, '')) || 0;
 
-            shipping_charge = parseInt(shipping_charge) * parseInt(seller_count);
-
-            let subtotal = $('span#sub-total').text();
-            let coupon = $('span#coupon').text();
-
-            let rep_subtotal = subtotal.replace(',', '');
-            let rep_coupon = coupon.replace(',', '');
-
-            let total = (parseInt(rep_subtotal) + shipping_charge) - parseInt(rep_coupon);
+            let total = Math.max(0, stotal + giftFee + shipping_charge - coupon);
             $('span#ship-charge').text(number_format(shipping_charge, 2, '.', ','));
             $('span#total').text(number_format(total, 2, '.', ','));
         }

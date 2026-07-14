@@ -128,6 +128,7 @@ it('carries gift wrapping from add-to-cart into the order with its fee', functio
     $this->post('/order_minimal', [
         'first_name' => 'Rahim',
         'phone' => '01700000000',
+        'district' => 'Dhaka',
     ])->assertOk();
 
     $order = Order::firstOrFail();
@@ -151,6 +152,7 @@ it('places an order without gift wrapping when not selected', function () {
     $this->post('/order_minimal', [
         'first_name' => 'Karim',
         'phone' => '01700000001',
+        'district' => 'Dhaka',
     ])->assertOk();
 
     $order = Order::firstOrFail();

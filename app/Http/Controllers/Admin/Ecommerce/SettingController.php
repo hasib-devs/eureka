@@ -216,6 +216,9 @@ class SettingController extends Controller
 
             Setting::updateOrCreate(['name' => 'COUNTRY_SERVE'], ['value' => $request->get('COUNTRY_SERVE')]);
             Setting::updateOrCreate(['name' => 'shipping_range_inside'], ['value' => $request->get('shipping_range_inside')]);
+            Setting::updateOrCreate(['name' => 'shipping_charge'], ['value' => $request->get('shipping_charge')]);
+            Setting::updateOrCreate(['name' => 'shipping_charge_out_of_range'], ['value' => $request->get('shipping_charge_out_of_range')]);
+            Setting::updateOrCreate(['name' => 'shipping_free_above'], ['value' => $request->get('shipping_free_above')]);
             Setting::updateOrCreate(['name' => 'CURRENCY_CODE'], ['value' => $request->get('CURRENCY_CODE')]);
             Setting::updateOrCreate(['name' => 'CURRENCY_CODE_MIN'], ['value' => $request->get('CURRENCY_CODE_MIN')]);
             Setting::updateOrCreate(['name' => 'CURRENCY_ICON'], ['value' => $request->get('CURRENCY_ICON')]);

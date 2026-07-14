@@ -121,10 +121,39 @@
 
                         <div>
                             <label for="shipping_range_inside" class="mb-1 block text-sm font-medium text-slate-700">
-                                Text - Shipping in Range <span class="text-danger">*</span>
+                                Inside Delivery District <span class="text-danger">*</span>
                             </label>
                             <input class="{{ $control }}" name="shipping_range_inside" id="shipping_range_inside"
                                 type="text" value="{{ setting('shipping_range_inside') ?? 'Dhaka' }}" required>
+                            <p class="mt-1 text-xs text-slate-400">Orders to this district pay the inside charge; every other district pays the outside charge.</p>
+                        </div>
+
+                        <div>
+                            <label for="shipping_charge" class="mb-1 block text-sm font-medium text-slate-700">
+                                Delivery Charge — Inside <span class="text-danger">*</span>
+                            </label>
+                            <input class="{{ $control }}" name="shipping_charge" id="shipping_charge"
+                                type="number" min="0" step="0.01"
+                                value="{{ setting('shipping_charge') ?? 60 }}" required>
+                        </div>
+
+                        <div>
+                            <label for="shipping_charge_out_of_range" class="mb-1 block text-sm font-medium text-slate-700">
+                                Delivery Charge — Outside <span class="text-danger">*</span>
+                            </label>
+                            <input class="{{ $control }}" name="shipping_charge_out_of_range" id="shipping_charge_out_of_range"
+                                type="number" min="0" step="0.01"
+                                value="{{ setting('shipping_charge_out_of_range') ?? 120 }}" required>
+                        </div>
+
+                        <div>
+                            <label for="shipping_free_above" class="mb-1 block text-sm font-medium text-slate-700">
+                                Free Delivery Above <span class="text-danger">*</span>
+                            </label>
+                            <input class="{{ $control }}" name="shipping_free_above" id="shipping_free_above"
+                                type="number" min="0" step="0.01"
+                                value="{{ setting('shipping_free_above') ?? 0 }}" required>
+                            <p class="mt-1 text-xs text-slate-400">0 disables free delivery.</p>
                         </div>
 
                         <div>
