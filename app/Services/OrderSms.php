@@ -57,7 +57,8 @@ class OrderSms
         $site = setting('site_title') ?: config('app.name');
         $invoice = $order->invoice ?: $order->order_id;
         $total = rtrim(rtrim(number_format((float) $order->total, 2, '.', ''), '0'), '.');
-        $trackUrl = url('/order/track');
+        // One-click tracking: deep-link straight to this order's invoice.
+        $trackUrl = url('/order/track').'?invoice='.urlencode((string) $invoice);
         $name = trim(($order->first_name ?? '').' '.($order->last_name ?? '')) ?: 'Customer';
 
         $replacements = [

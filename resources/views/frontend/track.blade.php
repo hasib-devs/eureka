@@ -21,12 +21,21 @@ background: white
                 <div class="form-group ">
                     <label>Invoice No. <sup class="text-[red]">*</sup></label>
                     <p>Paste Your Invoice Number Without #</p>
-                    <input type="text" name="invoice" id="invoice" class="form-control" required />
+                    <input type="text" name="invoice" id="invoice" class="form-control"
+                        value="{{ ltrim((string) request('invoice'), '#') }}" required />
                 </div>
                 <input  class="form-control" type="submit" value="Track">
             </div>
         </form>
-       
+
+        @if(request()->filled('invoice') && !isset($order))
+        <div class="col-md-6 offset-md-3 mt-3">
+            <div class="alert alert-warning text-center" style="border-radius:5px;">
+                এই ইনভয়েস নম্বরে কোনো অর্ডার পাওয়া যায়নি। SMS-এ পাঠানো নম্বরটি হুবহু বসান।
+            </div>
+        </div>
+        @endif
+
         @if(isset($order))
         <style>
         #invoice{

@@ -135,9 +135,14 @@ class HomeController extends Controller
         return view('auth.admin-login');
     }
 
-    public function track_form()
+    public function track_form(Request $request)
     {
-        return view('frontend.track');
+        $invoice = $request->input('invoice');
+        $order = is_string($invoice) && trim($invoice) !== ''
+            ? $this->findTrackedOrder($invoice)
+            : null;
+
+        return view('frontend.track', compact('order'));
     }
 
     public function tracking(Request $request)
@@ -145,15 +150,28 @@ class HomeController extends Controller
         $this->validate($request, [
             'invoice' => 'required|string|max:255',
         ]);
-        if ($request->pt) {
-            $invoice = $request->invoice;
-        } else {
-            $invoice = '#'.$request->invoice;
-        }
 
-        $order = Order::where('user_id', auth()->id())->where('invoice', $invoice)->first();
+        $order = $this->findTrackedOrder($request->invoice);
 
         return view('frontend.track', compact('order'));
+    }
+
+    /**
+     * Look up an order for public tracking by its invoice number. The customer
+     * pastes the number from their SMS, so match it with or without a leading
+     * '#' — this supports both current "INV-..." invoices and legacy "#NNNN" ones.
+     */
+    private function findTrackedOrder(string $invoice): ?Order
+    {
+        $invoice = trim($invoice);
+        $bare = ltrim($invoice, '#');
+
+        $candidates = array_values(array_unique([$invoice, $bare, '#'.$bare]));
+
+        return Order::with('orderDetails')
+            ->whereIn('invoice', $candidates)
+            ->latest('id')
+            ->first();
     }
 
     public function saveToken(Request $request)

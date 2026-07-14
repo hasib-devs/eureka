@@ -1,31 +1,30 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
-use App\Http\Controllers\chatController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\pageController;
-use Laravel\Socialite\Facades\Socialite;
-use App\Http\Controllers\campaingController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\socialController;
-use App\Http\Controllers\Frontend\adsController;
-use App\Http\Controllers\subscriptionController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Frontend\CartController;
-use App\Http\Controllers\Frontend\OrderController;
-use App\Http\Controllers\Vendor\ProfileController;
-use App\Http\Controllers\Frontend\VendorController;
+use App\Http\Controllers\Auth\socialController;
+use App\Http\Controllers\blogControler as ablogController;
+use App\Http\Controllers\campaingController;
+use App\Http\Controllers\chatController;
 use App\Http\Controllers\Frontend\AccountController;
-use App\Http\Controllers\Frontend\ContactController;
-use App\Http\Controllers\Frontend\ProductController;
-use App\Http\Controllers\Frontend\ProductReviewController;
+use App\Http\Controllers\Frontend\adsController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\CheckoutOtpController;
-use App\Http\Controllers\Frontend\wishlistController;
+use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\IncompleteLeadController;
-use App\Http\Controllers\blogControler as ablogController;
+use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Frontend\ProductReviewController;
+use App\Http\Controllers\Frontend\VendorController;
+use App\Http\Controllers\Frontend\wishlistController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\pageController;
+use App\Http\Controllers\subscriptionController;
+use App\Http\Controllers\Vendor\ProfileController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +52,7 @@ Route::prefix('admin')
 Route::prefix('vendor')
     ->as('vendor.')
     ->group(base_path('routes/vendor.php'));
-# Hridoy
+// Hridoy
 Route::get('/get-off-canvas-cart', [CartController::class, 'get_off_canvas_cart'])->name('get-off-canvas-cart');
 
 Route::get('/cancel', [OrderController::class, 'fail'])->name('uddoktapay.cancel');
@@ -64,14 +63,10 @@ Route::get('/seller', [AccountController::class, 'vendorJoin'])->name('vendorJoi
 // Route::Post('register', [AccountController::class, 'register'])->name('register');
 Route::Post('register2', [AccountController::class, 'register2'])->name('register2');
 
-
-
 Route::get('/', HomeController::class)->name('home');
 
 // Route::get('/', [ProductController::class, 'homeAsCategory'])
 //     ->name('home');
-
-
 
 Route::get('/categories_all', [HomeController::class, 'categories_all'])->name('categories_all');
 Route::get('admin/login', [HomeController::class, 'adminLogin'])->name('adminLogin');
@@ -120,13 +115,13 @@ Route::middleware(['auth'])->group(function () {
 Route::Post('/get/color/price', [ProductController::class, 'getAttrPrice']);
 Route::Post('/get/attr/price', [ProductController::class, 'getAttrPrice']);
 
-
 Route::get('vendor/search/product', [VendorController::class, 'productSearch'])->name('search.product.vendor');
 
 Route::get('cart', [CartController::class, 'cart'])->name('cart');
 Route::get('compare', [CartController::class, 'compare'])->name('compare');
 Route::get('clear/compare', function () {
     session()->forget('compare');
+
     return redirect('/');
 })->name('compare.clear');
 Route::get('get/cart', [CartController::class, 'getCart'])->name('get.cart');
@@ -147,6 +142,11 @@ Route::post('checkout/verify-otp', [CheckoutOtpController::class, 'verifyOtp'])-
 Route::get('/render/superCat', [HomeController::class, 'superCat']);
 Route::get('/render/subCat', [HomeController::class, 'subCat']);
 
+// Order tracking is public: guests must be able to open the tracking link
+// sent in their order-confirmation SMS without logging in.
+Route::get('order/track', [HomeController::class, 'track_form'])->name('track');
+Route::post('order/tracking', [HomeController::class, 'tracking'])->name('tracking');
+Route::get('order/tracking', [HomeController::class, 'track_form'])->name('tracking.re');
 
 Route::middleware(['account', 'auth'])->group(function () {
     Route::group(['as' => 'connection.', 'prefix' => 'connection'], function () {
@@ -156,7 +156,6 @@ Route::middleware(['account', 'auth'])->group(function () {
         Route::post('/live-chat', [chatController::class, 'storeLiveChatForm'])->name('store.chat');
     });
 
-
     Route::get('account/password', [AccountController::class, 'passChangeUser'])->name('pass-change');
     Route::put('password/update', [ProfileController::class, 'updatePassword'])->name('password.update');
     Route::get('account/verify', [AccountController::class, 'verify'])->name('email.verify');
@@ -164,10 +163,6 @@ Route::middleware(['account', 'auth'])->group(function () {
     Route::Post('account/verify/confirm', [AccountController::class, 'otpconfirm'])->name('account.email.confirm');
     Route::get('account/dashboard', [AccountController::class, 'index'])->name('dashboard');
     Route::get('account', [AccountController::class, 'showAccount'])->name('account');
-    Route::get('order/track', [HomeController::class, 'track_form'])->name('track');
-    Route::post('order/tracking', [HomeController::class, 'tracking'])->name('tracking');
-    Route::get('order/tracking', [HomeController::class, 'track_form'])->name('tracking.re');
-
 
     Route::post('account/update', [AccountController::class, 'accountUpdate'])->name('account.update');
     Route::get('apply/coupon/{code}/{stotal}', [CartController::class, 'applyCoupon'])->name('apply.coupon');
@@ -181,10 +176,8 @@ Route::middleware(['account', 'auth'])->group(function () {
     Route::get('order/return_req/{id}', [OrderController::class, 'return_req'])->name('order.return_req');
     // Route::get('buy/product', [OrderController::class, 'buyProduct'])->name('buy.product');
 
-
     Route::get('download', [OrderController::class, 'download'])->name('download');
     Route::get('download/product/{pro_id}/{id}', [OrderController::class, 'downloadProductFile'])->name('download.product');
-
 
     Route::get('review/{order_id}', [OrderController::class, 'review'])->name('review');
     Route::post('review/{id}', [OrderController::class, 'storeReview'])->name('review.store');
@@ -195,18 +188,15 @@ Route::middleware(['account', 'auth'])->group(function () {
     Route::get('ticket/', [ContactController::class, 'ticket'])->name('ticket');
     Route::post('ticket/create', [ContactController::class, 'ticketCreate'])->name('ticket.create');
 
-
     Route::get('/user-blogs', [ablogController::class, 'index3'])->name('user_blog');
     Route::get('/redem', [AccountController::class, 'redem'])->name('redem.index');
     Route::get('/cashout', [AccountController::class, 'cashout'])->name('redem.cashout');
     Route::Post('/withdraw', [AccountController::class, 'withdraw'])->name('redem.withdraw');
     Route::post('/redem/covert', [AccountController::class, 'covert'])->name('redem.convert');
 
-
-    Route::get("/myrefer", function () {
-        return View::make("frontend.myrefer");
+    Route::get('/myrefer', function () {
+        return View::make('frontend.myrefer');
     })->name('myrefer');
-
 
     Route::post('/create-blog', [ablogController::class, 'store2'])->name('create_blog');
     Route::get('blog/status/{blog}', [ablogController::class, 'status'])->name('blog.status');
@@ -226,7 +216,6 @@ Route::middleware(['account', 'auth'])->group(function () {
     Route::Post('order/payment/create/{slug}', [OrderController::class, 'payCreate'])->name('order.pay.create');
 });
 
-
 Route::get('/classic/product/{slug}', [adsController::class, 'show'])->name('clasified.show');
 Route::get('/{slug}', [pageController::class, 'pageshow'])->name('page');
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -234,13 +223,10 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::post('setup/vendor', [VendorController::class, 'setupVendor'])->name('setup.vendor');
 });
 
-
-
 Route::middleware(['auth'])->group(function () {
     Route::post('product/comment/{slug}', [ProductController::class, 'comment'])->name('comment');
     // Route::post('product/comment/reply/{slug}/{id}', [ProductController::class, 'reply'])->name('reply');
 });
-
 
 Route::get('service/form', [ContactController::class, 'service'])->name('service');
 Route::get('sheba/list', [HomeController::class, 'sheba'])->name('sheba');
@@ -253,12 +239,10 @@ Route::post('subscription', [subscriptionController::class, 'store'])->name('sub
 Route::post('order_guest', [OrderController::class, 'orderStore_guest'])->name('order.store_guest');
 Route::post('order_minimal', [OrderController::class, 'orderStore_minimal'])->name('order.store_minimal');
 
-
 // direct buy
 Route::get('buy/product', [OrderController::class, 'buyProduct'])->name('buy.product');
 // Route::post('order/buy-now_guest', [OrderController::class, 'orderBuyNowStore_guest'])->name('order.buy.store_guest');
 Route::post('order/buy-now_minimal', [OrderController::class, 'orderBuyNowStore_minimal'])->name('order.buy.store_minimal');
-
 
 /** Google OAuth routes */
 Route::get('/auth/google/redirect', [socialController::class, 'handleGoogleRedirect']);
@@ -267,14 +251,12 @@ Route::get('/auth/google/callback', [socialController::class, 'handleGoogleCallb
 Route::get('/auth/facebook/redirect', [socialController::class, 'handleFacebookRedirect']);
 Route::get('/auth/facebook/callback', [socialController::class, 'handleFacebookCallback']);
 
-
-Route::post('/save-token', [App\Http\Controllers\HomeController::class, 'saveToken'])->name('save-token');
-Route::post('/send-notification', [App\Http\Controllers\HomeController::class, 'sendNotification'])->middleware('admin')->name('send.notification');
+Route::post('/save-token', [HomeController::class, 'saveToken'])->name('save-token');
+Route::post('/send-notification', [HomeController::class, 'sendNotification'])->middleware('admin')->name('send.notification');
 Route::post('register/send-otp', [RegisterController::class, 'sendotp'])->name('sendotp');
 
 Route::post('/success', [OrderController::class, 'success'])->name('success');
 Route::post('/fail', [OrderController::class, 'fail'])->name('fail');
-
 
 // ===== Active Visitors Tracking =====
 use App\Http\Controllers\Frontend\ActiveVisitorController;
@@ -282,6 +264,4 @@ use App\Http\Controllers\Frontend\ActiveVisitorController;
 Route::post('/visitor/heartbeat', [ActiveVisitorController::class, 'heartbeat'])->name('visitor.heartbeat');
 Route::post('/visitor/leave', [ActiveVisitorController::class, 'leave'])->name('visitor.leave');
 
-
 Route::get('/visitor/count', [ActiveVisitorController::class, 'count'])->name('visitor.count');
-
