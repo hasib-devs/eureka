@@ -77,6 +77,12 @@
                             @endif
                         @endif
 
+                        @if (setting('PATHAO_STATUS') == 1 && $order->status != 9)
+                            <x-ui.button :href="route('admin.setting.pathao.send', $order->id)" variant="info" size="sm">
+                                <i class="fas fa-motorcycle"></i> Send Pathao
+                            </x-ui.button>
+                        @endif
+
                         @if (setting('STEEDFAST_STATUS') == 1 && $order->status != 9)
                             <form action="{{ route('admin.setting.courier.sendsteedfast') }}" method="POST">
                                 @csrf

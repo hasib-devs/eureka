@@ -301,8 +301,14 @@
                             onclick="window.location='{{ url('admin/setting/getway') }}'">
                             <i class="bx bx-credit-card"></i> Payment Gateway
                         </li>
-                        <li class="{{ $navActive('admin/setting/courier') }}"
+                        {{-- Legacy courier API page (Steadfast / BD Courier) hidden per request —
+                             the page and routes still exist at admin/setting/courier --}}
+                        {{-- <li class="{{ $navActive('admin/setting/courier') }}"
                             onclick="window.location='{{ url('admin/setting/courier') }}'">
+                            <i class="bx bx-package"></i> Courier
+                        </li> --}}
+                        <li class="{{ $navActive('admin/setting/pathao*') }}"
+                            onclick="window.location='{{ url('admin/setting/pathao') }}'">
                             <i class="bx bx-package"></i> Courier
                         </li>
                         <li class="{{ $navActive('admin/setting/mailsmsapireglog') }}"

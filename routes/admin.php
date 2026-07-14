@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\Ecommerce\VariableProductController;
 use App\Http\Controllers\Admin\Ecommerce\VendorController;
 use App\Http\Controllers\Admin\Ecommerce\WishlistController;
 use App\Http\Controllers\Admin\IpBlockController;
+use App\Http\Controllers\Admin\PathaoCourierController;
 use App\Http\Controllers\blogControler as ablogController;
 use App\Http\Controllers\campaingController;
 use App\Http\Controllers\CourierController;
@@ -341,6 +342,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('setting/seo', [SettingController::class, 'seoIndex'])->name('setting.seo');
     Route::get('setting/courier', [SettingController::class, 'courierIndex'])->name('setting.courier');
     Route::post('setting/courier/sendsteedfast', [CourierController::class, 'sendsteedfast'])->name('setting.courier.sendsteedfast');
+
+    // Pathao courier (separate from the legacy courier page)
+    Route::get('setting/pathao', [PathaoCourierController::class, 'index'])->name('setting.pathao');
+    Route::put('setting/pathao', [PathaoCourierController::class, 'saveSettings'])->name('setting.pathao.save');
+    Route::get('setting/pathao/send/{order}', [PathaoCourierController::class, 'sendForm'])->name('setting.pathao.send');
+    Route::post('setting/pathao/send/{order}', [PathaoCourierController::class, 'sendOrder'])->name('setting.pathao.send.store');
+    Route::get('setting/pathao/zones/{city}', [PathaoCourierController::class, 'zones'])->name('setting.pathao.zones');
+    Route::get('setting/pathao/areas/{zone}', [PathaoCourierController::class, 'areas'])->name('setting.pathao.areas');
 
     Route::get('setting/mailsmsapireglog', [SettingController::class, 'mailsmsapireglogIndex'])->name('setting.mailsmsapireglog');
 
