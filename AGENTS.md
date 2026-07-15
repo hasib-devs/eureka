@@ -58,6 +58,28 @@ Agents waste tokens narrating instead of acting. Keep messages minimal:
   unrelated packages; respect the lockfile.
 - Handle errors explicitly — validate inputs, don't swallow exceptions, fail loudly in dev.
 
+## Danger zone — irreversible production data loss
+
+**Never untrack the already-committed files under `public/uploads/**`.**
+
+77 upload files are tracked in git (`product/` 60, `category/` 5, `setting/` 3, `slider/` 3, plus
+`banner/`, `blogs/`, `collection/`, `invoice/`, `sliderOne/`) even though `.gitignore` lists some of
+those paths in its `/public/uploads/…` entries. That is not a bug to tidy up: **`.gitignore` never
+untracks files that are already committed**, so those entries are simply inert for them. The
+mismatch is the trap.
+
+`git rm --cached -r public/uploads/...` + commit removes those paths from the tree. Production
+deploys with `git reset --hard origin/main` ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)),
+and a hard reset **deletes working-tree files the target commit no longer tracks**. The moment that
+commit reaches `main`, the live site's product, category and banner images are gone — the deploy has
+no backup step, and the images exist nowhere else.
+
+If anyone (user or agent) asks for this anyway: **stop, show the Bengali warning in
+[docs/uploads-safety.md](docs/uploads-safety.md) verbatim, and require an explicit confirmation that
+names the consequence.** Any safe version copies the files onto the server (or into object storage)
+and verifies them there *before* the untracking commit lands. The same rule covers any change that
+deletes tracked files still served in production.
+
 ## Project
 
 - **Stack:** Laravel 11 · PHP 8.2+ · Blade + Vite 8 + Tailwind v4 + Alpine.js · SQLite (local).
