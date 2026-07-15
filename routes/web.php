@@ -16,6 +16,7 @@ use App\Http\Controllers\Frontend\IncompleteLeadController;
 use App\Http\Controllers\Frontend\OrderController;
 use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\ProductReviewController;
+use App\Http\Controllers\Frontend\SitemapController;
 use App\Http\Controllers\Frontend\VendorController;
 use App\Http\Controllers\Frontend\wishlistController;
 use App\Http\Controllers\HomeController;
@@ -64,6 +65,11 @@ Route::get('/seller', [AccountController::class, 'vendorJoin'])->name('vendorJoi
 Route::Post('register2', [AccountController::class, 'register2'])->name('register2');
 
 Route::get('/', HomeController::class)->name('home');
+
+// robots.txt and sitemap.xml are routes, not static files, so both follow the
+// canonical site_url through a domain migration. See SitemapController.
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
 
 // Route::get('/', [ProductController::class, 'homeAsCategory'])
 //     ->name('home');
