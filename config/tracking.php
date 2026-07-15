@@ -38,6 +38,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Retry backoff base (milliseconds)
+    |--------------------------------------------------------------------------
+    |
+    | Failed Meta CAPI / GA4 sends retry with exponential backoff: base, base*2,
+    | base*4. Set to 0 in tests so the suite does not actually sleep.
+    |
+    */
+
+    'retry_backoff_ms' => (int) env('TRACKING_RETRY_BACKOFF_MS', 1000),
+
+    /*
+    |--------------------------------------------------------------------------
     | Settings cache TTL (seconds)
     |--------------------------------------------------------------------------
     |

@@ -31,5 +31,7 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="SCOUT_DRIVER" value="null"/>
+        <!-- Retry backoff is real sleep; zero it so the suite doesn't wait. -->
+        <env name="TRACKING_RETRY_BACKOFF_MS" value="0"/>
     </php>
 </phpunit>

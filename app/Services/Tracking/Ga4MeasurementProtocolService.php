@@ -187,7 +187,11 @@ class Ga4MeasurementProtocolService
             }
 
             if ($attempt < self::MAX_ATTEMPTS) {
-                usleep((int) (1_000_000 * (2 ** ($attempt - 1))));
+                $base = (int) config('tracking.retry_backoff_ms', 1000);
+
+                if ($base > 0) {
+                    usleep($base * 1000 * (2 ** ($attempt - 1)));
+                }
             }
         }
 

@@ -205,8 +205,12 @@ class MetaCapiService
         ]);
 
         if ($attempt < self::MAX_ATTEMPTS) {
-            // 1s, 2s, 4s.
-            usleep((int) (1_000_000 * (2 ** ($attempt - 1))));
+            // Exponential: base, base*2, base*4.
+            $base = (int) config('tracking.retry_backoff_ms', 1000);
+
+            if ($base > 0) {
+                usleep($base * 1000 * (2 ** ($attempt - 1)));
+            }
         }
     }
 

@@ -7,6 +7,7 @@ namespace App\Services\Tracking;
 use App\Jobs\SendGa4MpEvent;
 use App\Jobs\SendMetaCapiEvent;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -161,6 +162,67 @@ class TrackingEvents
         $this->dispatchMeta($request, 'AddPaymentInfo', $eventId, $userData, $custom);
 
         return $eventId;
+    }
+
+    /**
+     * ViewContent — browser leg only.
+     *
+     * Deliberately not mirrored to CAPI: it fires on every product page view,
+     * so a server copy would multiply request volume for an event that carries
+     * little conversion signal. The brief's server-side mirroring list is the
+     * conversion events, and this is not one.
+     */
+    public function viewContent(Request $request, Product $product, float $price): string
+    {
+        $eventId = $this->eventId();
+
+        $this->queueBrowserEvent($request, 'ViewContent', 'view_item', $eventId, [
+            'currency' => $this->currency(),
+            'value' => round($price, 2),
+            'content_type' => 'product',
+            'content_ids' => [(string) $product->id],
+            'content_name' => $product->title,
+            'contents' => [[
+                'id' => (string) $product->id,
+                'item_name' => $product->title,
+                'quantity' => 1,
+                'item_price' => round($price, 2),
+            ]],
+        ]);
+
+        return $eventId;
+    }
+
+    /**
+     * Search — browser leg only, same reasoning as ViewContent.
+     *
+     * @param  array<int, int|string>  $productIds
+     */
+    public function search(Request $request, string $term, array $productIds = []): string
+    {
+        $eventId = $this->eventId();
+
+        $this->queueBrowserEvent($request, 'Search', 'search', $eventId, [
+            'search_string' => $term,
+            'content_type' => 'product',
+            'content_ids' => array_map(fn ($id) => (string) $id, $productIds),
+        ]);
+
+        return $eventId;
+    }
+
+    /**
+     * Remember identifiers without recording a conversion.
+     *
+     * For funnel steps that repeat (a checkout form saving as the customer
+     * types): the identifiers improve every later event's match quality, but
+     * the conversion itself must fire once, not once per keystroke.
+     *
+     * @param  array<string, string|null>  $identifiers  raw, unhashed
+     */
+    public function rememberIdentifiers(Request $request, array $identifiers): void
+    {
+        $this->userData->remember($request, $identifiers);
     }
 
     public function contact(Request $request, array $identifiers = [], array $custom = []): string

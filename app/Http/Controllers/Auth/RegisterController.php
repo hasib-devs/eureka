@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerInfo;
 use App\Models\User;
+use App\Services\Tracking\TrackingEvents;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -92,7 +93,16 @@ class RegisterController extends Controller
                 'user_id' => $customer->id
             ]);
             Session::forget('otpres');
-            
+
+            // CompleteRegistration. The new account supplies email, phone and
+            // name, so this event matches strongly. Tracking must never break a
+            // registration that already succeeded.
+            try {
+                app(TrackingEvents::class)->completeRegistration($request, $customer);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             # Send SMS - Hridoy
             $msg = "Your have registered successfully.\nStay with Eureka Avenue.\nThank you.";
             $uname = 'sunshine.com.bd@gmail.com';

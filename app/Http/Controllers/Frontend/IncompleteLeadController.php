@@ -6,6 +6,7 @@ use App\Core\ShoppingCart\Facades\Cart;
 use App\Http\Controllers\Controller;
 use App\Models\IncompleteLead;
 use App\Models\Product;
+use App\Services\Tracking\TrackingEvents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
@@ -265,6 +266,8 @@ class IncompleteLeadController extends Controller
                 'items_count' => count($cartData['items']),
             ]);
 
+            $this->trackLead($request, $lead, $cartData);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Lead saved successfully',
@@ -283,6 +286,46 @@ class IncompleteLeadController extends Controller
                 'status' => false,
                 'message' => 'Error saving lead: '.$e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Record the Lead conversion, and remember the identifiers either way.
+     *
+     * This endpoint is called repeatedly as the customer types, so the Lead
+     * event itself fires only when the lead is first created — otherwise one
+     * abandoned checkout would report a dozen Leads.
+     *
+     * The identifiers are remembered on every call regardless: a guest's phone
+     * or email captured here is reused by every later event in the session, not
+     * just Purchase, which is the single biggest lever on match quality for
+     * guest checkouts.
+     */
+    private function trackLead(Request $request, IncompleteLead $lead, array $cartData): void
+    {
+        try {
+            $identifiers = array_filter([
+                'em' => $lead->email,
+                'ph' => $lead->phone,
+                'fn' => $lead->name,
+            ], fn ($v) => filled($v));
+
+            $events = app(TrackingEvents::class);
+
+            if (! $lead->wasRecentlyCreated) {
+                $events->rememberIdentifiers($request, $identifiers);
+
+                return;
+            }
+
+            $events->lead($request, $identifiers, [
+                'currency' => $events->currency(),
+                'value' => round((float) $cartData['subtotal'], 2),
+                'num_items' => (int) $cartData['total_items'],
+            ]);
+        } catch (\Throwable $e) {
+            // Tracking must never break lead capture.
+            report($e);
         }
     }
 

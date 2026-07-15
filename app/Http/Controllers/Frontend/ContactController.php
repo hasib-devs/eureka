@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Services\Tracking\TrackingEvents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ticket;
@@ -95,6 +96,18 @@ class ContactController extends Controller
         // ];
       
       
+        // Contact. The form supplies name, email and phone, so this matches well.
+        // Tracking must never break a submission that is already saved.
+        try {
+            app(TrackingEvents::class)->contact($request, [
+                'em' => $request->input('email'),
+                'ph' => $request->input('phone'),
+                'fn' => $request->input('name'),
+            ], ['content_name' => $request->input('subject') ?: 'Contact']);
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
          notify()->success("Receive your contact information successfully", "Success");
         return back();
     }
