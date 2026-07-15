@@ -5,6 +5,13 @@
     @include('layouts.frontend.partials.meta')
     @include('layouts.global')
     @include('layouts.frontend.partials.style')
+
+    {{-- Tracking & Integrations (admin-managed). Must come before the legacy
+         fb_pixel snippet below so Consent Mode v2 defaults are set before any
+         tag loads. Renders nothing until an admin enables an integration, so
+         the legacy snippet keeps working untouched until they switch over. --}}
+    @include('components.tracking.head')
+
     {!! setting('fb_pixel') !!}
     {{-- <!-- Custom Head Code --> --}}
     {!! setting('header_code') !!}
@@ -457,6 +464,9 @@
     window.addEventListener('pagehide', sendLeave);
 })();
 </script>
+
+{{-- Renders only for visitors whose region defaults to denied consent. --}}
+@include('components.tracking.consent-banner')
 
 </body>
 
