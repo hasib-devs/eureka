@@ -35,5 +35,15 @@ public/fonts-manifest.dev.json
 .superpowers/
 
 # Runtime user uploads (stored on disk per-environment, not versioned)
+#
+# ⚠️  সতর্কতা — এই লাইনগুলো দেখে ফাইল untrack করতে যাবেন না!
+#     public/uploads/-এ ~৭৭টা ফাইল এখনো git-এ tracked (product ৬০টা সহ)। .gitignore
+#     আগে থেকে commit হওয়া ফাইলে কাজ করে না — তাই এই লাইনগুলো ওদের জন্য নিষ্ক্রিয়।
+#     `git rm --cached` দিয়ে ওগুলো untrack করলে deploy-এর `git reset --hard origin/main`
+#     লাইভ সার্ভার থেকে ছবিগুলো চিরতরে মুছে ফেলবে (কোনো ব্যাকআপ নেই)।
+#     করার আগে অবশ্যই পড়ুন: docs/uploads-safety.md
+#
+# WARNING: do NOT `git rm --cached` these — it deletes the live images on deploy.
+# Read docs/uploads-safety.md first.
 /public/uploads/product/
 /public/uploads/tasks/
