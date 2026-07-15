@@ -82,12 +82,18 @@ deletes tracked files still served in production.
 
 ## Project
 
-- **Stack:** Laravel 11 · PHP 8.2+ · Blade + Vite 8 + Tailwind v4 + Alpine.js · SQLite (local).
-  Multi-vendor e-commerce app.
+- **Stack:** Laravel 12 · PHP 8.2+ · Blade + Vite 8 + Tailwind v4 + Alpine.js · SQLite (local),
+  MySQL (production). Multi-vendor e-commerce app.
 - **Run:** `composer dev` (server + queue + logs + vite), or `php artisan serve` + `npm run dev`.
 - **Test:** `composer test` (Pest). **Format:** `vendor/bin/pint` before committing.
 - **Routes:** `routes/web.php` (storefront), `admin.php`, `vendor.php`, `api.php`.
 - **Controllers:** `app/Http/Controllers/{Admin,Frontend,Vendor,Auth}/`.
 - **Models:** `app/Models/` (~52; `$guarded = ['id']` convention).
 - **Conventions:** match the surrounding file's style and naming; don't reformat unrelated code;
-  create migrations with `php artisan make:migration`.
+  create migrations with `php artisan make:migration`. Run `vendor/bin/pint` on **the files you
+  touched**, not the whole tree — a bare `vendor/bin/pint` reformats ~90 legacy files and buries
+  your diff.
+- **Tracking:** Meta Pixel/CAPI, GTM, GA4, Search Console and Consent Mode are runtime-configured
+  from Admin → Settings → Tracking & Integrations. Never hardcode an ID, token or domain — see
+  [TRACKING.md](TRACKING.md). Fire events via `TrackingEvents` (server) / `trackEvent()` (browser),
+  never `fbq`/`dataLayer` directly, or deduplication breaks.
