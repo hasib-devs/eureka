@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use App\Jobs\SendGa4MpEvent;
 use App\Jobs\SendMetaCapiEvent;
-use App\Models\Order;
-use App\Models\OrderDetails;
 use App\Models\TrackingSetting;
 use App\Services\Tracking\PiiHasher;
 use App\Services\Tracking\TrackingEvents;
@@ -32,48 +30,7 @@ beforeEach(function () {
     app(TrackingSettingsService::class)->flush();
 });
 
-// makeProduct() and seedRoles() are provided globally by tests/Pest.php.
-function makeOrder(array $overrides = []): Order
-{
-    // order_details.product_id is a real foreign key, so the product must exist.
-    $product = makeProduct();
-
-    $order = Order::create(array_merge([
-        'user_id' => null,
-        'first_name' => 'John',
-        'last_name' => 'Doe',
-        'email' => 'John_Smith@gmail.com',
-        'phone' => '01712345678',
-        'district' => 'Dhaka',
-        'town' => 'Dhaka',
-        'post_code' => '1207',
-        'country' => 'Bangladesh',
-        'payment_method' => 'Cash on Delivery',
-        'subtotal' => 1000,
-        'discount' => 0,
-        'shipping_charge' => 60,
-        'total' => 1060,
-        'status' => 0,
-        'pay_staus' => 0,
-        'order_id' => 'ORD-TEST1234',
-        'invoice' => 'INV-TEST-1',
-    ], $overrides));
-
-    OrderDetails::create([
-        'order_id' => $order->id,
-        'seller_id' => $product->user_id,
-        'product_id' => $product->id,
-        'title' => 'Test Product',
-        'color' => '',
-        'size' => '',
-        'qty' => 2,
-        'price' => 500,
-        'total_price' => 1000,
-        'g_total' => 1060,
-    ]);
-
-    return $order;
-}
+// makeOrder(), makeProduct() and adminUser() are provided globally by tests/Pest.php.
 
 // ─── Deduplication contract ─────────────────────────────────────────────────
 
@@ -82,6 +39,9 @@ it('uses one event id for both the browser and server legs of a purchase', funct
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     $eventId = app(TrackingEvents::class)->purchase($request, makeOrder());
 
@@ -103,6 +63,9 @@ it('mints a distinct event id per event', function () {
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     $events = app(TrackingEvents::class);
 
@@ -117,6 +80,9 @@ it('sends full ecommerce parameters with purchase', function () {
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     $order = makeOrder();
     $productId = (string) $order->orderDetails()->first()->product_id;
@@ -141,6 +107,9 @@ it('hashes purchase PII and leaves the match signals unhashed', function () {
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     app(TrackingEvents::class)->purchase($request, makeOrder());
 
@@ -164,6 +133,9 @@ it('derives event_source_url from site_url rather than the request host', functi
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     app(TrackingEvents::class)->purchase($request, makeOrder());
 
@@ -195,22 +167,24 @@ it('sends a matching GA4 measurement protocol event for a purchase', function ()
     });
 });
 
-it('does not send GA4 server events for a visitor who denied analytics consent', function () {
+it('does not send either server leg for a visitor who denied consent', function () {
     Bus::fake();
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
-    // EU visitor: analytics_storage denied by default. The browser's consent
-    // signals never reach a server-side hit, so this has to be checked here or
-    // the user's choice is bypassed entirely.
+    // EU visitor: everything denied by default. The browser's consent signals
+    // never reach a server-side hit, so both server legs have to check it here
+    // or the visitor's choice is bypassed entirely.
     $request->headers->set('CF-IPCountry', 'DE');
 
     app(TrackingEvents::class)->purchase($request, makeOrder());
 
     Bus::assertNotDispatched(SendGa4MpEvent::class);
-    // Meta CAPI still fires — it has its own consent handling and is not gated
-    // by Google's analytics_storage signal.
-    Bus::assertDispatched(SendMetaCapiEvent::class);
+    // Meta CAPI is gated too, on ad_storage. An earlier version of this argued
+    // Meta was exempt because Google's analytics_storage signal doesn't apply
+    // to it — but that reasoning let a denied visitor's hashed email, phone and
+    // address ship to Meta anyway. Denied means denied on both legs.
+    Bus::assertNotDispatched(SendMetaCapiEvent::class);
 });
 
 // ─── Disabled = silent ──────────────────────────────────────────────────────
@@ -223,6 +197,9 @@ it('dispatches nothing when the integrations are disabled', function () {
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     app(TrackingEvents::class)->purchase($request, makeOrder());
 
@@ -238,6 +215,9 @@ it('does not dispatch CAPI without an access token', function () {
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     app(TrackingEvents::class)->purchase($request, makeOrder());
 
@@ -251,6 +231,9 @@ it('reuses identifiers captured earlier in the session for later events', functi
 
     $request = request();
     $request->setLaravelSession(app('session.store'));
+    // A Bangladeshi customer: consent granted by default. Meta CAPI is now
+    // gated on ad_storage, so an unresolved country would (correctly) deny.
+    $request->headers->set('CF-IPCountry', 'BD');
 
     $events = app(TrackingEvents::class);
 

@@ -31,10 +31,14 @@ class SitemapController extends Controller
     {
         // Preserves the previous static file's behaviour (allow everything) and
         // adds the sitemap reference, which is what search engines look for.
+        //
+        // Deliberately NOT disallowing /vendor: routes/web.php:88 serves the
+        // public vendor storefront at vendor/{slug}, so blocking that prefix
+        // would deindex real catalogue pages. The vendor dashboard shares the
+        // prefix but sits behind auth, so crawlers only ever see a redirect.
         $lines = [
             'User-agent: *',
             'Disallow: /admin',
-            'Disallow: /vendor',
             'Allow: /',
             '',
             'Sitemap: '.$this->settings->canonical('sitemap.xml'),

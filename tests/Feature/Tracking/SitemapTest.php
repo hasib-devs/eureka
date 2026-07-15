@@ -41,10 +41,13 @@ it('follows site_url when the domain changes, with no code edit', function () {
         ->assertDontSee('old-domain.example');
 });
 
-it('keeps admin and vendor out of the index', function () {
+it('keeps admin out of the index but leaves the vendor storefront indexable', function () {
+    // vendor/{slug} is a public catalogue page (routes/web.php), so the /vendor
+    // prefix must not be blocked — the vendor dashboard shares it but sits
+    // behind auth, where a crawler only ever sees a redirect.
     $this->get('/robots.txt')
         ->assertSee('Disallow: /admin')
-        ->assertSee('Disallow: /vendor');
+        ->assertDontSee('Disallow: /vendor');
 });
 
 it('serves a valid sitemap.xml', function () {

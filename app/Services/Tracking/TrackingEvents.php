@@ -84,7 +84,7 @@ class TrackingEvents
         // email and address even for a guest — the richest set available.
         $userData = $this->userData->fromOrder($request, $order);
 
-        $this->queueBrowserEvent($request, 'Purchase', 'purchase', $eventId, $custom);
+        $this->queueBrowserEvent($request, 'Purchase', $this->browserGa4Name($request, 'purchase'), $eventId, $custom);
         $this->dispatchMeta($request, 'Purchase', $eventId, $userData, $custom);
 
         $this->dispatchGa4($request, 'purchase', [
@@ -110,7 +110,7 @@ class TrackingEvents
 
         $userData = $this->userData->build($request, Auth::user(), $identifiers);
 
-        $this->queueBrowserEvent($request, 'Lead', 'generate_lead', $eventId, $custom);
+        $this->queueBrowserEvent($request, 'Lead', $this->browserGa4Name($request, 'generate_lead'), $eventId, $custom);
         $this->dispatchMeta($request, 'Lead', $eventId, $userData, $custom);
         $this->dispatchGa4($request, 'generate_lead', $custom);
 
@@ -124,7 +124,7 @@ class TrackingEvents
         $userData = $this->userData->build($request, $user);
         $custom = ['content_name' => 'Registration'];
 
-        $this->queueBrowserEvent($request, 'CompleteRegistration', 'sign_up', $eventId, $custom);
+        $this->queueBrowserEvent($request, 'CompleteRegistration', $this->browserGa4Name($request, 'sign_up'), $eventId, $custom);
         $this->dispatchMeta($request, 'CompleteRegistration', $eventId, $userData, $custom);
         $this->dispatchGa4($request, 'sign_up', $custom, (string) $user->id);
 
@@ -261,7 +261,7 @@ class TrackingEvents
     public function queueBrowserEvent(
         Request $request,
         string $metaName,
-        string $ga4Name,
+        ?string $ga4Name,
         string $eventId,
         array $custom = [],
     ): void {
@@ -316,6 +316,14 @@ class TrackingEvents
             return;
         }
 
+        // Consent gate. The browser pixel honours Consent Mode on its own, but
+        // a server-side CAPI call is invisible to it — so without this check a
+        // visitor who denied ad_storage would still have their hashed email,
+        // phone and address shipped to Meta. Denied means denied on both legs.
+        if (! $this->consent->adStorageGranted($request)) {
+            return;
+        }
+
         // Everything the job needs is resolved here, while the Request exists.
         SendMetaCapiEvent::dispatch(
             $eventName,
@@ -352,6 +360,31 @@ class TrackingEvents
     public function eventId(): string
     {
         return (string) Str::uuid();
+    }
+
+    /**
+     * Which leg owns this event in GA4 — returns the GA4 event name for the
+     * browser to fire, or null when the server will send it instead.
+     *
+     * Meta collapses a browser and server copy that share an event_id. GA4 has
+     * no equivalent: it would simply count both, so a purchase reported by the
+     * pixel and by the Measurement Protocol becomes two purchases and inflates
+     * revenue. Exactly one leg must own each GA4 conversion.
+     *
+     * The server wins when it will actually send (enabled + consent granted),
+     * because it is the leg ad blockers and ITP cannot stop. Otherwise the
+     * browser keeps it, so the event is never lost. The Meta browser leg always
+     * fires either way — Meta's dedup makes that safe.
+     */
+    private function browserGa4Name(Request $request, string $ga4Name): ?string
+    {
+        return $this->willSendGa4($request) ? null : $ga4Name;
+    }
+
+    /** Mirrors the conditions in dispatchGa4(); the two must agree. */
+    private function willSendGa4(Request $request): bool
+    {
+        return $this->settings->ga4MpEnabled() && $this->consent->analyticsGranted($request);
     }
 
     /** ISO 4217 code from shop settings; BDT is this store's default. */

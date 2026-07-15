@@ -94,21 +94,37 @@ server's id via `trackEvent(name, data, { eventId })`.
 
 ### Which events have a server leg
 
-| Event | Browser | Server (CAPI) | GA4 MP |
+| Event | Meta browser | Meta CAPI | GA4 |
 |---|---|---|---|
-| PageView | ✅ | — | — |
-| ViewContent | ✅ | — | — |
-| Search | ✅ | — | — |
-| AddToCart | ✅ | — | — |
-| InitiateCheckout | ✅ | ✅ | — |
-| AddPaymentInfo | ✅ | ✅ | — |
-| **Purchase** | ✅ | ✅ | ✅ |
-| **Lead** | ✅ | ✅ | ✅ |
-| **CompleteRegistration** | ✅ | ✅ | ✅ |
-| Contact | ✅ | ✅ | — |
+| PageView | ✅ | — | browser |
+| ViewContent | ✅ | — | browser |
+| Search | ✅ | — | browser |
+| AddToCart | ✅ | — | browser |
+| InitiateCheckout | ✅ | ✅ | browser |
+| AddPaymentInfo | ✅ | ✅ | browser |
+| **Purchase** | ✅ | ✅ | **server** (browser if MP is off) |
+| **Lead** | ✅ | ✅ | **server** (browser if MP is off) |
+| **CompleteRegistration** | ✅ | ✅ | **server** (browser if MP is off) |
+| Contact | ✅ | ✅ | browser |
 
-ViewContent/Search/AddToCart are browser-only by design: they fire on ordinary browsing, so a server
-copy would multiply outbound request volume for events that carry little conversion signal.
+ViewContent/Search/AddToCart are browser-only for Meta by design: they fire on ordinary browsing, so
+a server copy would multiply outbound request volume for events that carry little conversion signal.
+
+### Why GA4 conversions have exactly one leg
+
+**GA4 has no deduplication mechanism.** This is the one place Meta's model does not transfer: Meta
+collapses a browser and server copy that share an `event_id`, but GA4 would simply count both — a
+purchase reported by the pixel *and* by the Measurement Protocol becomes two purchases and inflated
+revenue.
+
+So for the three conversion events, exactly one leg owns the GA4 hit:
+
+- **The server owns it** when the Measurement Protocol will actually send (enabled + consent
+  granted) — that is the leg ad blockers and ITP cannot stop.
+- **The browser keeps it** otherwise, so the event is never lost.
+
+The Meta browser leg fires either way; Meta's `event_id` dedup makes that safe. See
+`TrackingEvents::browserGa4Name()`.
 
 ---
 
@@ -207,10 +223,14 @@ Accept/Reject calls `gtag('consent', 'update', ...)` and writes a `tracking_cons
 dynamic domain. The server reads that cookie to resolve defaults on later requests and to gate
 server-side GA4 hits.
 
-**Server-side GA4 is consent-gated in our code.** The browser's Consent Mode signals never reach a
-Measurement Protocol call — gtag doesn't see it — so a server hit for a user who denied
-`analytics_storage` would bypass their choice entirely. `TrackingEvents::dispatchGa4()` checks
-consent and simply does not send. Meta CAPI is not gated by Google's analytics signal.
+**Both server legs are consent-gated in our code.** The browser's Consent Mode signals never reach a
+server-side call — gtag and fbq don't see it — so without an explicit check a visitor who denied
+consent would still have their data shipped from the server. Both are gated:
+
+- GA4 Measurement Protocol on `analytics_storage` (`TrackingEvents::dispatchGa4()`).
+- Meta CAPI on `ad_storage` (`TrackingEvents::dispatchMeta()`). Google's signal doesn't govern Meta,
+  but that is not a reason to send: a denied visitor's hashed email, phone and address must not
+  reach Meta either. Denied means denied on both legs.
 
 ---
 

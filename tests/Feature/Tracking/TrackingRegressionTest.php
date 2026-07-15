@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Jobs\SendGa4MpEvent;
+use App\Jobs\SendMetaCapiEvent;
 use App\Models\TrackingSetting;
 use App\Models\TrackingSettingAudit;
 use App\Services\Tracking\Ga4MeasurementProtocolService;
@@ -11,6 +13,7 @@ use App\Services\Tracking\TrackingRedactor;
 use App\Services\Tracking\TrackingSettingsService;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
@@ -337,6 +340,154 @@ it('does not log a spurious audit for a reordered consent array', function () {
     ]);
 
     expect(TrackingSettingAudit::count())->toBe($before);
+});
+
+// ─── GA4 has no dedup, so exactly one leg may own each conversion ───────────
+
+it('lets the server own the GA4 conversion when the measurement protocol will send it', function () {
+    TrackingSetting::create([
+        'meta_pixel_id' => '1234567890',
+        'meta_access_token' => 'token',
+        'meta_enabled' => true,
+        'ga4_measurement_id' => 'G-TEST12345',
+        'ga4_api_secret' => 'secret',
+        'ga4_enabled' => true,
+        'consent_default_row' => TrackingSetting::defaultRowConsent(),
+        'consent_default_eu' => TrackingSetting::defaultEuConsent(),
+    ]);
+    app(TrackingSettingsService::class)->flush();
+
+    Bus::fake();
+
+    $request = request();
+    $request->setLaravelSession(app('session.store'));
+    $request->headers->set('CF-IPCountry', 'BD');
+
+    $events = app(TrackingEvents::class);
+    $events->purchase($request, makeOrder());
+
+    $queued = $events->drainBrowserEvents($request);
+
+    // Meta still fires in the browser (event_id dedups it against CAPI), but
+    // the GA4 name is null — GA4 would otherwise count the purchase twice and
+    // inflate revenue, since it has no equivalent of Meta's event_id dedup.
+    expect($queued[0]['meta'])->toBe('Purchase')
+        ->and($queued[0]['ga4'])->toBeNull();
+
+    Bus::assertDispatched(SendGa4MpEvent::class);
+});
+
+it('lets the browser own the GA4 conversion when the server will not send it', function () {
+    // GA4 MP not configured: the browser must keep the event, or it is lost.
+    TrackingSetting::create([
+        'meta_pixel_id' => '1234567890',
+        'meta_access_token' => 'token',
+        'meta_enabled' => true,
+        'ga4_measurement_id' => 'G-TEST12345',
+        'ga4_enabled' => true,
+        'consent_default_row' => TrackingSetting::defaultRowConsent(),
+        'consent_default_eu' => TrackingSetting::defaultEuConsent(),
+    ]);
+    app(TrackingSettingsService::class)->flush();
+
+    Bus::fake();
+
+    $request = request();
+    $request->setLaravelSession(app('session.store'));
+    $request->headers->set('CF-IPCountry', 'BD');
+
+    $events = app(TrackingEvents::class);
+    $events->purchase($request, makeOrder());
+
+    $queued = $events->drainBrowserEvents($request);
+
+    expect($queued[0]['ga4'])->toBe('purchase');
+    Bus::assertNotDispatched(SendGa4MpEvent::class);
+});
+
+// ─── Meta CAPI must respect a denied visitor ────────────────────────────────
+
+it('does not ship hashed PII to Meta for a visitor who denied consent', function () {
+    TrackingSetting::create([
+        'meta_pixel_id' => '1234567890',
+        'meta_access_token' => 'token',
+        'meta_enabled' => true,
+        'consent_default_row' => TrackingSetting::defaultRowConsent(),
+        'consent_default_eu' => TrackingSetting::defaultEuConsent(),
+    ]);
+    app(TrackingSettingsService::class)->flush();
+
+    Bus::fake();
+
+    $request = request();
+    $request->setLaravelSession(app('session.store'));
+    // EU visitor: ad_storage denied by default. The pixel honours Consent Mode
+    // itself, but a server-side CAPI call is invisible to it — so without an
+    // explicit gate this visitor's hashed email, phone and address would be
+    // shipped to Meta anyway.
+    $request->headers->set('CF-IPCountry', 'DE');
+
+    app(TrackingEvents::class)->purchase($request, makeOrder());
+
+    Bus::assertNotDispatched(SendMetaCapiEvent::class);
+});
+
+it('still sends to Meta CAPI for a visitor whose region grants consent', function () {
+    TrackingSetting::create([
+        'meta_pixel_id' => '1234567890',
+        'meta_access_token' => 'token',
+        'meta_enabled' => true,
+        'consent_default_row' => TrackingSetting::defaultRowConsent(),
+        'consent_default_eu' => TrackingSetting::defaultEuConsent(),
+    ]);
+    app(TrackingSettingsService::class)->flush();
+
+    Bus::fake();
+
+    $request = request();
+    $request->setLaravelSession(app('session.store'));
+    $request->headers->set('CF-IPCountry', 'BD');
+
+    app(TrackingEvents::class)->purchase($request, makeOrder());
+
+    Bus::assertDispatched(SendMetaCapiEvent::class);
+});
+
+// ─── robots.txt must not deindex the storefront ─────────────────────────────
+
+it('does not disallow the public vendor storefront', function () {
+    // routes/web.php serves vendor/{slug} as a public catalogue page, so
+    // blocking the /vendor prefix would deindex real content. The old static
+    // robots.txt allowed everything.
+    $body = $this->get('/robots.txt')->getContent();
+
+    expect($body)->not->toContain('Disallow: /vendor')
+        ->and($body)->toContain('Disallow: /admin');
+});
+
+// ─── gtag must exist regardless of Consent Mode ─────────────────────────────
+
+it('defines gtag even when consent mode is switched off', function () {
+    // The GA4 config block calls gtag() unconditionally. Defining the shim only
+    // inside the consent branch threw "gtag is not defined" and killed GA4 for
+    // anyone who turned Consent Mode off.
+    TrackingSetting::create([
+        'ga4_measurement_id' => 'G-TEST12345',
+        'ga4_enabled' => true,
+        'consent_mode_enabled' => false,
+    ]);
+    app(TrackingSettingsService::class)->flush();
+
+    $html = $this->get('/')->getContent();
+
+    $shim = strpos($html, 'function gtag(');
+    $call = strpos($html, "gtag('js'");
+
+    expect($shim)->not->toBeFalse()
+        ->and($call)->not->toBeFalse()
+        // Defined before it is called.
+        ->and($shim)->toBeLessThan($call)
+        ->and($html)->not->toContain("gtag('consent', 'default'");
 });
 
 // ─── Settings service lifetime ──────────────────────────────────────────────

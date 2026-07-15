@@ -16,15 +16,20 @@
 @php($__tracking = app(\App\Services\Tracking\TrackingViewModel::class)->forRequest(request()))
 
 @if ($__tracking['any'])
-    {{-- 1. Consent Mode v2 — first push, before GTM/gtag/fbq load. --}}
-    @if ($__tracking['consentMode'])
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('consent', 'default', @json($__tracking['consentDefaults']));
-            gtag('set', 'ads_data_redaction', {{ $__tracking['consentDefaults']['ad_storage'] === 'denied' ? 'true' : 'false' }});
-        </script>
-    @endif
+    {{-- 1. dataLayer + gtag shim, then Consent Mode v2 defaults.
+         The shim is defined unconditionally: the GA4 block below calls gtag()
+         regardless of Consent Mode, so defining it only inside the consent
+         branch would throw "gtag is not defined" and kill GA4 entirely for
+         anyone who turns Consent Mode off. Consent defaults stay the FIRST
+         push, before GTM/gtag/fbq load. --}}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        @if ($__tracking['consentMode'])
+        gtag('consent', 'default', @json($__tracking['consentDefaults']));
+        gtag('set', 'ads_data_redaction', {{ $__tracking['consentDefaults']['ad_storage'] === 'denied' ? 'true' : 'false' }});
+        @endif
+    </script>
 
     {{-- 2. Google Tag Manager --}}
     @if ($__tracking['gtmId'])

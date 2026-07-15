@@ -82,11 +82,16 @@ export function trackEvent(eventName, customData = {}, options = {}) {
 
     // GA4 / GTM.
     //
-    // Pushed unconditionally, NOT gated on config. dataLayer is an ordinary
-    // array that GTM drains when it loads, so pushing with no container is
-    // harmless — and gating it here would be a regression: the storefront
-    // pushed add_to_cart directly before this utility existed, and that push
-    // must keep working whether or not an admin has configured the new panel.
+    // skipGa4 means the server is sending this one via the Measurement
+    // Protocol. GA4 has no dedup mechanism — unlike Meta it would simply count
+    // both legs — so exactly one side owns each GA4 conversion.
+    if (options.skipGa4) return eventId
+
+    // Otherwise pushed unconditionally, NOT gated on config. dataLayer is an
+    // ordinary array that GTM drains when it loads, so pushing with no
+    // container is harmless — and gating it here would be a regression: the
+    // storefront pushed add_to_cart directly before this utility existed, and
+    // that push must keep working whether or not the new panel is configured.
     const ga4Name = options.ga4Name || GA4_NAMES[eventName] || eventName
     const { contents, content_ids, content_type, num_items, ...rest } = customData
     const items = toGa4Items(customData)
@@ -182,10 +187,13 @@ function fireQueuedServerEvents() {
     const queued = window.__TRACKING_QUEUED__ || []
 
     queued.forEach((item) => {
-        // Reuses the server's event_id — this is the dedup contract.
+        // Reuses the server's event_id — this is the Meta dedup contract.
+        // A null ga4 name means the server already sent this one to GA4 via the
+        // Measurement Protocol, so the browser must not push it again.
         trackEvent(item.meta, item.data || {}, {
             eventId: item.eventId,
-            ga4Name: item.ga4,
+            ga4Name: item.ga4 || undefined,
+            skipGa4: !item.ga4,
         })
     })
 
