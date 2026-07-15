@@ -294,21 +294,26 @@
             })
             .then(response => response.json())
             .then(data => {
-                // GA4 Event
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    "event": "add_to_cart",
-                    "ecommerce": {
-                        "currency": "BDT",
-                        "value": parseFloat(btn.getAttribute('data-price') || 0),
-                        "items": [{
-                            "item_id": id,
-                            "item_name": btn.getAttribute('data-name'),
-                            "price": parseFloat(btn.getAttribute('data-price') || 0),
-                            "quantity": 1
-                        }]
-                    }
-                });
+                // AddToCart. trackEvent pushes the same GA4 add_to_cart payload
+                // this used to push directly, and additionally sends the Meta
+                // leg with a shared event ID. GA4 still sees exactly one event.
+                if (window.trackEvent) {
+                    const price = parseFloat(btn.getAttribute('data-price') || 0);
+
+                    window.trackEvent('AddToCart', {
+                        currency: (window.__TRACKING__ && window.__TRACKING__.currency) || 'BDT',
+                        value: price,
+                        content_type: 'product',
+                        content_ids: [String(id)],
+                        contents: [{
+                            id: String(id),
+                            item_name: btn.getAttribute('data-name'),
+                            quantity: 1,
+                            item_price: price
+                        }],
+                        num_items: 1
+                    });
+                }
 
                 // কার্ট সংখ্যা আপডেট (সার্ভারের authoritative count দিয়ে)
                 if (window.updateCartCount) window.updateCartCount(data.count);

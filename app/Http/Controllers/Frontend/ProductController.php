@@ -19,6 +19,7 @@ use App\Models\miniCategory;
 use App\Models\Product;
 use App\Models\SubCategory;
 use App\Services\ProductPriceCalculator;
+use App\Services\Tracking\TrackingEvents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use View;
@@ -429,6 +430,19 @@ class ProductController extends Controller
 
         $key = $request->keyword;
 
+        // Search, on the rendered results page only. This method also serves the
+        // as-you-type AJAX path above, which would otherwise report a Search per
+        // keystroke.
+        try {
+            app(TrackingEvents::class)->search(
+                $request,
+                (string) ($request->search ?? $key ?? ''),
+                $products->pluck('id')->all()
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return view('frontend.search-product', compact('products', 'key'));
     }
 
@@ -524,6 +538,17 @@ class ProductController extends Controller
             ->with('reviews')
             ->take(18)
             ->get();
+
+        // ViewContent, priced the way the customer sees it (discount wins).
+        try {
+            app(TrackingEvents::class)->viewContent(
+                request(),
+                $product,
+                (float) ($product->discount_price ?: $product->regular_price)
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return view('frontend.single-product', compact('product', 'colors_product', 'attributes', 'attributeGroups', 'relatedProducts', 'categoryBestProducts'));
     }

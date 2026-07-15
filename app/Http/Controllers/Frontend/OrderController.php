@@ -15,6 +15,7 @@ use App\Services\OrderSms;
 use App\Services\ProductPriceCalculator;
 use App\Services\RewardCoupon;
 use App\Services\ShippingCharge;
+use App\Services\Tracking\TrackingEvents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -586,6 +587,16 @@ class OrderController extends Controller
 
         OrderSms::send($order);
         RewardCoupon::forPurchase($userId);
+
+        // Every order path funnels through here, so this is the one place
+        // Purchase needs firing. The browser and server legs share one event_id,
+        // which is what lets Meta collapse them into a single event.
+        // Failing to track must never fail an order that is already placed.
+        try {
+            app(TrackingEvents::class)->purchase($request, $order);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return $order->load('orderDetails');
     }

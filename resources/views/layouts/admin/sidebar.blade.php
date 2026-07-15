@@ -311,6 +311,10 @@
                             onclick="window.location='{{ url('admin/setting/pathao') }}'">
                             <i class="bx bx-package"></i> Courier
                         </li>
+                        <li class="{{ $navActive('admin/setting/tracking*') }}"
+                            onclick="window.location='{{ url('admin/setting/tracking') }}'">
+                            <i class="bx bx-line-chart"></i> Tracking &amp; Integrations
+                        </li>
                         <li class="{{ $navActive('admin/setting/mailsmsapireglog') }}"
                             onclick="window.location='{{ url('admin/setting/mailsmsapireglog') }}'">
                             <i class="bx bx-message-square-detail"></i> Mail / SMS &amp; API

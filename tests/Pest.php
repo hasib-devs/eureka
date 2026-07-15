@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Brand;
+use App\Models\Order;
+use App\Models\OrderDetails;
 use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
@@ -69,4 +71,53 @@ function makeProduct(): Product
     $brand = Brand::create(['name' => 'Test Brand', 'slug' => 'brand-'.Str::random(10)]);
 
     return Product::factory()->create(['user_id' => $user->id, 'brand_id' => $brand->id]);
+}
+
+/**
+ * An order with one line item, for tracking tests.
+ *
+ * order_details.product_id is a real foreign key and color/size are NOT NULL,
+ * so the row has to be complete rather than minimal.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function makeOrder(array $overrides = []): Order
+{
+    $product = makeProduct();
+
+    $order = Order::create(array_merge([
+        'user_id' => null,
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'email' => 'John_Smith@gmail.com',
+        'phone' => '01712345678',
+        'district' => 'Dhaka',
+        'town' => 'Dhaka',
+        'post_code' => '1207',
+        'country' => 'Bangladesh',
+        'payment_method' => 'Cash on Delivery',
+        'subtotal' => 1000,
+        'discount' => 0,
+        'shipping_charge' => 60,
+        'total' => 1060,
+        'status' => 0,
+        'pay_staus' => 0,
+        'order_id' => 'ORD-TEST1234',
+        'invoice' => 'INV-TEST-1',
+    ], $overrides));
+
+    OrderDetails::create([
+        'order_id' => $order->id,
+        'seller_id' => $product->user_id,
+        'product_id' => $product->id,
+        'title' => 'Test Product',
+        'color' => '',
+        'size' => '',
+        'qty' => 2,
+        'price' => 500,
+        'total_price' => 1000,
+        'g_total' => 1060,
+    ]);
+
+    return $order;
 }
