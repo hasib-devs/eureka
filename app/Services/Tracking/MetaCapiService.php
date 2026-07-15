@@ -77,12 +77,13 @@ class MetaCapiService
         }
 
         try {
+            // Bearer header, not a query parameter: Guzzle puts the full URI in
+            // its exception messages, so a token in the query string would leak
+            // into the admin panel on any DNS failure or timeout.
             $response = Http::timeout(10)
                 ->acceptJson()
-                ->get($this->graphUrl($s->meta_pixel_id), [
-                    'fields' => 'name,id',
-                    'access_token' => $s->meta_access_token,
-                ]);
+                ->withToken($s->meta_access_token)
+                ->get($this->graphUrl($s->meta_pixel_id), ['fields' => 'name,id']);
 
             if ($response->successful()) {
                 $name = $response->json('name');
@@ -93,12 +94,17 @@ class MetaCapiService
                 ];
             }
 
-            // Meta's error message is safe to surface; it never echoes the token.
             $error = $response->json('error.message') ?? 'HTTP '.$response->status();
 
-            return ['ok' => false, 'message' => 'Meta rejected the request: '.$error];
+            return [
+                'ok' => false,
+                'message' => 'Meta rejected the request: '.$this->scrub($error),
+            ];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'message' => 'Could not reach Meta: '.$e->getMessage()];
+            return [
+                'ok' => false,
+                'message' => 'Could not reach Meta: '.$this->scrub($e->getMessage()),
+            ];
         }
     }
 
@@ -172,7 +178,7 @@ class MetaCapiService
                         'event_name' => $eventName,
                         'event_id' => $eventId,
                         'status' => $response->status(),
-                        'error' => $response->json('error.message'),
+                        'error' => $this->scrub($response->json('error.message')),
                         'attempt' => $attempt,
                     ]);
 
@@ -181,8 +187,9 @@ class MetaCapiService
 
                 $this->backoff($attempt, $eventName, $eventId, 'HTTP '.$response->status());
             } catch (\Throwable $e) {
-                // Network-level failure — worth retrying.
-                $this->backoff($attempt, $eventName, $eventId, $e->getMessage());
+                // Network-level failure — worth retrying. Scrubbed: a Guzzle
+                // exception message carries the full request URI.
+                $this->backoff($attempt, $eventName, $eventId, $this->scrub($e->getMessage()));
             }
         }
 
@@ -212,6 +219,12 @@ class MetaCapiService
                 usleep($base * 1000 * (2 ** ($attempt - 1)));
             }
         }
+    }
+
+    /** Never surface or log anything derived from an exception unscrubbed. */
+    private function scrub(?string $text): string
+    {
+        return TrackingRedactor::scrub($text, [$this->settings->current()->meta_access_token]);
     }
 
     private function graphUrl(string $path): string

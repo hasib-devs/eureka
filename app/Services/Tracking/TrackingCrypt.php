@@ -19,7 +19,15 @@ use RuntimeException;
  */
 class TrackingCrypt
 {
-    private static ?Encrypter $encrypter = null;
+    /**
+     * Keyed by the resolved key, not a bare instance. A plain memo would freeze
+     * the first key it ever saw while usingDedicatedKey() kept reading config
+     * live — so the admin panel could report "dedicated key in use" while
+     * secrets were still being encrypted with APP_KEY.
+     *
+     * @var array<string, Encrypter>
+     */
+    private static array $encrypters = [];
 
     /** True when a dedicated settings key is configured (rather than APP_KEY). */
     public static function usingDedicatedKey(): bool
@@ -50,19 +58,16 @@ class TrackingCrypt
 
     public static function flush(): void
     {
-        self::$encrypter = null;
+        self::$encrypters = [];
     }
 
     private static function encrypter(): Encrypter
     {
-        if (self::$encrypter instanceof Encrypter) {
-            return self::$encrypter;
-        }
-
-        $cipher = config('app.cipher', 'AES-256-CBC');
+        $cipher = (string) config('app.cipher', 'AES-256-CBC');
         $key = self::resolveKey();
+        $handle = $cipher.':'.md5($key);
 
-        return self::$encrypter = new Encrypter($key, $cipher);
+        return self::$encrypters[$handle] ??= new Encrypter($key, $cipher);
     }
 
     private static function resolveKey(): string

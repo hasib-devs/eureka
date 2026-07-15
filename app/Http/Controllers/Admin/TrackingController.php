@@ -96,6 +96,14 @@ class TrackingController extends Controller
             $validated[$group] = $this->consentGroup($request, $group);
         }
 
+        // A blank secret means "unchanged", so clearing one needs an explicit
+        // request — otherwise a leaked token could never be revoked here.
+        foreach (TrackingSetting::SECRET_FIELDS as $secret) {
+            if ($request->boolean('clear_'.$secret)) {
+                $validated[$secret] = TrackingSettingsService::CLEAR_SENTINEL;
+            }
+        }
+
         if (filled($validated['site_url'] ?? null)) {
             $validated['site_url'] = rtrim($validated['site_url'], '/');
         }

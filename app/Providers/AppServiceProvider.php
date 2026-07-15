@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\miniCategory;
 use App\Models\Page;
 use App\Models\SubCategory;
+use App\Services\Tracking\TrackingSettingsService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
@@ -20,7 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Singleton so the settings memo is scoped to one container lifetime —
+        // one web request, or one queued job — rather than being static and
+        // therefore unbounded. A process-wide memo would sit in front of the
+        // cache with no TTL, so a long-lived worker would keep using a revoked
+        // token or a disabled integration until it restarted.
+        $this->app->singleton(TrackingSettingsService::class);
     }
 
     /**

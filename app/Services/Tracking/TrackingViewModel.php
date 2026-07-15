@@ -47,7 +47,8 @@ class TrackingViewModel
             ? $this->settings->current()->gsc_verification_code
             : null;
 
-        $any = filled($pixelId) || filled($gtmId) || filled($ga4Id);
+        // Same predicate the queue producer uses, so the two cannot disagree.
+        $any = $this->settings->anyBrowserTagEnabled();
 
         return [
             'any' => $any,

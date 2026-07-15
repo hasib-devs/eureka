@@ -8,6 +8,7 @@ use App\Models\TrackingSetting;
 use App\Models\TrackingSettingAudit;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -23,9 +24,27 @@ class TrackingSettingsService
 {
     public const CACHE_KEY = 'tracking.settings';
 
-    private static ?TrackingSetting $memo = null;
+    /**
+     * Explicit "clear this secret" signal.
+     *
+     * A blank secret field means "unchanged" (the form never re-renders the
+     * stored value, so blank is the normal state of an untouched form). That
+     * alone would leave no way to remove a secret at all — so revoking a leaked
+     * token needs a signal that cannot be produced by simply not typing.
+     */
+    public const CLEAR_SENTINEL = '__CLEAR__';
 
-    private static bool $degraded = false;
+    /**
+     * Per-instance, and the service is bound as a singleton — so the memo lives
+     * exactly as long as the container that resolved it (one web request, or
+     * one queued job). It is deliberately NOT static: a static memo is consulted
+     * before the cache and therefore has no TTL at all, so a long-lived worker
+     * would keep using a revoked token or an integration an admin had switched
+     * off until the process restarted.
+     */
+    private ?TrackingSetting $memo = null;
+
+    private bool $degraded = false;
 
     /**
      * The settings row, or a disabled in-memory stand-in when the row cannot be
@@ -33,8 +52,8 @@ class TrackingSettingsService
      */
     public function current(): TrackingSetting
     {
-        if (self::$memo instanceof TrackingSetting) {
-            return self::$memo;
+        if ($this->memo instanceof TrackingSetting) {
+            return $this->memo;
         }
 
         try {
@@ -44,7 +63,7 @@ class TrackingSettingsService
                 fn () => TrackingSetting::query()->first()?->getRawOriginal() ?? []
             );
 
-            self::$degraded = false;
+            $this->degraded = false;
 
             // Rehydrated from raw columns so the casts (and decryption) apply
             // exactly as they would on a fresh read.
@@ -52,16 +71,19 @@ class TrackingSettingsService
             $row->setRawAttributes($attributes, true);
             $row->exists = $attributes !== [];
 
-            return self::$memo = $row;
+            return $this->memo = $row;
         } catch (\Throwable $e) {
             // A tracking outage must never take the storefront down.
             Log::warning('Tracking settings unavailable; tracking disabled for this request.', [
-                'exception' => $e->getMessage(),
+                'exception' => TrackingRedactor::scrub($e->getMessage()),
             ]);
 
-            self::$degraded = true;
+            $this->degraded = true;
 
-            return self::$memo = new TrackingSetting;
+            // Deliberately NOT memoized: memoizing the stand-in would turn one
+            // transient database blip into tracking being off for the rest of
+            // this request/job, even after the database recovered.
+            return new TrackingSetting;
         }
     }
 
@@ -70,7 +92,7 @@ class TrackingSettingsService
     {
         $this->current();
 
-        return self::$degraded;
+        return $this->degraded;
     }
 
     /** The editable row, created on first use. */
@@ -85,6 +107,9 @@ class TrackingSettingsService
             'consent_default_eu' => TrackingSetting::defaultEuConsent(),
             'site_url' => rtrim((string) config('app.url'), '/'),
         ]);
+
+        // A cached "no row" result is now wrong.
+        $this->flush();
 
         // Reload so the columns filled by database defaults (the enabled flags)
         // are populated in memory. Without this a fresh row reports null for
@@ -178,6 +203,21 @@ class TrackingSettingsService
     }
 
     /**
+     * Is any browser-side tag actually going to render?
+     *
+     * The single source of truth for both the queue producer
+     * (TrackingEvents::queueBrowserEvent) and the consumer
+     * (TrackingViewModel::forRequest). They must agree: a producer that writes
+     * while the consumer never drains would grow the session on every page view
+     * with tracking switched off, then fire the whole backlog the moment an
+     * admin enables it.
+     */
+    public function anyBrowserTagEnabled(): bool
+    {
+        return $this->metaPixelEnabled() || $this->gtmEnabled() || $this->ga4Enabled();
+    }
+
+    /**
      * The safe subset the browser is allowed to see. Secrets are structurally
      * absent — not masked, not filtered later, simply never added.
      *
@@ -210,14 +250,35 @@ class TrackingSettingsService
      */
     public function update(array $input, ?User $admin): TrackingSetting
     {
+        // Audit rows and the change itself must land together: without this a
+        // failed save would leave the log claiming a change that never happened.
+        $row = DB::transaction(fn () => $this->applyUpdate($input, $admin));
+
+        $this->flush();
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     */
+    private function applyUpdate(array $input, ?User $admin): TrackingSetting
+    {
         $row = $this->currentForEdit();
 
         foreach ($input as $field => $value) {
             $isSecret = in_array($field, TrackingSetting::SECRET_FIELDS, true);
 
-            // Blank secret submitted -> keep what is stored.
+            // Blank secret submitted -> keep what is stored, because the form
+            // never re-renders it and a blank submit is "I didn't touch this".
+            // Clearing therefore needs an explicit signal (see CLEAR_SENTINEL);
+            // without one there would be no way to revoke a leaked token.
             if ($isSecret && blank($value)) {
                 continue;
+            }
+
+            if ($isSecret && $value === self::CLEAR_SENTINEL) {
+                $value = null;
             }
 
             $old = $row->{$field};
@@ -239,8 +300,6 @@ class TrackingSettingsService
 
         $row->save();
 
-        $this->flush();
-
         return $row;
     }
 
@@ -248,8 +307,12 @@ class TrackingSettingsService
     public function flush(): void
     {
         Cache::forget(self::CACHE_KEY);
-        self::$memo = null;
-        self::$degraded = false;
+        $this->memo = null;
+        $this->degraded = false;
+
+        // The encrypter caches the resolved key; a settings change may be a key
+        // change.
+        TrackingCrypt::flush();
     }
 
     private function unchanged(mixed $old, mixed $new): bool
@@ -268,6 +331,10 @@ class TrackingSettingsService
     private function comparable(mixed $value): string
     {
         if (is_array($value)) {
+            // Key-sorted: the consent groups are associative, and a reordered
+            // but identical array is not a change worth logging.
+            ksort($value);
+
             return json_encode($value) ?: '';
         }
 

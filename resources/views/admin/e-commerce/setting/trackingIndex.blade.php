@@ -150,6 +150,14 @@
                                 autocomplete="new-password"
                                 placeholder="{{ $hasMetaToken ? 'Saved — leave blank to keep unchanged' : 'Paste the token from Events Manager' }}">
                             <p class="{{ $hint }}">Stored encrypted. Never shown again and never sent to the browser. Leave blank to keep the saved value.</p>
+                            @if ($hasMetaToken)
+                                {{-- Blank means "unchanged", so revoking a leaked token needs its own control. --}}
+                                <label class="mt-2 inline-flex cursor-pointer items-center gap-2">
+                                    <input type="checkbox" name="clear_meta_access_token" value="1"
+                                        class="h-3.5 w-3.5 rounded border-slate-300 text-red-600 focus:ring-red-300">
+                                    <span class="text-xs text-red-600">Clear the saved token (revoke it in Events Manager too)</span>
+                                </label>
+                            @endif
                         </div>
 
                         <div>
@@ -242,6 +250,13 @@
                                     autocomplete="new-password"
                                     placeholder="{{ $hasGa4Secret ? 'Saved — leave blank to keep unchanged' : 'Data Streams → Measurement Protocol API secrets' }}">
                                 <p class="{{ $hint }}">Stored encrypted. Required only for server-side events.</p>
+                                @if ($hasGa4Secret)
+                                    <label class="mt-2 inline-flex cursor-pointer items-center gap-2">
+                                        <input type="checkbox" name="clear_ga4_api_secret" value="1"
+                                            class="h-3.5 w-3.5 rounded border-slate-300 text-red-600 focus:ring-red-300">
+                                        <span class="text-xs text-red-600">Clear the saved secret (delete it in GA4 too)</span>
+                                    </label>
+                                @endif
                             </div>
                         </div>
                         <div class="flex items-center gap-3 border-t border-slate-100 pt-4">

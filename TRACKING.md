@@ -44,7 +44,11 @@ Everything ships **disabled**, so deploying changes no live behaviour. To go liv
 
 **Secrets** (access token, API secret) are encrypted at rest and **write-only**: once saved they are
 never shown again, never sent to the browser, and never written to the audit log. Leaving a secret
-field blank keeps the stored value; it does not clear it.
+field blank keeps the stored value — a blank field is the normal state of an untouched form, so it
+cannot mean "delete".
+
+To **revoke** a secret, tick the red *Clear the saved token* box under the field and save. Do that
+in Meta/Google's UI too — clearing it here stops us using it, it does not invalidate it upstream.
 
 ### Secret encryption key
 
@@ -305,9 +309,27 @@ break a checkout. They work on the current `sync` queue driver with no worker; s
 | `app/Services/Tracking/ConsentResolver.php` | Region → consent defaults; banner decision |
 | `app/Services/Tracking/MetaUserData.php` | Builds `user_data` (the EMQ block) |
 | `app/Services/Tracking/TrackingContext.php` | IP through proxies, UA, fbp/fbc, cookie domain |
+| `app/Services/Tracking/TrackingRedactor.php` | Strips secrets from anything shown or logged |
 | `resources/js/tracking.js` | `trackEvent()`, fbc capture, consent update |
 | `resources/views/components/tracking/head.blade.php` | Tag injection, in the required order |
 | `app/Http/Controllers/Admin/TrackingController.php` | The admin panel |
+
+### Two things that will silently break this if you change them
+
+**1. The cookie exception list.** `bootstrap/app.php` exempts `_fbp`, `_fbc`, `_ga` and
+`tracking_consent` from `EncryptCookies`. These are written by JavaScript in plaintext; Laravel
+tries to decrypt every incoming cookie and **silently replaces anything it cannot read with null**.
+Remove them from that list and: `fbp`/`fbc` stop reaching CAPI (EMQ collapses), every server-side
+GA4 hit invents a second unattributed user, and an EU visitor's consent never reaches the server so
+the banner reappears on every page forever. Nothing errors. Pinned by
+`tests/Feature/Tracking/TrackingRegressionTest.php`.
+
+**2. Error messages must be scrubbed.** Guzzle appends the full request URI — query string included
+— to every cURL-level exception message. GA4 requires `api_secret` in the query string, and Test
+Connection renders messages straight into the admin's DOM, so an unscrubbed message turns a DNS blip
+into a secret disclosure. Anything derived from an exception or an HTTP response must go through
+`TrackingRedactor::scrub()` before it reaches a response or a log. (Meta's token avoids this
+entirely by going in an `Authorization: Bearer` header rather than the URL.)
 
 ### Reliability
 

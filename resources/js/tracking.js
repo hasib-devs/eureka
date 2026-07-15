@@ -80,22 +80,25 @@ export function trackEvent(eventName, customData = {}, options = {}) {
         window.fbq('track', eventName, customData, { eventID: eventId })
     }
 
-    // GA4 / GTM
+    // GA4 / GTM.
+    //
+    // Pushed unconditionally, NOT gated on config. dataLayer is an ordinary
+    // array that GTM drains when it loads, so pushing with no container is
+    // harmless — and gating it here would be a regression: the storefront
+    // pushed add_to_cart directly before this utility existed, and that push
+    // must keep working whether or not an admin has configured the new panel.
     const ga4Name = options.ga4Name || GA4_NAMES[eventName] || eventName
+    const { contents, content_ids, content_type, num_items, ...rest } = customData
+    const items = toGa4Items(customData)
 
-    if (config.ga4Id || config.gtmId) {
-        const { contents, content_ids, content_type, num_items, ...rest } = customData
-        const items = toGa4Items(customData)
-
-        dataLayerPush({
-            event: ga4Name,
-            event_id: eventId,
-            ecommerce: {
-                ...rest,
-                ...(items.length ? { items } : {}),
-            },
-        })
-    }
+    dataLayerPush({
+        event: ga4Name,
+        event_id: eventId,
+        ecommerce: {
+            ...rest,
+            ...(items.length ? { items } : {}),
+        },
+    })
 
     return eventId
 }
@@ -160,14 +163,15 @@ export function setConsent(granted) {
     }
 
     // The server reads this cookie to resolve defaults on the next page load
-    // and to gate server-side GA4 hits.
+    // and to gate server-side GA4 hits. It is in the EncryptCookies exception
+    // list — Laravel would otherwise fail to decrypt this plaintext value and
+    // silently read it as null.
     writeCookie(config.consentCookie || 'tracking_consent', JSON.stringify(state), 180)
 
-    // A visitor who consents after the pixel loaded has not sent a PageView yet
-    // under denied storage; send one now so the session is not lost.
-    if (granted && config.pixelId && typeof window.fbq === 'function') {
-        trackEvent('PageView')
-    }
+    // Deliberately no PageView here. boot() already fires exactly one per page
+    // load regardless of consent state (fbq's own consent handling is separate
+    // from Google's signals), so sending another on Accept would double-count
+    // every consenting visitor.
 }
 
 window.setTrackingConsent = setConsent

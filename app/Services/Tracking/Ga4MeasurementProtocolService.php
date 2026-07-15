@@ -143,7 +143,10 @@ class Ga4MeasurementProtocolService
 
             return ['ok' => true, 'message' => 'Measurement Protocol reachable and the payload validated.'];
         } catch (\Throwable $e) {
-            return ['ok' => false, 'message' => 'Could not reach GA4: '.$e->getMessage()];
+            // Scrubbed: Google requires api_secret in the query string, and a
+            // Guzzle exception message carries the full URI — so a DNS blip or
+            // timeout would otherwise render the secret into the admin panel.
+            return ['ok' => false, 'message' => 'Could not reach GA4: '.$this->scrub($e->getMessage())];
         }
     }
 
@@ -182,7 +185,9 @@ class Ga4MeasurementProtocolService
                 Log::warning('GA4 MP attempt failed.', [
                     'event_name' => $eventName,
                     'attempt' => $attempt,
-                    'reason' => $e->getMessage(),
+                    // The exception message embeds the endpoint URL, which
+                    // carries api_secret.
+                    'reason' => $this->scrub($e->getMessage()),
                 ]);
             }
 
@@ -201,6 +206,12 @@ class Ga4MeasurementProtocolService
         ]);
 
         return false;
+    }
+
+    /** Never surface or log anything derived from an exception unscrubbed. */
+    private function scrub(?string $text): string
+    {
+        return TrackingRedactor::scrub($text, [$this->settings->current()->ga4_api_secret]);
     }
 
     private function endpointUrl(string $base): string

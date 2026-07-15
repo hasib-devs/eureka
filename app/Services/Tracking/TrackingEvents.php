@@ -31,6 +31,9 @@ class TrackingEvents
     /** Session key holding browser events waiting to be rendered. */
     public const QUEUE_KEY = 'tracking.browser_events';
 
+    /** Most events held for a browser that has not rendered a page yet. */
+    public const QUEUE_LIMIT = 20;
+
     public function __construct(
         private TrackingSettingsService $settings,
         private MetaUserData $userData,
@@ -244,10 +247,16 @@ class TrackingEvents
     /**
      * Hand an event to the browser layer to fire with this same event_id.
      *
-     * Uses flash so it works whether the controller returns a view directly
-     * (OrderController renders order_success inline) or redirects: the head
-     * component renders it and immediately forgets it, so it fires exactly once
-     * either way.
+     * Stored with put(), NOT flash(). Flash survives exactly one subsequent
+     * request, and this layout sends a session-backed heartbeat POST every five
+     * seconds — so a flashed event queued on a JSON response (the Lead capture)
+     * was aged out before any page could render it, and its browser leg was
+     * silently lost. put() + an explicit forget on drain means the event waits
+     * for a real page render however many background requests intervene.
+     *
+     * Nothing is queued unless a browser tag will actually render it; otherwise
+     * the queue would grow on every page view of a store with tracking off, and
+     * then fire the entire backlog at once when an admin enabled it.
      */
     public function queueBrowserEvent(
         Request $request,
@@ -256,11 +265,12 @@ class TrackingEvents
         string $eventId,
         array $custom = [],
     ): void {
-        if (! $request->hasSession()) {
+        if (! $request->hasSession() || ! $this->settings->anyBrowserTagEnabled()) {
             return;
         }
 
         $queued = $request->session()->get(self::QUEUE_KEY, []);
+        $queued = is_array($queued) ? $queued : [];
 
         $queued[] = [
             'meta' => $metaName,
@@ -269,12 +279,19 @@ class TrackingEvents
             'data' => $custom,
         ];
 
-        $request->session()->flash(self::QUEUE_KEY, $queued);
+        // Backstop: a visitor who only ever hits JSON endpoints would otherwise
+        // accumulate forever. Keep the most recent — the oldest are the least
+        // useful to replay.
+        if (count($queued) > self::QUEUE_LIMIT) {
+            $queued = array_slice($queued, -self::QUEUE_LIMIT);
+        }
+
+        $request->session()->put(self::QUEUE_KEY, $queued);
     }
 
     /**
-     * Drain the queue for rendering. Forgetting here is what prevents a
-     * same-request render from firing again on the following request.
+     * Drain the queue for rendering. The forget is what stops an event firing
+     * twice, and is why put() is safe here.
      *
      * @return array<int, array<string, mixed>>
      */
