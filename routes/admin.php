@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\Ecommerce\VendorController;
 use App\Http\Controllers\Admin\Ecommerce\WishlistController;
 use App\Http\Controllers\Admin\IpBlockController;
 use App\Http\Controllers\Admin\PathaoCourierController;
+use App\Http\Controllers\Admin\TrackingController;
 use App\Http\Controllers\blogControler as ablogController;
 use App\Http\Controllers\campaingController;
 use App\Http\Controllers\CourierController;
@@ -350,6 +351,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('setting/pathao/send/{order}', [PathaoCourierController::class, 'sendOrder'])->name('setting.pathao.send.store');
     Route::get('setting/pathao/zones/{city}', [PathaoCourierController::class, 'zones'])->name('setting.pathao.zones');
     Route::get('setting/pathao/areas/{zone}', [PathaoCourierController::class, 'areas'])->name('setting.pathao.areas');
+
+    // Tracking & Integrations — Meta Pixel/CAPI, GTM, GA4, Search Console, Consent Mode.
+    // Inherits the ['auth', 'admin'] group above, so role_id == 1 only.
+    Route::get('setting/tracking', [TrackingController::class, 'index'])->name('setting.tracking');
+    Route::put('setting/tracking', [TrackingController::class, 'update'])->name('setting.tracking.save');
+    Route::post('setting/tracking/test/{integration}', [TrackingController::class, 'test'])->name('setting.tracking.test');
+    Route::post('setting/tracking/import-legacy-pixel', [TrackingController::class, 'importLegacyPixel'])->name('setting.tracking.import-legacy');
 
     Route::get('setting/mailsmsapireglog', [SettingController::class, 'mailsmsapireglogIndex'])->name('setting.mailsmsapireglog');
 

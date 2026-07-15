@@ -76,11 +76,20 @@ class TrackingSettingsService
     /** The editable row, created on first use. */
     public function currentForEdit(): TrackingSetting
     {
-        return TrackingSetting::query()->first() ?? TrackingSetting::query()->create([
+        if ($row = TrackingSetting::query()->first()) {
+            return $row;
+        }
+
+        $row = TrackingSetting::query()->create([
             'consent_default_row' => TrackingSetting::defaultRowConsent(),
             'consent_default_eu' => TrackingSetting::defaultEuConsent(),
             'site_url' => rtrim((string) config('app.url'), '/'),
         ]);
+
+        // Reload so the columns filled by database defaults (the enabled flags)
+        // are populated in memory. Without this a fresh row reports null for
+        // them, and update() would diff against the wrong "old" value.
+        return $row->refresh();
     }
 
     /**
@@ -245,12 +254,30 @@ class TrackingSettingsService
 
     private function unchanged(mixed $old, mixed $new): bool
     {
-        if (is_array($old) || is_array($new)) {
-            return json_encode($old) === json_encode($new);
+        return $this->comparable($old) === $this->comparable($new);
+    }
+
+    /**
+     * A comparable representation of a field value.
+     *
+     * Booleans are tagged rather than cast to string: PHP renders false as ''
+     * and true as '1', which would make false indistinguishable from null or an
+     * empty string — and a toggle being switched off would silently look like
+     * "no change" and never save.
+     */
+    private function comparable(mixed $value): string
+    {
+        if (is_array($value)) {
+            return json_encode($value) ?: '';
         }
 
-        // Loose compare so "1" from a form checkbox matches a stored true.
-        return (string) ($old ?? '') === (string) ($new ?? '');
+        // Tagged, so a boolean can never collide with a string field that
+        // happens to hold "1" (a test event code, say).
+        if (is_bool($value)) {
+            return $value ? 'bool:1' : 'bool:0';
+        }
+
+        return $value === null ? '' : (string) $value;
     }
 
     private function auditValue(mixed $value, bool $isSecret): ?string
