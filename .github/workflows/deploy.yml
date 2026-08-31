@@ -20,7 +20,7 @@ jobs:
       SSH_HOST: ${{ secrets.SSH_HOST || 'eureka.reliableuksolutions.com' }}
       SSH_USER: ${{ secrets.SSH_USER || 'u562520413' }}
       SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
-      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/home/u562520413/domains/eureka.reliableuksolutions.com/public_html' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/home/u562520413/domains/anasluxyworld.com/public_html' }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     steps:
