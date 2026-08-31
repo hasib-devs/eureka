@@ -17,19 +17,11 @@ jobs:
         -o ConnectTimeout=20
         -o ServerAliveInterval=15
         -o ServerAliveCountMax=4
-      SSH_HOST: ${{ '92.112.182.65' }}
-      SSH_USER: ${{ 'u562520413' }}
-      SSH_PORT: ${{ '65002' }}
-      DEPLOY_PATH: ${{ '/home/u562520413/domains/anasluxyworld.com/public_html' }}
-      SSH_PRIVATE_KEY: |
-        -----BEGIN OPENSSH PRIVATE KEY-----
-            b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-            QyNTUxOQAAACCudsr+ez/uZhWmm9b3l8i7wjyyVhb6F32cK7eUsgjMTgAAAKhIzQuDSM0L
-            gwAAAAtzc2gtZWQyNTUxOQAAACCudsr+ez/uZhWmm9b3l8i7wjyyVhb6F32cK7eUsgjMTg
-            AAAEAR6nFv2jnBP92wzd75Ob/QKX+tgstGx3gkIdf1xsLxM652yv57P+5mFaab1veXyLvC
-            PLJWFvoXfZwrt5SyCMxOAAAAHmhhc2liQEhhc2licy1NYWNCb29rLVByby5sb2NhbAECAw
-            QFBgc=
-            -----END OPENSSH PRIVATE KEY-----
+      SSH_HOST: ${{ secrets.SSH_HOST || 'eureka.reliableuksolutions.com' }}
+      SSH_USER: ${{ secrets.SSH_USER || 'u562520413' }}
+      SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/home/u562520413/domains/eureka.reliableuksolutions.com/public_html' }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     steps:
       - name: Checkout code
