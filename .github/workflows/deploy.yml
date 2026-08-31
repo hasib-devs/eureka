@@ -17,7 +17,7 @@ jobs:
         -o ConnectTimeout=20
         -o ServerAliveInterval=15
         -o ServerAliveCountMax=4
-      SSH_HOST: ${{ secrets.SSH_HOST || 'eureka.reliableuksolutions.com' }}
+      SSH_HOST: ${{ secrets.SSH_HOST || '92.112.182.65' }}
       SSH_USER: ${{ secrets.SSH_USER || 'u562520413' }}
       SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
       DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/home/u562520413/domains/anasluxyworld.com/public_html' }}
